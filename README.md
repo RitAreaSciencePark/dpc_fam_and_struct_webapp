@@ -14,15 +14,15 @@ You may follow the steps below, although our code is still under development:
 
     - Create and activate
 
-        `python3 -m venv .area_internship_venv`
+        `python3 -m venv .area_internship_venv` (if not yet existent)
 
         `source .area_internship_venv/bin/activate`
 
-4. **Install dependencies**:
+    - Install dependencies:
 
     `pip install -r requirements.txt`
 
-5. **Run the development server**:
+4. **Run the development server**:
 
     `python3 manage.py runserver`
 
