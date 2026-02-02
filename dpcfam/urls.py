@@ -1,6 +1,8 @@
 from django.urls import path
-from . import views
+from .views import MCSPropertyListView
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    # show the MCS properties table at the app root
+    path('', MCSPropertyListView.as_view(), name='index'),
+    path('mcs/', MCSPropertyListView.as_view(), name='mcs_list'),
 ]
