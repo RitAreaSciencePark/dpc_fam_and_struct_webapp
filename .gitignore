@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.area_internship_venv/
+venv/
+env/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Django local settings
+*.sqlite3
+
+# Jupyter
+.ipynb_checkpoints
+
+# IDEs
+.vscode/
+
+# Misc
+.DS_Store
