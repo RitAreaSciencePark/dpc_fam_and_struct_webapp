@@ -30,4 +30,23 @@ You may follow the steps below, although our code is still under development:
 
     `http://127.0.0.1:8000/`
 
-6. **(Coming soon)**
+## Data Organization (Static Files)
+
+To enable the "Downloads" feature and serve sequence data, the `static/` directory must be organized as follows:
+
+```text
+static/
+├── downloads/
+│   └── dpcfam/
+│       ├── alphafolddb_reps.zip
+│       ├── dpcfamb_dataset.zip
+│       ├── dpcfam_full_seeds.zip
+│       ├── dpcfam_hmm_profiles.zip
+│       └── dpcfam_msa_profiles.zip
+└── production_files/
+    ├── dpcfam/
+    │   ├── metaclusters_fasta/       # .fasta files
+    │   ├── metaclusters_hmms/        # .hmm files
+    │   └── metaclusters_msas_cdhit/  # .msa files
+    └── dpcstruct/
+```

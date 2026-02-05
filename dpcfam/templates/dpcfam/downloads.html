@@ -1,0 +1,60 @@
+{% extends "index.html" %}
+{% load static %}
+
+{% block title %}DPCFam | Downloads{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">DPCFam Downloads</h2>
+    <p>The following files are available for download:</p>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>File</th>
+                    <th>Description</th>
+                    <th style="width: 120px;">Link</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>DPCfam full seeds</td>
+                    <td>DPCfam MC’s seed sequence regions (SSRs) based on the UniRef50 database (v. 2017_07)</td>
+                    <td class="text-center">
+                        <a href="{% static 'downloads/dpcfam/dpcfam_full_seeds.zip' %}" class="btn btn-sm btn-primary" download>Click me</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>DPCfam HMM profiles</td>
+                    <td>HMM-profiles for all MCs</td>
+                    <td class="text-center">
+                        <a href="{% static 'downloads/dpcfam/dpcfam_hmm_profiles.zip' %}" class="btn btn-sm btn-primary" download>Click me</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>DPCfam MSA profiles</td>
+                    <td>MSA-profiles for all MCs</td>
+                    <td class="text-center">
+                        <a href="{% static 'downloads/dpcfam/dpcfam_msa_profiles.zip' %}" class="btn btn-sm btn-primary" download>Click me</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>AlphaFoldDB Reps</td>
+                    <td>File containing details about representatives in AlphaFoldDB</td>
+                    <td class="text-center">
+                        <a href="{% static 'downloads/dpcfam/alphafolddb_reps.zip' %}" class="btn btn-sm btn-primary" download>Click me</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>DPCFamB</td>
+                    <td>All files related to DPCFamB dataset</td>
+                    <td class="text-center">
+                        <a href="{% static 'downloads/dpcfam/dpcfamb_dataset.zip' %}" class="btn btn-sm btn-primary" download>Click me</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

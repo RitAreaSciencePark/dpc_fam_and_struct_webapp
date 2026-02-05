@@ -16,6 +16,9 @@ dist/
 # Django local settings
 *.sqlite3
 
+# Static files
+static/
+
 # Jupyter
 .ipynb_checkpoints
 

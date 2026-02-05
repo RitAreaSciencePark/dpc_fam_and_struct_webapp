@@ -1,0 +1,180 @@
+{% extends "index.html" %}
+
+{% block title %}DPCFam | {{ mc.mcid }}{% endblock %}
+
+{% block content %}
+<style>
+    .nav-tabs .nav-link.active {
+        color: magenta !important;
+        font-weight: bold;
+    }
+    /* Also coloring the h4 headers magenta as per potential interpretation */
+    .tab-pane h4 {
+        color: magenta;
+    }
+</style>
+<div class="container mt-4">
+    <h2 class="mb-4">DPCFam | {{ mc.mcid }}</h2>
+
+    <ul class="nav nav-tabs" id="mcTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button" role="tab" aria-controls="summary" aria-selected="true">Summary</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="sequences-tab" data-bs-toggle="tab" data-bs-target="#sequences" type="button" role="tab" aria-controls="sequences" aria-selected="false">Sequences</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="msa-tab" data-bs-toggle="tab" data-bs-target="#msa" type="button" role="tab" aria-controls="msa" aria-selected="false">MSA Viewer</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="downloads-tab" data-bs-toggle="tab" data-bs-target="#downloads" type="button" role="tab" aria-controls="downloads" aria-selected="false">Downloads</button>
+        </li>
+    </ul>
+
+    <div class="tab-content p-4 border border-top-0 rounded-bottom bg-white" id="mcTabsContent">
+        
+        <!-- Tab 1: Summary -->
+        <div class="tab-pane fade show active" id="summary" role="tabpanel" aria-labelledby="summary-tab">
+            <h4>Metacluster Properties</h4>
+            <table class="table table-striped table-bordered mt-3" style="max-width: 600px;">
+                <tbody>
+                    <tr><th>Number of sequences (Size Uniref50)</th><td>{{ mc.size_uniref50 }}</td></tr>
+                    <tr><th>Average sequence length (Avg len)</th><td>{{ mc.avg_len|floatformat:0 }} aa</td></tr>
+                    <tr><th>Low complexity (Lc percent)</th><td>{{ mc.lc_percent }}</td></tr>
+                    <tr><th>Coiled coils (Cc percent)</th><td>{{ mc.cc_percent }}</td></tr>
+                    <tr><th>Disordered domains (Dis percent)</th><td>{{ mc.dis_percent }}</td></tr>
+                    <tr><th>Average transmembrane regions (Tm)</th><td>{{ mc.tm|default:"0" }}</td></tr>
+                    <tr><th>Pfam dominant architecture (Pfam DA)</th><td>{{ mc.pfam_da|default:"None" }}</td></tr>
+                    <tr><th>Pfam dominant architecture (DA percent)</th><td>{{ mc.da_percent }}</td></tr>
+                    <tr><th>Pfam Sequences (Size Pfam)</th><td>{{ mc.size_pfam }}</td></tr>
+                    <tr><th>Pfam overlap type (Overlap Label)</th><td>{{ mc.overlap_label|default:"None" }}</td></tr>
+                    <tr><th>AlphafoldDB representative</th><td>Coming Soon...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Tab 2: Sequences -->
+        <div class="tab-pane fade" id="sequences" role="tabpanel" aria-labelledby="sequences-tab">
+            <h4>Sequences</h4>
+            {% if sequences %}
+            <div class="table-responsive">
+                <table class="table table-sm table-hover mt-3">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Protein</th>
+                            <th>Range</th>
+                            <th>AA Length</th>
+                            <th>AA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for seq in sequences %}
+                        <tr>
+                            <td>{{ seq.protein }}</td>
+                            <td>{{ seq.range_str }}</td>
+                            <td>{{ seq.aa_length }}</td>
+                            <td class="text-break font-monospace" title="{{ seq.amino_acids }}">{{ seq.amino_acids|slice:":50" }}...</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination Controls -->
+            <nav aria-label="Page navigation" class="mt-3">
+                <ul class="pagination justify-content-center">
+                    {% if sequences.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1#sequences" aria-label="First">&laquo; First</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ sequences.previous_page_number }}#sequences" aria-label="Previous">Previous</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">&laquo; First</span></li>
+                        <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                    {% endif %}
+
+                    <li class="page-item disabled"><span class="page-link">Page {{ sequences.number }} of {{ sequences.paginator.num_pages }}</span></li>
+
+                    {% if sequences.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ sequences.next_page_number }}#sequences" aria-label="Next">Next</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ sequences.paginator.num_pages }}#sequences" aria-label="Last">Last &raquo;</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">Next</span></li>
+                        <li class="page-item disabled"><span class="page-link">Last &raquo;</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+
+            {% else %}
+                <p>No sequence information available for this metacluster.</p>
+            {% endif %}
+        </div>
+
+        <!-- Tab 3: MSA Viewer -->
+        <div class="tab-pane fade" id="msa" role="tabpanel" aria-labelledby="msa-tab">
+            <h4>MSA Viewer</h4>
+            <div class="alert alert-info">
+                We will do it soon
+            </div>
+        </div>
+
+        <!-- Tab 4: Downloads -->
+        <div class="tab-pane fade" id="downloads" role="tabpanel" aria-labelledby="downloads-tab">
+            <h4>Downloads</h4>
+            <div class="list-group list-group-flush" style="max-width: 500px;">
+                <a href="{{ fasta_file }}" download class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong class="mb-1">Seeds</strong>
+                        <div class="text-muted small">Download .fasta file</div>
+                    </div>
+                    <span class="badge bg-primary rounded-pill">Download</span>
+                </a>
+                <a href="{{ msa_file }}" download class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong class="mb-1">MSA</strong>
+                        <div class="text-muted small">Download .msa file</div>
+                    </div>
+                    <span class="badge bg-primary rounded-pill">Download</span>
+                </a>
+                <a href="{{ hmm_file }}" download class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong class="mb-1">HMM Model</strong>
+                        <div class="text-muted small">Download .hmm file</div>
+                    </div>
+                    <span class="badge bg-primary rounded-pill">Download</span>
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Activate tab based on URL hash
+        var hash = window.location.hash;
+        if (hash) {
+            var triggerEl = document.querySelector('button[data-bs-target="' + hash + '"]');
+            if (triggerEl) {
+                var tab = new bootstrap.Tab(triggerEl);
+                tab.show();
+            }
+        }
+        
+        // Update URL hash when tab is changed
+        var tabElList = [].slice.call(document.querySelectorAll('button[data-bs-toggle="tab"]'))
+        tabElList.forEach(function (tabEl) {
+            tabEl.addEventListener('shown.bs.tab', function (event) {
+                var targetId = event.target.getAttribute('data-bs-target');
+                history.replaceState(null, null, targetId);
+            })
+        })
+    });
+</script>
+{% endblock %}

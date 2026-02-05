@@ -21,3 +21,19 @@ class MCSProperty(models.Model):
 
     def __str__(self):
         return self.mcid
+
+
+class MCSSequence(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    mcid = models.CharField(max_length=100)
+    protein = models.CharField(max_length=255)
+    range_str = models.CharField(max_length=100, db_column='range_str') # Renamed to avoid reserved word conflicts
+    aa_length = models.IntegerField(db_column='aa_length')
+    amino_acids = models.TextField()
+
+    class Meta:
+        db_table = 'mcs_sequences'
+        managed = False
+
+    def __str__(self):
+        return f"{self.mcid} - {self.protein}"

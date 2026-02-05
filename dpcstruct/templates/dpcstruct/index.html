@@ -1,17 +1,13 @@
-<!--.dpcstruct/index.html-->
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta language="en">
-    <title>DPCStruct</title>
-</head>
+{% extends "index.html" %}
 
-<body>
+{% block title %}DPCStruct{% endblock %}
 
-<h1>DPCStruct</h1>
-<p>Welcome to DPCStruct!</p>
-
-</body>
-</html>
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">DPCStruct</h1>
+    <p>Welcome to the DPCStruct database.</p>
+    <div class="alert alert-info">
+        This section is currently under development.
+    </div>
+</div>
+{% endblock %}

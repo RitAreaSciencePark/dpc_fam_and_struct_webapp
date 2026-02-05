@@ -4,10 +4,12 @@ from .models import MCSProperty
 
 
 class MCSPropertyTable(tables.Table):
+    mcid = tables.LinkColumn("mcs_detail", args=[tables.A("mcid")])
+
     class Meta:
         model = MCSProperty
         template_name = "django_tables2/bootstrap.html"
-        attrs = {"class": "table table-striped table-hover"}
+        attrs = {"class": "table table-striped table-hover table-bordered"}
         fields = (
             'mcid',
             'size_uniref50',

@@ -1,20 +1,323 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta language="en">
-    <title>DPCFam and DPCStruct Webapp</title>
-</head>
+    <meta name="description" content="Unified access to DPCFam and DPCStruct protein families and structures database. Search by Metacluster, Pfam, or UniProt ID.">
+    <title>{% block title %}DPCFam and DPCStruct Unified Database{% endblock %}</title>
 
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    
+    <style>
+        :root {
+            --primary-bg: linear-gradient(135deg, #1b1f5a, #0d4f8b);
+            --header-bg: #0b4f8a;
+            --accent-color: #ffd84d;
+            --text-light: #ffffff;
+        }
+
+        body {
+            background: var(--primary-bg);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--header-bg);
+            padding: 2.5rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .navbar-brand {
+            font-size: 1.9rem;
+            font-weight: 1000;
+            color: white !important;
+
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.85) !important;
+            font-weight: 600;
+            margin: 0 5px;
+            transition: color 0.3s;
+            text-decoration: none;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #fff !important;
+            text-decoration: underline;
+        }
+
+        .nav-btn {
+            background-color: #6c757d;
+            color: #000 !important;
+            font-weight: 600;
+            margin-left: 5px;
+            border-radius: 0; /* Boxed look */
+            text-decoration: none;
+        }
+        .nav-btn:hover {
+            color: #fff !important;
+            background-color: #5a6268;
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .welcome-text {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .welcome-text h2 {
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .welcome-text p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        /* Search Container */
+        .search-card {
+            background-color: rgba(255, 255, 255, 0.95);
+            color: #333;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .form-check-inline {
+            background-color: #ffffff;
+            padding: 15px 25px;
+            border-radius: 8px;
+            margin: 10px;
+            border: 2px solid #0b4f8a;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            align-items: center;
+        }
+        
+        .form-check-inline:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            background-color: #f1f8ff;
+        }
+
+        /* Highlight selected option (requires modern browser) */
+        .form-check-inline:has(.form-check-input:checked) {
+            background-color: #0b4f8a;
+            border-color: #0b4f8a;
+        }
+
+        .form-check-label {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #0b4f8a; /* Match border */
+            margin-left: 8px;
+            cursor: pointer;
+        }
+        
+        .form-check-inline:has(.form-check-input:checked) .form-check-label {
+            color: #ffffff;
+        }
+
+        .form-check-input {
+            cursor: pointer;
+            width: 1.3em;
+            height: 1.3em;
+            border: 2px solid #0b4f8a;
+        }
+
+        .form-check-input:checked {
+            background-color: #ffd84d; /* Accent color check */
+            border-color: #ffd84d;
+        }
+        
+        .search-btn {
+            background-color: #0b4f8a;
+            color: white;
+            padding: 10px 30px;
+            font-weight: bold;
+            transition: background 0.3s;
+            border: none;
+        }
+        .search-btn:hover {
+            background-color: #0d4f8b; 
+            color: white;
+        }
+
+        /* Info Box */
+        .info-panel {
+            margin-top: 2rem;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-left: 5px solid var(--accent-color);
+            padding: 15px;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .example-code {
+            background-color: rgba(255,255,255,0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: var(--accent-color);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+    </style>
+</head>
 <body>
 
-<h1>Welcome to DPCFam and DPCStruct Webapp</h1>
-<p>Please, choose an app:</p>
-<ul>
-    <li><a href="/dpcfam/">DPCFam</a></li>
-    <li><a href="/dpcstruct/">DPCStruct</a></li>
-</ul>
+    <header>
+        <div class="container-fluid d-flex align-items-center">
+            <!-- Project Title: 50% width -->
+            <div class="d-flex align-items-center" style="width: 50%; padding-left: 20px;">
+                <h1 class="navbar-brand m-0" style="font-family: 'Georgia', serif; font-size: 2rem; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">
+                    DPCFam & DPCStruct Unified Database
+                </h1>
+            </div>
+            
+            <!-- Navigation Bar: 50% width, evenly spaced -->
+            <nav class="d-flex justify-content-between" style="width: 50%; padding-right: 20px;">
+                <a href="{% url 'home' %}" class="btn nav-btn flex-fill text-center mx-1">Home</a>
+                <a href="{% url 'about' %}" class="btn nav-btn flex-fill text-center mx-1">About</a>
+                
+                <div class="dropdown flex-fill mx-1">
+                    <button class="btn nav-btn w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Metaclusters
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/dpcfam/mcs/">DPCFam</a></li>
+                        <li><a class="dropdown-item" href="/dpcstruct/">DPCStruct</a></li>
+                    </ul>
+                </div>
 
+                <div class="dropdown flex-fill mx-1">
+                    <button class="btn nav-btn w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Downloads
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'dpcfam_downloads' %}">DPCFam</a></li>
+                        <li><a class="dropdown-item" href="#">DPCStruct</a></li>
+                    </ul>
+                </div>
+
+                <a href="{% url 'faqs' %}" class="btn nav-btn flex-fill text-center mx-1">FAQs</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        {% block content %}
+        <div class="container">
+            <div class="welcome-text">
+                <h2>Explore proteins at the domain level</h2> 
+                <p>
+                    Welcome to the unified portal for DPCFam and DPCStruct. 
+                    Select a database source below to discover detailed information about protein (families): metaclusters.
+                </p>
+            </div>
+
+            {% if messages %}
+                <div class="container mb-4" style="max-width: 900px;">
+                    {% for message in messages %}
+                        <div class="alert alert-danger text-center" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="search-card">
+                <form action="/search/" method="GET" class="row g-3">
+                    
+                    <div class="col-12 text-center mb-3">
+                        <label class="form-label fw-bold mb-3 d-block">Select a database source :</label>
+                        
+                        <div class="d-flex flex-wrap justify-content-center">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="database" id="db_dpcfam" value="DPCFam" required>
+                                <label class="form-check-label" for="db_dpcfam">DPCFam</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="database" id="db_dpcstruct" value="DPCStruct">
+                                <label class="form-check-label" for="db_dpcstruct">DPCStruct</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="database" id="db_pfam" value="PFam">
+                                <label class="form-check-label" for="db_pfam">PFam</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="database" id="db_uniprot" value="UniProtKB">
+                                <label class="form-check-label" for="db_uniprot">UniProtKB</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-9">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light">ID</span>
+                            <input type="text" class="form-control form-control-lg" name="query_id" placeholder="Enter valid ID (e.g., MC21651, PF03243...)" aria-label="Search ID" required>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <button type="submit" class="btn search-btn w-100 btn-lg">Search</button>
+                    </div>
+
+                </form>
+            </div>
+
+            <div class="info-panel text-center">
+                <p class="mb-2"><strong>Search Guide :</strong> Select a family above, then enter a valid ID.</p>
+                <div class="d-flex justify-content-center flex-wrap gap-4">
+                    <p class="mb-1">Examples (Family - Valid ID) : </p>
+                    <span><span class="example-code">DPCFam</span> - MC100,</span>
+                    <span><span class="example-code">DPCStruct</span> - MC7,</span>
+                    <span><span class="example-code">Pfam</span> - PF03243,</span>
+                    <span><span class="example-code">UniProtKB</span> - P05067</span>
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 DPCFam and DPCStruct Webapp | Area Science Park. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 </body>
 </html>
