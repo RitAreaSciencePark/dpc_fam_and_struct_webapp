@@ -1,0 +1,309 @@
+{% extends "index.html" %}
+
+{% block title %}Pfam {{ pfam_id }} | DPCFam & DPCStruct{% endblock %}
+
+{% block content %}
+<style>
+    .pfam-header {
+        background: rgba(255, 255, 255, 0.95);
+        color: #0b4f8a;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        max-width: 1200px;
+        margin: 0 auto 30px auto;
+        text-align: center;
+    }
+    
+    .pfam-header h2 {
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: #0b4f8a;
+    }
+    
+    .pfam-link {
+        display: inline-block;
+        background-color: #0b4f8a;
+        color: white;
+        padding: 10px 25px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+        margin-top: 10px;
+    }
+    
+    .pfam-link:hover {
+        background-color: #0d4f8b;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .results-container {
+        background: rgba(255, 255, 255, 0.95);
+        color: #333;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .column-header {
+        background-color: #0b4f8a;
+        color: white;
+        padding: 15px;
+        text-align: center;
+        font-weight: 700;
+        font-size: 1.3rem;
+        border-radius: 8px 8px 0 0;
+        margin-bottom: 0;
+    }
+    
+    .metacluster-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .metacluster-table thead th {
+        background-color: #e8f4f8;
+        color: #0b4f8a;
+        padding: 12px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        text-align: center;
+        border-bottom: 2px solid #0b4f8a;
+    }
+    
+    .metacluster-table tbody tr {
+        transition: background-color 0.2s;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .metacluster-table tbody tr:hover {
+        background-color: #f1f8ff;
+    }
+    
+    .metacluster-table tbody tr:last-child {
+        border-bottom: none;
+    }
+    
+    .metacluster-table td {
+        padding: 12px;
+        text-align: center;
+        vertical-align: middle;
+    }
+    
+    .rank-cell {
+        font-weight: 700;
+        color: #666;
+        font-size: 1.1rem;
+        width: 60px;
+    }
+    
+    .mcid-cell {
+        width: 120px;
+    }
+    
+    .mcid-link {
+        font-weight: 600;
+        font-size: 1.05rem;
+        color: #0b4f8a;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    
+    .mcid-link:hover {
+        color: #0d4f8b;
+        text-decoration: underline;
+    }
+    
+    .overlap-cell {
+        width: auto;
+    }
+    
+    .battery-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        justify-content: center;
+    }
+    
+    .battery-icon {
+        position: relative;
+        width: 80px;
+        height: 35px;
+        border: 3px solid #333;
+        border-radius: 4px;
+        background-color: #f5f5f5;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+    }
+    
+    .battery-icon::after {
+        content: '';
+        position: absolute;
+        right: -8px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 6px;
+        height: 16px;
+        background-color: #333;
+        border-radius: 0 2px 2px 0;
+    }
+    
+    .battery-fill {
+        height: 100%;
+        transition: width 0.3s ease;
+    }
+    
+    .battery-percent {
+        font-weight: 600;
+        font-size: 1rem;
+        color: #333;
+        min-width: 55px;
+        text-align: left;
+    }
+    
+    /* Battery colors based on percentage */
+    .battery-fill.high {
+        background: linear-gradient(90deg, #28a745, #20c997);
+    }
+    
+    .battery-fill.medium {
+        background: linear-gradient(90deg, #ffc107, #fd7e14);
+    }
+    
+    .battery-fill.low {
+        background: linear-gradient(90deg, #dc3545, #bd2130);
+    }
+    
+    .count-badge {
+        background-color: #ffd84d;
+        color: #0b4f8a;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 1rem;
+        display: inline-block;
+        margin-top: 10px;
+    }
+    
+    .column-container {
+        border: 2px solid #0b4f8a;
+        border-radius: 8px;
+        overflow: hidden;
+        background: white;
+        margin-bottom: 20px;
+    }
+    
+    .empty-message {
+        text-align: center;
+        padding: 30px;
+        color: #666;
+        font-style: italic;
+    }
+</style>
+
+<div class="container">
+    <div class="pfam-header">
+        <h2>Pfam Domain: {{ pfam_id }}</h2>
+        <p class="mb-2">Metaclusters containing this Pfam domain</p>
+        {% if pfam_id != 'UNKNOWN' %}
+        <a href="https://www.ebi.ac.uk/interpro/entry/pfam/{{ pfam_id }}" target="_blank" class="pfam-link">
+            🔗 Visit {{ pfam_id }} in InterPro Database
+        </a>
+        {% endif %}
+        <div class="mt-3">
+            <span class="count-badge">{{ total_count }} Metacluster{{ total_count|pluralize }} Found</span>
+        </div>
+    </div>
+    
+    <div class="results-container">
+        <div class="row">
+            <!-- DPCFam Column -->
+            <div class="col-md-6">
+                <div class="column-container">
+                    <div class="column-header">
+                        DPCFam
+                    </div>
+                    <div class="metaclusters-list">
+                        {% if metaclusters %}
+                            <table class="metacluster-table">
+                                <thead>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>MCID</th>
+                                        <th>Overlap</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for mc in metaclusters %}
+                                    <tr>
+                                        <td class="rank-cell">{{ forloop.counter }}</td>
+                                        <td class="mcid-cell">
+                                            <a href="{% url 'mcs_detail' mc.mcid %}" class="mcid-link">
+                                                {{ mc.mcid }}
+                                            </a>
+                                        </td>
+                                        <td class="overlap-cell">
+                                            <div class="battery-container">
+                                                <div class="battery-icon">
+                                                    <div class="battery-fill {% if mc.avg_ov_percent >= 70 %}high{% elif mc.avg_ov_percent >= 40 %}medium{% else %}low{% endif %}" 
+                                                         style="width: {{ mc.avg_ov_percent }}%;">
+                                                    </div>
+                                                </div>
+                                                <span class="battery-percent">{{ mc.avg_ov_percent|floatformat:1 }}%</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <div class="empty-message">
+                                No metaclusters found in DPCFam
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- DPCStruct Column -->
+            <div class="col-md-6">
+                <div class="column-container">
+                    <div class="column-header">
+                        DPCStruct
+                    </div>
+                    <div class="metaclusters-list">
+                        <table class="metacluster-table">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>MCID</th>
+                                    <th>Overlap</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="3" class="empty-message">
+                                        DPCStruct data coming soon...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'home' %}" class="btn btn-secondary btn-lg">
+                ← Back to Search
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

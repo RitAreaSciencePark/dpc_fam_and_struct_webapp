@@ -5,8 +5,9 @@ import psycopg2
 from psycopg2.extras import execute_values
 import os
 
+
 class Command(BaseCommand):
-    help = 'Import mcs_sequences CSV into the mcs_sequences table.'
+    help = 'Import alphafold CSV into the alphafold_reps table.'
 
     def add_arguments(self, parser):
         parser.add_argument('csvfile', type=str, help='Path to the CSV file to import')
@@ -32,13 +33,13 @@ class Command(BaseCommand):
         cur = conn.cursor()
 
         if truncate:
-            cur.execute('TRUNCATE TABLE mcs_sequences;')
+            cur.execute('TRUNCATE TABLE alphafold_reps;')
             conn.commit()
-            self.stdout.write('Truncated mcs_sequences table.')
+            self.stdout.write('Truncated alphafold_reps table.')
 
-        # Columns: mcid, protein_id, seq_range, seq_length, aa_seq
+        # Columns: mcid, alphafold_prot, seq_range, hmm_coverage, avg_plddt
         sql = """
-            INSERT INTO mcs_sequences (mcid, protein_id, seq_range, seq_length, aa_seq)
+            INSERT INTO alphafold_reps (mcid, alphafold_prot, seq_range, hmm_coverage, avg_plddt)
             VALUES %s
         """
 
@@ -54,16 +55,20 @@ class Command(BaseCommand):
                 
                 # Extract data from CSV columns
                 mcid = row.get('mcid', '').strip()
-                protein_id = row.get('protein_id', '').strip()
+                alphafold_prot = row.get('alphafold_prot', '').strip()
                 seq_range = row.get('seq_range', '').strip()
-                aa_seq = row.get('aa_seq', '').strip()
                 
                 try:
-                    seq_length = int(row.get('seq_length', 0))
+                    hmm_coverage = float(row.get('hmm_coverage', 0))
                 except ValueError:
-                    seq_length = 0
+                    hmm_coverage = 0.0
                 
-                batch.append((mcid, protein_id, seq_range, seq_length, aa_seq))
+                try:
+                    avg_plddt = float(row.get('avg_plddt', 0))
+                except ValueError:
+                    avg_plddt = 0.0
+                
+                batch.append((mcid, alphafold_prot, seq_range, hmm_coverage, avg_plddt))
                 
                 if len(batch) >= batch_size:
                     execute_values(cur, sql, batch)

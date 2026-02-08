@@ -14,6 +14,7 @@ class MCSPropertyTable(tables.Table):
             'mcid',
             'size_uniref50',
             'avg_len',
+            'std_avg_len',
             'lc_percent',
             'cc_percent',
             'dis_percent',
@@ -21,5 +22,6 @@ class MCSPropertyTable(tables.Table):
             'pfam_da',
             'da_percent',
             'size_pfam',
+            'avg_ov_percent',
             'overlap_label',
         )

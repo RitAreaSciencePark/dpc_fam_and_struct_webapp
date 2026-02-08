@@ -22,6 +22,7 @@ from . import views
 urlpatterns = [
     path('', TemplateView.as_view(template_name='index.html'), name='home'),
     path('search/', views.search, name='search'),
+    path('pfam/<str:pfam_id>/', views.pfam_detail, name='pfam_detail'),
     path('about/', TemplateView.as_view(template_name='about.html'), name='about'),
     path('faqs/', TemplateView.as_view(template_name='faqs.html'), name='faqs'),
     path('admin/', admin.site.urls),

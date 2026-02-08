@@ -31,8 +31,8 @@ class Command(BaseCommand):
         cur = conn.cursor()
 
         cols = [
-            'mcid','size_uniref50','avg_len','lc_percent','cc_percent',
-            'dis_percent','tm','size_pfam','pfam_da','da_percent','overlap_label'
+            'mcid','size_uniref50','avg_len','std_avg_len','lc_percent','cc_percent',
+            'dis_percent','tm','pfam_da','da_percent','size_pfam','avg_ov_percent','overlap_label'
         ]
 
         placeholders = ','.join(['%s'] * len(cols))
@@ -43,13 +43,15 @@ class Command(BaseCommand):
         ON CONFLICT (mcid) DO UPDATE SET
         size_uniref50 = EXCLUDED.size_uniref50,
         avg_len = EXCLUDED.avg_len,
+        std_avg_len = EXCLUDED.std_avg_len,
         lc_percent = EXCLUDED.lc_percent,
         cc_percent = EXCLUDED.cc_percent,
         dis_percent = EXCLUDED.dis_percent,
         tm = EXCLUDED.tm,
-        size_pfam = EXCLUDED.size_pfam,
         pfam_da = EXCLUDED.pfam_da,
         da_percent = EXCLUDED.da_percent,
+        size_pfam = EXCLUDED.size_pfam,
+        avg_ov_percent = EXCLUDED.avg_ov_percent,
         overlap_label = EXCLUDED.overlap_label
         """
 
@@ -64,13 +66,15 @@ class Command(BaseCommand):
                     r.get('mcid') or r.get('MCID') or r.get('mc_id'),
                     self._as_int(r.get('size_uniref50')),
                     self._as_float(r.get('avg_len')),
+                    self._as_float(r.get('std_avg_len')),
                     self._as_float(r.get('lc_percent')),
                     self._as_float(r.get('cc_percent')),
                     self._as_float(r.get('dis_percent')),
                     self._as_float(r.get('tm')),
-                    self._as_int(r.get('size_pfam')),
                     r.get('pfam_da'),
                     self._as_float(r.get('da_percent')),
+                    self._as_int(r.get('size_pfam')),
+                    self._as_float(r.get('avg_ov_percent')),
                     r.get('overlap_label') or r.get('overlap_type'),
                 ]
                 rows.append(tuple(vals))
