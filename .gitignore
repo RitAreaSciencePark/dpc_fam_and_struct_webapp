@@ -3,10 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Virtual environments
+# Virtual environment
 .area_internship_venv/
-venv/
-env/
 
 # Distribution / packaging
 build/
@@ -16,8 +14,16 @@ dist/
 # Django local settings
 *.sqlite3
 
-# Static files
-static/
+# Static files : Only notebooks/ and scripts/ are tracked
+# Ignore everything inside static
+static/*
+# But keep these directories
+!static/notebooks/
+!static/scripts/
+# And keep their contents
+!static/notebooks/**
+!static/scripts/**
+
 
 # Jupyter
 .ipynb_checkpoints
@@ -27,3 +33,6 @@ static/
 
 # Misc
 .DS_Store
+
+# License files
+LICENSE

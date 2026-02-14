@@ -71,5 +71,35 @@
     </ul>
   </nav>
   {% endif %}
+
+  <!-- Legend Box -->
+  <div class="mt-5 p-4 border rounded bg-light text-dark">
+    <h5 class="mb-3 text-dark text-center fw-bold"><i class="fas fa-info-circle me-2"></i>Legend</h5>
+    <div class="row g-4">
+      <div class="col-md-6">
+        <ul class="list-unstyled mb-0">
+          <li class="mb-2"> <strong>A</strong>. Some measures regarding intrinsic properties of the MC based on its seed sequences :</li>
+          <li class="mb-2"><strong class="text-primary">MCID : </strong> Metacluster identifier.</li>
+          <li class="mb-2">1. <strong class="text-primary">Size UniRef50 : </strong> Number of seed sequences belonging to MCID in UniRef50.</li>
+          <li class="mb-2">2. <strong class="text-primary">Avg. Len. :</strong> Average amino-acidic length of seed sequences.</li>
+          <li class="mb-2">3. <strong class="text-primary">Std. Avg. Len. :</strong> Standard Deviation of the former.</li>
+          <li class="mb-2">4. <strong class="text-primary">% LC :</strong> Percent of amino-acids in a Low Complexity region.</li>
+          <li class="mb-2">5. <strong class="text-primary">% CC :</strong> Percent of amino-acids in a Coiled Coil region.</li>
+          <li class="mb-2">6. <strong class="text-primary">% DIS :</strong> Percent of amino-acids in a Disordered region.</li>
+          <li class="mb-2">7. <strong class="text-primary">Avg.TM :</strong> Average number of TransMembrane regions.</li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <ul class="list-unstyled mb-0">
+          <li class="mb-2"><strong>B</strong>. Some measures to compare the MC with its Pfam ground truth, if any :</li>
+          <li class="mb-2">1. <strong class="text-primary">Pfam DA : </strong> Dominant Pfam Architecture(s) ( DA ) [UNKNOWN if no DA has been found].</li>
+          <li class="mb-2">2. <strong class="text-primary">% DA : </strong> Percent of sequences in the MC matching the DA.</li>
+          <li class="mb-2">3. <strong class="text-primary">Size Pfam : </strong> Number of sequences belonging to MC in Pfam.</li>
+          <li class="mb-2">4. <strong class="text-primary">% Avg. Ov. : </strong> Average overlap percent between MC seed sequences and their best matching DA sequence in Pfam.</li>
+          <li class="mb-2">5. <strong class="text-primary">Overlap Label : </strong> Label describing qualitatively the overlap of the MC with its DA, which can be : equivalent, reduced, extended or shifted. NONE otherwise.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

@@ -1,0 +1,313 @@
+{% extends "index.html" %}
+
+{% block title %}Protein | {{ protein.uniref50_id }}{% endblock %}
+
+{% block content %}
+<style>
+    .protein-header {
+        background: rgba(255, 255, 255, 0.95);
+        color: #0b4f8a;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        width: 98%;
+        max-width: none;
+        margin: 0 auto 30px auto;
+        text-align: center;
+    }
+    
+    .protein-header h2 {
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+    
+    .uniprot-link {
+        display: inline-block;
+        background-color: #0b4f8a;
+        color: white;
+        padding: 10px 25px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+        margin-top: 10px;
+    }
+    
+    .uniprot-link:hover {
+        background-color: #0d4f8b;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    /* Domain Diagram Styles */
+    .architecture-container {
+        width: 80%;
+        max-width: none;
+        margin: 100px auto;
+        position: relative;
+    }
+    
+    .track {
+        height: 30px;
+        position: relative;
+        width: 100%;
+    }
+
+    .track-label {
+        position: absolute;
+        left: -120px;
+        font-weight: bold;
+        color: #333;
+        width: 110px;
+        text-align: right;
+    }
+
+    .domain-box {
+        position: absolute;
+        height: 30px;
+        border-radius: 4px;
+        color: white;
+        font-size: 11px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        padding: 0 5px;
+        cursor: help;
+        border: 1px solid rgba(0,0,0,0.3);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: all 0.2s;
+        opacity: 0.9;
+    }
+
+    .domain-box:hover {
+        transform: scaleY(1.15);
+        z-index: 100 !important;
+        opacity: 1;
+        box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+    }
+
+    .scale-line {
+        height: 4px;
+        background-color: #333;
+        position: relative;
+        width: 100%;
+        margin: 15px 0;
+        border-radius: 2px;
+    }
+
+    .scale-line::before {
+        content: '1';
+        position: absolute;
+        left: 0;
+        top: 10px;
+        font-weight: bold;
+    }
+
+    .scale-line::after {
+        content: '{{ protein.length }}';
+        position: absolute;
+        right: 0;
+        top: 10px;
+        font-weight: bold;
+    }
+
+    .scale-tick {
+        position: absolute;
+        top: -10px;
+        width: 2px;
+        height: 22px;
+        background-color: #333;
+    }
+
+    .tick-start { left: 0; }
+    .tick-end { right: 0; }
+
+    .domain-container {
+        background: rgba(255, 255, 255, 0.95);
+        color: #333;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        width: 98%;
+        max-width: none;
+        margin: 0 auto;
+    }
+
+    .column-title {
+        background-color: #0b4f8a;
+        color: white;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-weight: bold;
+    }
+
+    .table-domain thead th {
+        background-color: #f8f9fa;
+        color: #0b4f8a;
+        border-bottom: 2px solid #0b4f8a;
+    }
+
+    .domain-link {
+        color: #0b4f8a;
+        font-weight: bold;
+        text-decoration: none;
+    }
+
+    .domain-link:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="protein-header">
+    <h2>Protein | {{ protein.uniref50_id }}</h2>
+    
+    <div class="uniprot-link-container text-center mb-4">
+        <a href="https://www.uniprot.org/uniprot/{{ protein.uniref50_id }}" target="_blank" class="uniprot-link">
+            View on UniProt
+        </a>
+    </div>
+
+    <!-- Domain Architecture Diagram -->
+    <div class="architecture-container">
+        <!-- DPCFam Track (ABOVE the line) -->
+        <div class="track" id="diagramDPCFam" style="margin-bottom: 20px;">
+            <span class="track-label" style="top: 2px;">DPCFam</span>
+            {% for d in dpcfam_domains %}
+            <div class="domain-box" 
+                 style="left: {{ d.left }}%; width: {{ d.width }}%; background-color: {% cycle '#28a745' '#17a2b8' '#ffc107' '#fd7e14' '#e83e8c' '#6f42c1' %};" 
+                 title="{{ d.id }} ({{ d.start }}-{{ d.end }})">
+                {{ d.id }}
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Scale Line (The Horizontal Line) -->
+        <div class="scale-line">
+            <div class="scale-tick tick-start"></div>
+            <div class="scale-tick tick-end"></div>
+        </div>
+
+        <!-- Pfam Track (BELOW the line) -->
+        <div class="track" id="diagramPfam" style="margin-top: 20px;">
+            <span class="track-label" style="top: 2px;">Pfam</span>
+            {% for p in pfam_domains %}
+            <div class="domain-box" 
+                 style="left: {{ p.left }}%; width: {{ p.width }}%; background-color: {% cycle '#007bff' '#6610f2' '#dc3545' '#20c997' '#82ccdd' '#e58e26' %};" 
+                 title="{{ p.id }} ({{ p.start }}-{{ p.end }})">
+                {{ p.id }}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center gap-5 mt-5">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="checkDPCFam" checked onchange="toggleColumns()">
+            <label class="form-check-label fw-bold" for="checkDPCFam">DPCFam</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="checkPfam" checked onchange="toggleColumns()">
+            <label class="form-check-label fw-bold" for="checkPfam">Pfam</label>
+        </div>
+    </div>
+</div>
+
+<div class="domain-container">
+    <div class="row">
+        <!-- DPCFam Column -->
+        <div class="col-md-6" id="colDPCFam">
+            <h4 class="column-title text-center">DPCFam</h4>
+            {% if dpcfam_domains %}
+            <table class="table table-hover table-domain">
+                <thead>
+                    <tr>
+                        <th class="text-center">Rank</th>
+                        <th class="text-center">Domains</th>
+                        <th class="text-center">Range</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in dpcfam_qs %}
+                    <tr>
+                        <td class="text-center">{{ forloop.counter }}</td>
+                        <td class="text-center"><a href="/dpcfam/mcs/{{ d.mc.mcid }}/" class="domain-link">{{ d.mc.mcid }}</a></td>
+                        <td class="text-center">{{ d.seq_range }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="text-center text-muted">No DPCFam domains matching.</p>
+            {% endif %}
+        </div>
+
+        <!-- Pfam Column -->
+        <div class="col-md-6" id="colPfam">
+            <h4 class="column-title text-center">Pfam</h4>
+            {% if pfam_domains %}
+            <table class="table table-hover table-domain">
+                <thead>
+                    <tr>
+                        <th class="text-center">Rank</th>
+                        <th class="text-center">Domains</th>
+                        <th class="text-center">Range</th>
+                        <th class="text-center">Pfam Web</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in pfam_qs %}
+                    <tr>
+                        <td class="text-center">{{ forloop.counter }}</td>
+                        <td class="text-center"><a href="{% url 'pfam_detail' p.pfam_ids %}" class="domain-link">{{ p.pfam_ids }}</a></td>
+                        <td class="text-center">{{ p.pfam_ranges }}</td>
+                        <!-- Visit InterPro for Pfam details -->
+                        <td class="text-center"><a href="https://www.ebi.ac.uk/interpro/entry/pfam/{{ p.pfam_ids }}" target="_blank" class="domain-link">Visit me</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="text-center text-muted">No Pfam domains matching.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleColumns() {
+    const showDPCFam = document.getElementById('checkDPCFam').checked;
+    const showPfam = document.getElementById('checkPfam').checked;
+    
+    // Tables
+    const colDPCFam = document.getElementById('colDPCFam');
+    const colPfam = document.getElementById('colPfam');
+    
+    // Diagram tracks
+    const diagramDPCFam = document.getElementById('diagramDPCFam');
+    const diagramPfam = document.getElementById('diagramPfam');
+    
+    colDPCFam.style.display = showDPCFam ? 'block' : 'none';
+    colPfam.style.display = showPfam ? 'block' : 'none';
+    
+    if (diagramDPCFam) diagramDPCFam.style.opacity = showDPCFam ? '1' : '0.2';
+    if (diagramPfam) diagramPfam.style.opacity = showPfam ? '1' : '0.2';
+    
+    // Adjust column widths if one is hidden
+    if (showDPCFam && !showPfam) {
+        colDPCFam.className = 'col-md-12';
+    } else if (!showDPCFam && showPfam) {
+        colPfam.className = 'col-md-12';
+    } else {
+        colDPCFam.className = 'col-md-6';
+        colPfam.className = 'col-md-6';
+    }
+}
+</script>
+
+{% endblock %}

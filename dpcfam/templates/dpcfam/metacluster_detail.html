@@ -38,17 +38,25 @@
             <h4>Metacluster Properties</h4>
             <table class="table table-striped table-bordered mt-3" style="max-width: 600px;">
                 <tbody>
-                    <tr><th>Number of sequences (Size Uniref50)</th><td>{{ mc.size_uniref50 }}</td></tr>
-                    <tr><th>Average sequence length (Avg len)</th><td>{{ mc.avg_len|floatformat:0 }} ± {{ mc.std_avg_len|floatformat:0 }} aa</td></tr>
-                    <tr><th>Low complexity (Lc percent)</th><td>{{ mc.lc_percent }}</td></tr>
-                    <tr><th>Coiled coils (Cc percent)</th><td>{{ mc.cc_percent }}</td></tr>
-                    <tr><th>Disordered domains (Dis percent)</th><td>{{ mc.dis_percent }}</td></tr>
-                    <tr><th>Average transmembrane regions (Tm)</th><td>{{ mc.tm|default:"0" }}</td></tr>
-                    <tr><th>Pfam dominant architecture (Pfam DA)</th><td>{{ mc.pfam_da|default:"None" }}</td></tr>
-                    <tr><th>Pfam dominant architecture (DA percent)</th><td>{{ mc.da_percent }}</td></tr>
-                    <tr><th>Pfam Sequences (Size Pfam)</th><td>{{ mc.size_pfam }}</td></tr>
-                    <tr><th>Average overlap percent (Avg Ov Percent)</th><td>{{ mc.avg_ov_percent }}</td></tr>
-                    <tr><th>Pfam overlap type (Overlap Label)</th><td>{{ mc.overlap_label|default:"None" }}</td></tr>
+                    <tr><th>Number of sequences in UniRef50</th><td>{{ mc.size_uniref50 }}</td></tr>
+                    <tr><th>Average sequence length</th><td>{{ mc.avg_len|floatformat:0 }} ± {{ mc.std_avg_len|floatformat:0 }} aa</td></tr>
+                    <tr><th>Percent of amino-acids in a Low Complexity region</th><td>{{ mc.lc_percent }}</td></tr>
+                    <tr><th>Percent of amino-acids in a Coiled Coil region</th><td>{{ mc.cc_percent }}</td></tr>
+                    <tr><th>Percent of amino-acids in a Disordered region</th><td>{{ mc.dis_percent }}</td></tr>
+                    <tr><th>Average number of TransMembrane regions</th><td>{{ mc.tm|default:"0" }}</td></tr>
+                    <tr><th>Dominant Pfam architecture(s)</th><td>
+                        {% if pfam_architectures %}
+                            {% for pfam_id in pfam_architectures %}
+                                <a href="/search/?database=PFam&query_id={{ pfam_id }}" style="color: #0b4f8a; font-weight: bold; text-decoration: none;">{{ pfam_id }}</a>{% if not forloop.last %}-{% endif %}
+                            {% endfor %}
+                        {% else %}
+                            {{ mc.pfam_da|default:"None" }}
+                        {% endif %}
+                    </td></tr>
+                    <tr><th>Percent of sequences matching the DA</th><td>{{ mc.da_percent }}</td></tr>
+                    <tr><th>Number of sequences in Pfam</th><td>{{ mc.size_pfam }}</td></tr>
+                    <tr><th>Average overlap percent</th><td>{{ mc.avg_ov_percent }}</td></tr>
+                    <tr><th>Pfam overlap type</th><td>{{ mc.overlap_label|default:"None" }}</td></tr>
                 </tbody>
             </table>
         </div>
@@ -70,7 +78,9 @@
                     <tbody>
                         {% for seq in sequences %}
                         <tr>
-                            <td>{{ seq.protein_id }}</td>
+                            <td>
+                                <a href="/search/?database=UniProtKB&query_id={{ seq.protein_id }}" style="color: #0b4f8a; font-weight: bold; text-decoration: none;">{{ seq.protein_id }}</a>
+                            </td>
                             <td>{{ seq.seq_range }}</td>
                             <td>{{ seq.seq_length }}</td>
                             <td class="text-break font-monospace" title="{{ seq.aa_seq }}">{{ seq.aa_seq|slice:":85" }}...</td>
