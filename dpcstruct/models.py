@@ -17,6 +17,8 @@ class DpcStructMcsProperty(models.Model):
     class Meta:
         db_table = 'dpcstruct_mcs_properties'
         managed = False
+        verbose_name = 'DPCStruct MC Property'
+        verbose_name_plural = 'DPCStruct MC Properties'
 
     def __str__(self):
         return self.mc_id
