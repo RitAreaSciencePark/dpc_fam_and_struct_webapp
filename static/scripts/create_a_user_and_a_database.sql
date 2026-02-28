@@ -22,9 +22,17 @@ GRANT ALL PRIVILEGES ON DATABASE dpcfam_mcs_db TO enyanduk;
 -- Connect to the database to grant schema privileges
 \c dpcfam_mcs_db
 
--- Grant schema permissions to enyanduk
-GRANT USAGE, CREATE ON SCHEMA public TO enyanduk;
+-- Grant schema permissions to enyanduk : Optional
 GRANT ALL ON SCHEMA public TO enyanduk;
+
+-- =========================================================================
+-- PERMISSIONS (Standardizing for Django access)
+-- =========================================================================
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO enyanduk;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO enyanduk;
+
+
+
 
 -- Exit
 \q

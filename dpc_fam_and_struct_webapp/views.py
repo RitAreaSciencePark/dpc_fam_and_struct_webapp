@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db.models import Q
 from dpcfam.models import MCSProperty, UniRef50Protein, UniRef50Pfam, MCSSequence
+from dpcstruct.models import DpcStructMcsProperty
 
 def search(request):
     database = request.GET.get('database')
@@ -20,8 +21,7 @@ def search(request):
         else:
             # ID doesn't exist
             messages.error(request, 'The id doesn\'t exist, please try another')
-            return render(request, 'index.html')
-    
+            return render(request, 'index.html')  
     elif database == 'PFam':
         query_id = query_id.upper()
         # Exact match within dash-separated string using regex

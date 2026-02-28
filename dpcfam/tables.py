@@ -14,7 +14,7 @@ class MCSPropertyTable(tables.Table):
     tm = tables.Column(verbose_name="Avg. TM")
     pfam_da = tables.Column(verbose_name="Pfam DA")
     da_percent = tables.Column(verbose_name="% DA")
-    size_pfam = tables.Column(verbose_name="Size Pfam")
+    size_pfam = tables.Column(verbose_name="PfamA Count")
     avg_ov_percent = tables.Column(verbose_name="% Avg. Ov.")
     overlap_label = tables.Column(verbose_name="Overlap Label")
 

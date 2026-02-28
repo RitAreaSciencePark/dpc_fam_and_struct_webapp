@@ -1,0 +1,111 @@
+{% extends "index.html" %}
+{% load render_table from django_tables2 %}
+
+{% block title %}DPCStruct | Metaclusters{% endblock %}
+
+{% block content %}
+<style>
+  /* Hide django-tables2 default pagination inside the table wrapper */
+  .django-tables2 > tfoot,
+  .table-wrapper .pagination,
+  .table-wrapper nav {
+    display: none !important;
+  }
+  /* Style for placeholder text */
+  input::placeholder {
+    color: #999;
+    font-style: italic;
+  }
+</style>
+
+<div class="container mt-4">
+  <h1 class="mb-3">DPCStruct Metaclusters</h1>
+
+  <form method="get" class="mb-3">
+    <div class="d-flex align-items-center gap-2">
+      <label for="id_mc_id" class="mb-0 flex-shrink-0">Enter MC ID</label>
+      <div style="flex: 0 0 auto;">
+          <!-- Using the form field name from filters.py (mc_id) -->
+          <input type="text" name="mc_id" class="form-control" placeholder="Enter MCID" id="id_mc_id" value="{{ request.GET.mc_id }}">
+      </div>
+      <button type="submit" class="btn btn-primary flex-shrink-0">Search</button>
+    </div>
+  </form>
+
+  <div class="bg-white p-3 rounded text-dark table-wrapper">
+      {% render_table table %}
+  </div>
+
+  <!-- Pagination Controls -->
+  {% if page_obj.paginator.num_pages > 1 %}
+  <nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page=1{% if request.GET.mc_id %}&mc_id={{ request.GET.mc_id }}{% endif %}">First</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.mc_id %}&mc_id={{ request.GET.mc_id }}{% endif %}">Previous</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled">
+          <span class="page-link">First</span>
+        </li>
+        <li class="page-item disabled">
+          <span class="page-link">Previous</span>
+        </li>
+      {% endif %}
+
+      <li class="page-item disabled">
+        <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+      </li>
+
+      {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.mc_id %}&mc_id={{ request.GET.mc_id }}{% endif %}">Next</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.mc_id %}&mc_id={{ request.GET.mc_id }}{% endif %}">Last</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled">
+          <span class="page-link">Next</span>
+        </li>
+        <li class="page-item disabled">
+          <span class="page-link">Last</span>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+
+  <!-- Legend Box -->
+  <div class="mt-5 p-4 border rounded bg-light text-dark">
+    <h5 class="mb-3 text-dark text-center fw-bold"><i class="fas fa-info-circle me-2"></i>Legend</h5>
+    <div class="row g-4">
+      <div class="col-md-6">
+        <ul class="list-unstyled mb-0">
+          <li class="mb-2"> <strong>A</strong>. Metacluster Properties :</li>
+          <li class="mb-2"><strong class="text-primary">MCID : </strong> Unique metacluster identifier.</li>
+          <li class="mb-2"><strong class="text-primary">Size : </strong> Number of Foldseek proteins/domains in the metacluster.</li>
+          <li class="mb-2"><strong class="text-primary">Avg. Len.: </strong> Average length (in amino acids) of the domains in this metacluster.</li>
+          <li class="mb-2"><strong class="text-primary">Len. Std : </strong> Standard deviation of the lengths within the metacluster.</li>
+          <li class="mb-2"><strong class="text-primary">Len. Ratio : </strong> Coefficient of variation for length (len_std / len_aa) (0-1).</li>
+          <li class="mb-2"><strong class="text-primary">Plddt : </strong> Average predicted Local Distance Difference Test score from AlphaFold2(%).</li>
+          <li class="mb-2"><strong class="text-primary">Disorder : </strong> Average proportion of intrinsically disordered regions (0-1).</li>
+          <li class="mb-2"><strong class="text-primary">TM-Score : </strong> Average Template Modeling score - Structural similarity (0-1).</li>
+          <li class="mb-2"><strong class="text-primary">Lddt : </strong> Average Local Distance Difference Test (0-1). </li>
+          <li class="mb-2"><strong class="text-primary">pident : </strong> Average percent sequence identity among proteins in MCID (%).</li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <ul class="list-unstyled mb-0">
+          <li class="mb-2"><strong>B</strong>. Comparison with Pfam-36 :</li>
+          <li class="mb-2"><strong class="text-primary">Pfam Score : </strong> Score against Pfam database. Not a Number (N/A) for some cases.</li>
+          <li class="mb-2"><strong class="text-primary">Pfam Labels : </strong> Pfam domain assignments (Clans or Families). NONE if no Pfam domains are assigned to the metacluster (Pfam Score is N/A).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

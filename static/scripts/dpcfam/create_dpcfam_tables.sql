@@ -79,6 +79,10 @@ CREATE INDEX IF NOT EXISTS idx_uniref50_uniprot_id ON uniref50_proteins(uniprotk
 CREATE INDEX IF NOT EXISTS idx_mcs_seq_protein ON mcs_sequences(protein_id);
 CREATE INDEX IF NOT EXISTS idx_mcs_seq_mcid ON mcs_sequences(mcid);
 CREATE INDEX IF NOT EXISTS idx_uniref50_pfam_protein ON uniref50_pfam(uniref50_id);
+--check
+--SELECT indexname, indexdef
+--FROM pg_indexes
+--WHERE tablename = 'mcs_properties';
 
 -- AlphaFold Representatives: Filter by metacluster
 CREATE INDEX IF NOT EXISTS idx_alphafold_reps_mcid ON alphafold_reps(mcid);
@@ -87,11 +91,3 @@ CREATE INDEX IF NOT EXISTS idx_alphafold_reps_mcid ON alphafold_reps(mcid);
 -- Allows the app to quickly find Metaclusters containing a specific Pfam domain.
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 CREATE INDEX IF NOT EXISTS idx_pfam_da_trgm ON mcs_properties USING gin (pfam_da gin_trgm_ops);
-
-
-
--- =========================================================================
--- PERMISSIONS (Standardizing for Django access)
--- =========================================================================
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO enyanduk;
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO enyanduk;
