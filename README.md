@@ -12,7 +12,9 @@ Hi! Thank you for visiting our repository. This is a Django project designed to 
 | **DPCStruct** | Structure-based domain clusters | [![DOI](https://img.shields.io/badge/Zenodo-DPCStruct-blue?style=flat-square&logo=zenodo)](https://zenodo.org/records/13334296) |
 
 The project currently consists of two applications `dpcfam` and `dpcstruct` corresponding to the two datasets presented above. To reproduce the current state of this project (which is under development), please follow the steps below.
+
 ---
+
 ## Table of Contents
 
 * [1. Prerequisites](#1-prerequisites)
@@ -21,12 +23,11 @@ The project currently consists of two applications `dpcfam` and `dpcstruct` corr
 * [4. Database Initialization](#4-database-initialization)
   * [4.1 Create User and Database (only once)](#41-create-user-and-database-only-once)
   * [4.2 Create Tables and Indexes, then Populate Tables from CSV Files](#42-create-tables-and-indexes-then-populate-tables-from-csv-files)
-    * [I. Application I: dpcfam](#i-application-i--dpcfam-almost-done)
-    * [II. Application II: dpcstruct](#ii-application-ii--dpcstruct-under-development)
 * [5. Migrations](#5-migrations)
 * [6. Run the Server](#6-run-the-server)
 * [7. Usage](#7-usage)
 * [References](#references)
+
 ---
 
 ### 1. Prerequisites
@@ -39,6 +40,7 @@ The project currently consists of two applications `dpcfam` and `dpcstruct` corr
 ![VS Code](https://img.shields.io/badge/VS%20Code-1.109.3-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white)
 
 Our development environment uses:
+
 * [Ubuntu](https://ubuntu.com/) 24.04.3 LTS
 * [Python](https://www.python.org/) 3.12.3
 * [Visual Studio Code](https://code.visualstudio.com/) 1.109.3
@@ -75,11 +77,14 @@ static/
 ![GitHub](https://img.shields.io/badge/GitHub-Clone-181717?style=flat-square&logo=github&logoColor=white)
 
 If this is your first time, clone the project:
+
 ```bash
 git clone https://github.com/emmanuelnyandukagarabi/dpc_fam_and_struct_webapp
 cd dpc_fam_and_struct_webapp
 ```
+
 Otherwise, pull the latest changes:
+
 ```bash
 cd dpc_fam_and_struct_webapp
 git pull
@@ -91,11 +96,14 @@ git pull
 ![venv](https://img.shields.io/badge/venv-Virtual%20Environment-3776AB?style=flat-square&logo=python&logoColor=white)
 
 1. Create (for first-time users) and activate a virtual environment:
+
    ```bash
    python3 -m venv .venv
    source .venv/bin/activate
    ```
+
 2. Install dependencies:
+
    ```bash
    pip install -r requirements.txt
    ```
@@ -106,6 +114,7 @@ git pull
 ![SQL](https://img.shields.io/badge/SQL-Scripts-CC2927?style=flat-square&logo=microsoftsqlserver&logoColor=white)
 
 Start the PostgreSQL service:
+
 ```bash
 sudo service postgresql start
 ```
@@ -113,30 +122,37 @@ sudo service postgresql start
 #### 4.1 Create User and Database (only once)
 
 Use the provided script to set up the PostgreSQL user and database:
+
 ```bash
 sudo -u postgres psql -f static/scripts/create_a_user_and_a_database.sql
 ```
 
 #### 4.2 Create Tables and Indexes, then Populate Tables from CSV Files
 
-**I. Application I : dpcfam (almost done)**
+##### I. Application I : dpcfam (almost done)
 
 1. Run the following script to create dpcfam tables and indexes :
+
    ```bash
    PGPASSWORD="***REMOVED***" psql -U enyanduk -h localhost -d dpcfam_mcs_db -f static/scripts/dpcfam/create_dpcfam_tables.sql
    ```
+
 2. Run the following script to populate dpcfam tables by loading data from CSV files (It will take a while; please wait until the process is completed!):
+
    ```bash
    PGPASSWORD="***REMOVED***" psql -U enyanduk -h localhost -d dpcfam_mcs_db -f static/scripts/dpcfam/populate_dpcfam_tables.sql
    ```
 
-**II. Application II : dpcstruct (under development)**
+##### II. Application II : dpcstruct (under development)
 
 1. Run the following script to create dpcstruct tables and indexes:
+
    ```bash
    PGPASSWORD="***REMOVED***" psql -U enyanduk -h localhost -d dpcfam_mcs_db -f static/scripts/dpcstruct/create_dpcstruct_tables.sql
    ```
+
 2. Run the following script to populate dpcstruct tables by loading data from CSV files:
+
    ```bash
    PGPASSWORD="***REMOVED***" psql -U enyanduk -h localhost -d dpcfam_mcs_db -f static/scripts/dpcstruct/populate_dpcstruct_tables.sql
    ```
@@ -146,6 +162,7 @@ sudo -u postgres psql -f static/scripts/create_a_user_and_a_database.sql
 ![Django](https://img.shields.io/badge/Django-Migrations-092E20?style=flat-square&logo=django&logoColor=white)
 
 We have already created and pushed all migrations in this project. Optionally, you may run:
+
 ```bash
 python3 manage.py makemigrations
 python3 manage.py migrate
@@ -165,6 +182,7 @@ python3 manage.py runserver
 ![Chrome](https://img.shields.io/badge/Google%20Chrome-Recommended-4285F4?style=flat-square&logo=googlechrome&logoColor=white)
 
 Visit the following URL in your web browser ([Chrome](https://www.google.com/chrome/) is my friend!):
+
 ```
 http://127.0.0.1:8000/
 ```
