@@ -1,0 +1,39 @@
+{% extends "index.html" %}
+{% load static %}
+
+{% block title %}DPCStruct | Downloads{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">DPCStruct Downloads</h2>
+    <p>The following files are available for download :</p>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>File</th>
+                    <th>Description</th>
+                    <th style="width: 120px;">Link</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>DPCStruct Representative PDBs</td>
+                    <td>PDB structure files for representative domains of all DPCStruct metaclusters</td>
+                    <td class="text-center">
+                        <a href="{% static 'downloads/dpcstruct/dpcstruct_reps_pdbs.tar.gz' %}" class="btn btn-sm btn-primary" download>Click me</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>DPCStruct Representative Sequences</td>
+                    <td>FASTA sequence files for representative domains of all DPCStruct metaclusters</td>
+                    <td class="text-center">
+                        <a href="{% static 'downloads/dpcstruct/dpcstruct_reps_seqs.tar.gz' %}" class="btn btn-sm btn-primary" download>Click me</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

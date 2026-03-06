@@ -1,9 +1,10 @@
 from django.urls import path
-from .views import DpcStructPropertyListView
+from django.views.generic import TemplateView
+from .views import DpcStructPropertyListView, DpcStructDetailView
 
 urlpatterns = [
-    path('', DpcStructPropertyListView.as_view(), name='index'),
+    path('', DpcStructPropertyListView.as_view(), name='dpcstruct_index'),
+    path('downloads/', TemplateView.as_view(template_name='dpcstruct/dpcstruct_downloads.html'), name='dpcstruct_downloads'),
     path('mcs/', DpcStructPropertyListView.as_view(), name='dpcstruct_mcs_list'),
-    # Placeholder for detail view
-    path('dpcstruct/<str:mc_id>/', DpcStructPropertyListView.as_view(), name='dpcstruct_detail'),
+    path('mcs/<str:mc_id>/', DpcStructDetailView.as_view(), name='dpcstruct_detail'),
 ]

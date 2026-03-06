@@ -1,6 +1,6 @@
 {% extends "index.html" %}
 
-{% block title %}DPCFam | {{ mc.mcid }}{% endblock %}
+{% block title %}DPCStruct | {{ mc.mc_id }}{% endblock %}
 
 {% block content %}
 <style>
@@ -8,7 +8,6 @@
         color: magenta !important;
         font-weight: bold;
     }
-    /* Also coloring the h4 headers magenta as per potential interpretation */
     .tab-pane h4 {
         color: magenta;
     }
@@ -27,7 +26,7 @@
     }
 </style>
 <div class="container mt-4">
-    <h2 class="mb-4">DPCFam | {{ mc.mcid }}</h2>
+    <h2 class="mb-4">DPCStruct | {{ mc.mc_id }}</h2>
 
     <ul class="nav nav-tabs" id="mcTabs" role="tablist">
         <li class="nav-item" role="presentation">
@@ -52,25 +51,24 @@
             <div class="table-responsive">
             <table class="table table-striped table-bordered mt-3" style="max-width: 600px;">
                 <tbody>
-                    <tr><th>Number of sequences in UniRef50</th><td>{{ mc.size_uniref50 }}</td></tr>
-                    <tr><th>Average sequence length</th><td>{{ mc.avg_len|floatformat:0 }} ± {{ mc.std_avg_len|floatformat:0 }} aa</td></tr>
-                    <tr><th>Percent of amino-acids in a Low Complexity region</th><td>{{ mc.lc_percent }}</td></tr>
-                    <tr><th>Percent of amino-acids in a Coiled Coil region</th><td>{{ mc.cc_percent }}</td></tr>
-                    <tr><th>Percent of amino-acids in a Disordered region</th><td>{{ mc.dis_percent }}</td></tr>
-                    <tr><th>Average number of TransMembrane regions</th><td>{{ mc.tm|default:"0" }}</td></tr>
-                    <tr><th>Dominant Pfam architecture(s)</th><td>
-                        {% if pfam_architectures %}
-                            {% for pfam_id in pfam_architectures %}
-                                <a href="/search/?database=PFam&query_id={{ pfam_id }}" style="color: #0b4f8a; font-weight: bold; text-decoration: none;">{{ pfam_id }}</a>{% if not forloop.last %}-{% endif %}
+                    <tr><th>Number of structures</th><td>{{ mc.mc_size }}</td></tr>
+                    <tr><th>Average domain length</th><td>{{ mc.len_aa|floatformat:0 }} &plusmn; {{ mc.len_std|floatformat:0 }} aa</td></tr>
+                    <tr><th>Length ratio (CV)</th><td>{{ mc.len_ratio|floatformat:2 }}</td></tr>
+                    <tr><th>Average pLDDT (%)</th><td>{{ mc.plddt|floatformat:2 }}</td></tr>
+                    <tr><th>Average disorder</th><td>{{ mc.disorder|floatformat:2 }}</td></tr>
+                    <tr><th>Average TM-Score</th><td>{{ mc.tmscore|floatformat:2 }}</td></tr>
+                    <tr><th>Average lDDT</th><td>{{ mc.lddt|floatformat:2 }}</td></tr>
+                    <tr><th>Average percent identity (%)</th><td>{{ mc.pident|floatformat:2 }}</td></tr>
+                    <tr><th>Pfam score</th><td>{% if mc.pfam_score != None %}{{ mc.pfam_score|floatformat:2 }}{% else %}N/A{% endif %}</td></tr>
+                    <tr><th>Pfam labels</th><td>
+                        {% if pfam_label_list %}
+                            {% for label in pfam_label_list %}
+                                <span class="badge bg-info text-dark">{{ label }}</span>{% if not forloop.last %}-{% endif %}
                             {% endfor %}
                         {% else %}
-                            {{ mc.pfam_da|default:"None" }}
+                            {{ mc.pfam_labels|default:"NONE" }}
                         {% endif %}
                     </td></tr>
-                    <tr><th>Percent of sequences matching the DA</th><td>{{ mc.da_percent }}</td></tr>
-                    <tr><th>Number of sequences in Pfam</th><td>{{ mc.size_pfam }}</td></tr>
-                    <tr><th>Average overlap percent</th><td>{{ mc.avg_ov_percent }}</td></tr>
-                    <tr><th>Pfam overlap type</th><td>{{ mc.overlap_label|default:"None" }}</td></tr>
                 </tbody>
             </table>
             </div>
@@ -86,19 +84,15 @@
                         <tr>
                             <th>Protein ID</th>
                             <th>Range</th>
-                            <th>Length</th>
-                            <th>Amino Acids</th>
+                            <th>Amino Acids (Representatives)</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for seq in sequences %}
                         <tr>
-                            <td>
-                                <a href="/search/?database=UniProtKB&query_id={{ seq.protein_id }}" style="color: #0b4f8a; font-weight: bold; text-decoration: none;">{{ seq.protein_id }}</a>
-                            </td>
-                            <td>{{ seq.seq_range }}</td>
-                            <td>{{ seq.seq_length }}</td>
-                            <td class="text-break font-monospace" title="{{ seq.aa_seq }}">{{ seq.aa_seq|slice:":85" }}...</td>
+                            <td>{{ seq.protein_id }}</td>
+                            <td>{{ seq.prot_range }}</td>
+                            <td class="text-break font-monospace" title="{{ seq.prot_seq }}">{{ seq.prot_seq|truncatechars:88 }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -144,58 +138,25 @@
         <!-- Tab 3: 3D Viewer -->
         <div class="tab-pane fade" id="viewer" role="tabpanel" aria-labelledby="viewer-tab">
             <h4>3D Viewer</h4>
-            {% if alphafolds %}
-            <div class="table-responsive">
-                <table class="table table-sm table-hover mt-3">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>AlphaFold Protein</th>
-                            <th>Sequence Range</th>
-                            <th>HMM Coverage</th>
-                            <th>Avg pLDDT</th>
-                            <th>AlphaFold 3D Structure</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for af in alphafolds %}
-                        <tr>
-                            <td>{{ af.alphafold_prot }}</td>
-                            <td>{{ af.seq_range }}</td>
-                            <td>{{ af.hmm_coverage|floatformat:2 }}</td>
-                            <td>{{ af.avg_plddt|floatformat:2 }}</td>
-                            <td><a href="https://alphafold.ebi.ac.uk/entry/{{ af.alphafold_prot }}" target="_blank" class="btn btn-sm btn-info">Click me</a></td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% else %}
-                <p>No AlphaFold data available for this metacluster.</p>
-            {% endif %}
+            <p class="text-muted">3D viewer coming soon! In the meantime, you can download the representative PDB files from the Downloads tab.</p>
         </div>
+
 
         <!-- Tab 4: Downloads -->
         <div class="tab-pane fade" id="downloads" role="tabpanel" aria-labelledby="downloads-tab">
             <h4>Downloads</h4>
             <div class="list-group list-group-flush" style="max-width: 500px;">
-                <a href="{{ fasta_file }}" download class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                <a href="{{ seqs_file }}" download class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                     <div>
-                        <strong class="mb-1">Seeds</strong>
+                        <strong class="mb-1">Representative Sequences</strong>
                         <div class="text-muted small">Download .fasta file</div>
                     </div>
                     <span class="badge bg-primary rounded-pill">Download</span>
                 </a>
-                <a href="{{ msa_file }}" download class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                <a href="{{ pdbs_dir }}" download class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                     <div>
-                        <strong class="mb-1">MSA</strong>
-                        <div class="text-muted small">Download .msa file</div>
-                    </div>
-                    <span class="badge bg-primary rounded-pill">Download</span>
-                </a>
-                <a href="{{ hmm_file }}" download class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                    <div>
-                        <strong class="mb-1">HMM Model</strong>
-                        <div class="text-muted small">Download .hmm file</div>
+                        <strong class="mb-1">Representative PDBs</strong>
+                        <div class="text-muted small">Download PDB files</div>
                     </div>
                     <span class="badge bg-primary rounded-pill">Download</span>
                 </a>

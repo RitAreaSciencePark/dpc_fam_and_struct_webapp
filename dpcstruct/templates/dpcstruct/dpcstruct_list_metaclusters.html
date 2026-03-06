@@ -22,7 +22,7 @@
   <h1 class="mb-3">DPCStruct Metaclusters</h1>
 
   <form method="get" class="mb-3">
-    <div class="d-flex align-items-center gap-2">
+    <div class="d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center gap-2">
       <label for="id_mc_id" class="mb-0 flex-shrink-0">Enter MC ID</label>
       <div style="flex: 0 0 auto;">
           <!-- Using the form field name from filters.py (mc_id) -->
@@ -32,7 +32,7 @@
     </div>
   </form>
 
-  <div class="bg-white p-3 rounded text-dark table-wrapper">
+  <div class="bg-white p-3 rounded text-dark table-wrapper" style="overflow-x: auto;">
       {% render_table table %}
   </div>
 

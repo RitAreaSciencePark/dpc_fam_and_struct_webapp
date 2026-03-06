@@ -22,3 +22,27 @@ class DpcStructMcsProperty(models.Model):
 
     def __str__(self):
         return self.mc_id
+
+
+class DpcStructMcsSequence(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    mc = models.ForeignKey(
+        DpcStructMcsProperty,
+        on_delete=models.CASCADE,
+        related_name='sequences',
+        db_column='mc_id'
+    )
+    protein_id = models.CharField(max_length=50)
+    prot_range = models.CharField(max_length=100)
+    prot_seq = models.TextField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'dpcstruct_mcs_sequences'
+        indexes = [
+            models.Index(fields=['mc', 'id']),
+            models.Index(fields=['protein_id']),
+        ]
+        managed = False
+
+    def __str__(self):
+        return f"{self.mc.mc_id} - {self.protein_id}"

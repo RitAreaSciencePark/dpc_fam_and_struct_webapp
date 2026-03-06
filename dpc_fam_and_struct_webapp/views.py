@@ -21,7 +21,13 @@ def search(request):
         else:
             # ID doesn't exist
             messages.error(request, 'The id doesn\'t exist, please try another')
-            return render(request, 'index.html')  
+            return render(request, 'index.html')
+    elif database == 'DPCStruct':
+        if DpcStructMcsProperty.objects.filter(mc_id=query_id).exists():
+            return redirect(f'/dpcstruct/mcs/{query_id}/')
+        else:
+            messages.error(request, 'The id doesn\'t exist, please try another')
+            return render(request, 'index.html')
     elif database == 'PFam':
         query_id = query_id.upper()
         # Exact match within dash-separated string using regex
