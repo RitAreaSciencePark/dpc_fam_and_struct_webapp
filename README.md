@@ -12,7 +12,21 @@ Hi! Thank you for visiting our repository. This is a Django project designed to 
 | **DPCStruct** | Structure-based domain clusters | [![DOI](https://img.shields.io/badge/Zenodo-DPCStruct-blue?style=flat-square&logo=zenodo)](https://zenodo.org/records/13334296) |
 
 The project currently consists of two applications `dpcfam` and `dpcstruct` corresponding to the two datasets presented above. To reproduce the current state of this project (which is under development), please follow the steps below.
+---
+## Table of Contents
 
+* [1. Prerequisites](#1-prerequisites)
+* [2. Clone the Repository](#2-clone-the-repository)
+* [3. Installation](#3-installation)
+* [4. Database Initialization](#4-database-initialization)
+  * [4.1 Create User and Database (only once)](#41-create-user-and-database-only-once)
+  * [4.2 Create Tables and Indexes, then Populate Tables from CSV Files](#42-create-tables-and-indexes-then-populate-tables-from-csv-files)
+    * [I. Application I: dpcfam](#i-application-i--dpcfam-almost-done)
+    * [II. Application II: dpcstruct](#ii-application-ii--dpcstruct-under-development)
+* [5. Migrations](#5-migrations)
+* [6. Run the Server](#6-run-the-server)
+* [7. Usage](#7-usage)
+* [References](#references)
 ---
 
 ### 1. Prerequisites
@@ -31,7 +45,7 @@ Our development environment uses:
 * [Git](https://git-scm.com/) 2.43.0
 * [PostgreSQL](https://www.postgresql.org/) 16.11
 * **CSV Data Files**: Available upon request; place them in `static/dataframes/`.
-* **Static files**: To enable the "Downloads" feature and serve sequence data, organize the `static/` directory as follows:
+* **Static files**: To enable the "Downloads" feature and serve domains data, organize the `static/` directory as follows:
 
 ```text
 static/
@@ -43,16 +57,17 @@ static/
 │   │   ├── dpcfam_hmm_profiles.zip
 │   │   └── dpcfam_msa_profiles.zip
 │   └── dpcstruct/
-│       ├── mcs_reps_fasta.zip
-│       └── mcs_reps_pdbs.zip
+│       ├── dpcstruct_reps_pdbs.tar.gz
+│       └── dpcstruct_reps_seqs.tar.gz
 └── production_files/
     ├── dpcfam/
-    │   ├── metaclusters_fasta/       # .fasta files
-    │   ├── metaclusters_hmms/        # .hmm files
-    │   └── metaclusters_msas_cdhit/  # .msa files
+    │   ├── metaclusters_fasta/       # MCID.fasta files
+    │   ├── metaclusters_hmms/        # MCID.hmm files
+    │   └── metaclusters_msas_cdhit/  # MCID.msa files
     └── dpcstruct/
-        ├── mcs_reps_fasta/           # .fasta files (representatives only)
-        └── mcs_reps_pdbs/            # .pdb files (representatives only)
+        ├── dpcstruct_reps_seqs/           # MCID.fasta files (representatives only)
+        ├── dpcstruct_reps_pdbs_zipped/    # MCID_pdb.zip files (representatives only)
+        └── dpcstruct_reps_pdbs/           # MCID.pdb files (representatives only)
 ```
 
 ### 2. Clone the Repository
@@ -77,8 +92,8 @@ git pull
 
 1. Create (for first-time users) and activate a virtual environment:
    ```bash
-   python3 -m venv .area_internship_venv
-   source .area_internship_venv/bin/activate
+   python3 -m venv .venv
+   source .venv/bin/activate
    ```
 2. Install dependencies:
    ```bash
@@ -106,11 +121,11 @@ sudo -u postgres psql -f static/scripts/create_a_user_and_a_database.sql
 
 **I. Application I : dpcfam (almost done)**
 
-1. Run the following script to create dpcfam tables and indexes:
+1. Run the following script to create dpcfam tables and indexes :
    ```bash
    PGPASSWORD="EmmaPSQL2026" psql -U enyanduk -h localhost -d dpcfam_mcs_db -f static/scripts/dpcfam/create_dpcfam_tables.sql
    ```
-2. Run the following script to populate dpcfam tables by loading data from CSV files:
+2. Run the following script to populate dpcfam tables by loading data from CSV files (It will take a while; please wait until the process is completed!):
    ```bash
    PGPASSWORD="EmmaPSQL2026" psql -U enyanduk -h localhost -d dpcfam_mcs_db -f static/scripts/dpcfam/populate_dpcfam_tables.sql
    ```

@@ -14,6 +14,7 @@
         max-width: none;
         margin: 0 auto 30px auto;
         text-align: center;
+        overflow-x: auto;
     }
     
     .protein-header h2 {
@@ -44,8 +45,29 @@
     .architecture-container {
         width: 80%;
         max-width: none;
-        margin: 100px auto;
+        margin: 60px auto;
         position: relative;
+        min-width: 0;
+    }
+
+    @media (max-width: 767.98px) {
+        .architecture-container {
+            width: 95%;
+            margin: 30px auto;
+        }
+        .track-label {
+            position: static !important;
+            display: block;
+            text-align: center;
+            width: auto !important;
+            margin-bottom: 4px;
+        }
+        .track {
+            margin-left: 0 !important;
+        }
+        .domain-box {
+            font-size: 9px;
+        }
     }
     
     .track {
@@ -136,6 +158,7 @@
         width: 98%;
         max-width: none;
         margin: 0 auto;
+        overflow-x: auto;
     }
 
     .column-title {

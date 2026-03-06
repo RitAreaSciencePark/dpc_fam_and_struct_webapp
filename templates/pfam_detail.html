@@ -48,6 +48,7 @@
         box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         max-width: 1200px;
         margin: 0 auto;
+        overflow-x: auto;
     }
     
     .column-header {
@@ -140,6 +141,29 @@
         display: flex;
         align-items: center;
         overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    @media (max-width: 767.98px) {
+        .battery-icon {
+            width: 50px;
+            height: 24px;
+            border-width: 2px;
+        }
+        .battery-percent {
+            font-size: 0.8rem;
+            min-width: 40px;
+        }
+        .pfam-header {
+            padding: 20px 15px;
+        }
+        .results-container {
+            padding: 15px 10px;
+        }
+        .column-header {
+            font-size: 1.1rem;
+            padding: 10px;
+        }
     }
     
     .battery-icon::after {
