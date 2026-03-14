@@ -1,9 +1,9 @@
 from django.contrib import admin
-from .models import MCSProperty
+from .models import DpcfamMcsProperty
 
 
-@admin.register(MCSProperty)
-class MCSPropertyAdmin(admin.ModelAdmin):
+@admin.register(DpcfamMcsProperty)
+class DpcfamMcsPropertyAdmin(admin.ModelAdmin):
 	list_display = (
 		'mcid',
 		'size_uniref50',

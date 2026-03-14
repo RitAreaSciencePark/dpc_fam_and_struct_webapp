@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'dpc',
     'dpcfam',
     'dpcstruct',
     "django_tables2",
@@ -80,8 +81,8 @@ WSGI_APPLICATION = 'dpc_fam_and_struct_webapp.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "dpcfam_mcs_db",
-        "USER": "enyanduk",
+        "NAME": "dpc_db",
+        "USER": "dpc_admin",
         "PASSWORD": "***REMOVED***",
         "HOST": "localhost",
         "PORT": "5432",

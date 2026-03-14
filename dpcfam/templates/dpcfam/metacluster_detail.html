@@ -68,7 +68,6 @@
                         {% endif %}
                     </td></tr>
                     <tr><th>Percent of sequences matching the DA</th><td>{{ mc.da_percent }}</td></tr>
-                    <tr><th>Number of sequences in Pfam</th><td>{{ mc.size_pfam }}</td></tr>
                     <tr><th>Average overlap percent</th><td>{{ mc.avg_ov_percent }}</td></tr>
                     <tr><th>Pfam overlap type</th><td>{{ mc.overlap_label|default:"None" }}</td></tr>
                 </tbody>
@@ -94,7 +93,7 @@
                         {% for seq in sequences %}
                         <tr>
                             <td>
-                                <a href="/search/?database=UniProtKB&query_id={{ seq.protein_id }}" style="color: #0b4f8a; font-weight: bold; text-decoration: none;">{{ seq.protein_id }}</a>
+                                <a href="/search/?database=UniProt&query_id={{ seq.protein_id }}" style="color: #0b4f8a; font-weight: bold; text-decoration: none;">{{ seq.protein_id }}</a>
                             </td>
                             <td>{{ seq.seq_range }}</td>
                             <td>{{ seq.seq_length }}</td>

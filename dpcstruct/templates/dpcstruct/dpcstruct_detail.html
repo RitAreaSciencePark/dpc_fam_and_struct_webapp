@@ -59,14 +59,14 @@
                     <tr><th>Average TM-Score</th><td>{{ mc.tmscore|floatformat:2 }}</td></tr>
                     <tr><th>Average lDDT</th><td>{{ mc.lddt|floatformat:2 }}</td></tr>
                     <tr><th>Average percent identity (%)</th><td>{{ mc.pident|floatformat:2 }}</td></tr>
-                    <tr><th>Pfam score</th><td>{% if mc.pfam_score != None %}{{ mc.pfam_score|floatformat:2 }}{% else %}N/A{% endif %}</td></tr>
-                    <tr><th>Pfam labels</th><td>
+                    <tr><th>Pfam score</th><td>{{ mc.pfam_score|floatformat:2 }}</td></tr>
+                    <tr><th>Pfam DA</th><td>
                         {% if pfam_label_list %}
                             {% for label in pfam_label_list %}
-                                <span class="badge bg-info text-dark">{{ label }}</span>{% if not forloop.last %}-{% endif %}
+                                <a href="/search/?database=PFam&query_id={{ label }}" style="color: #0b4f8a; font-weight: bold; text-decoration: none;">{{ label }}</a>{% if not forloop.last %}-{% endif %}
                             {% endfor %}
                         {% else %}
-                            {{ mc.pfam_labels|default:"NONE" }}
+                            {{ mc.pfam_da|default:"NONE" }}
                         {% endif %}
                     </td></tr>
                 </tbody>
@@ -90,7 +90,9 @@
                     <tbody>
                         {% for seq in sequences %}
                         <tr>
-                            <td>{{ seq.protein_id }}</td>
+                            <td>
+                                <a href="/search/?database=UniProt&query_id={{ seq.protein.protein_id }}" style="color: #0b4f8a; font-weight: bold; text-decoration: none;">{{ seq.protein.protein_id }}</a>
+                            </td>
                             <td>{{ seq.prot_range }}</td>
                             <td class="text-break font-monospace" title="{{ seq.prot_seq }}">{{ seq.prot_seq|truncatechars:88 }}</td>
                         </tr>

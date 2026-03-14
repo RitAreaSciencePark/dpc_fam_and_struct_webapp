@@ -11,7 +11,7 @@ Hi! Thank you for visiting our repository. This is a Django project designed to 
 | **DPCFam** | Sequence-based domain clusters | [![DOI](https://img.shields.io/badge/Zenodo-DPCFam-blue?style=flat-square&logo=zenodo)](https://zenodo.org/records/6900559) |
 | **DPCStruct** | Structure-based domain clusters | [![DOI](https://img.shields.io/badge/Zenodo-DPCStruct-blue?style=flat-square&logo=zenodo)](https://zenodo.org/records/13334296) |
 
-The project currently consists of two applications `dpcfam` and `dpcstruct` corresponding to the two datasets presented above. To reproduce the current state of this project (which is under development), please follow the steps below.
+The project currently consists of two main django-applications `dpcfam` and `dpcstruct` corresponding to the two datasets presented above. To reproduce the current state of this project (which is under development), please follow the steps below.
 
 ---
 
@@ -124,23 +124,35 @@ sudo service postgresql start
 Use the provided script to set up the PostgreSQL user and database:
 
 ```bash
-sudo -u postgres psql -f static/scripts/create_a_user_and_a_database.sql
+sudo -u postgres psql -f static/scripts/dpc/create_a_user_and_a_database.sql
 ```
 
 #### 4.2 Create Tables and Indexes, then Populate Tables from CSV Files
+
+1. Run the following script to create dpc tables and indexes :
+
+   ```bash
+   PGPASSWORD="***REMOVED***" psql -U dpc_admin -h localhost -d dpc_db -f static/scripts/dpc/create_dpc_tables.sql
+   ```
+
+2. Run the following script to populate dpc tables by loading data from CSV files :
+
+   ```bash
+   PGPASSWORD="***REMOVED***" psql -U dpc_admin -h localhost -d dpc_db -f static/scripts/dpc/populate_dpc_tables.sql
+   ```
 
 ##### I. Application I : dpcfam (almost done)
 
 1. Run the following script to create dpcfam tables and indexes :
 
    ```bash
-   PGPASSWORD="***REMOVED***" psql -U enyanduk -h localhost -d dpcfam_mcs_db -f static/scripts/dpcfam/create_dpcfam_tables.sql
+   PGPASSWORD="***REMOVED***" psql -U dpc_admin -h localhost -d dpc_db -f static/scripts/dpcfam/create_dpcfam_tables.sql
    ```
 
 2. Run the following script to populate dpcfam tables by loading data from CSV files (It will take a while; please wait until the process is completed!):
 
    ```bash
-   PGPASSWORD="***REMOVED***" psql -U enyanduk -h localhost -d dpcfam_mcs_db -f static/scripts/dpcfam/populate_dpcfam_tables.sql
+   PGPASSWORD="***REMOVED***" psql -U dpc_admin -h localhost -d dpc_db -f static/scripts/dpcfam/populate_dpcfam_tables.sql
    ```
 
 ##### II. Application II : dpcstruct (under development)
@@ -148,13 +160,13 @@ sudo -u postgres psql -f static/scripts/create_a_user_and_a_database.sql
 1. Run the following script to create dpcstruct tables and indexes:
 
    ```bash
-   PGPASSWORD="***REMOVED***" psql -U enyanduk -h localhost -d dpcfam_mcs_db -f static/scripts/dpcstruct/create_dpcstruct_tables.sql
+   PGPASSWORD="***REMOVED***" psql -U dpc_admin -h localhost -d dpc_db -f static/scripts/dpcstruct/create_dpcstruct_tables.sql
    ```
 
 2. Run the following script to populate dpcstruct tables by loading data from CSV files:
 
    ```bash
-   PGPASSWORD="***REMOVED***" psql -U enyanduk -h localhost -d dpcfam_mcs_db -f static/scripts/dpcstruct/populate_dpcstruct_tables.sql
+   PGPASSWORD="***REMOVED***" psql -U dpc_admin -h localhost -d dpc_db -f static/scripts/dpcstruct/populate_dpcstruct_tables.sql
    ```
 
 ### 5. Migrations
@@ -183,7 +195,7 @@ python3 manage.py runserver
 
 Visit the following URL in your web browser ([Chrome](https://www.google.com/chrome/) is my friend!):
 
-```
+```bash
 http://127.0.0.1:8000/
 ```
 

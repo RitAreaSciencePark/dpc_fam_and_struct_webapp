@@ -1,10 +1,10 @@
 # dpcfam/filters.py
 import django_filters
 from django import forms
-from .models import MCSProperty
+from .models import DpcfamMcsProperty
 
 
-class MCSPropertyFilter(django_filters.FilterSet):
+class DpcfamMcsPropertyFilter(django_filters.FilterSet):
     mcid = django_filters.CharFilter(
         lookup_expr="icontains",
         widget=forms.TextInput(attrs={
@@ -14,5 +14,6 @@ class MCSPropertyFilter(django_filters.FilterSet):
     )
 
     class Meta:
-        model = MCSProperty
+        model = DpcfamMcsProperty
         fields = ["mcid"]
+

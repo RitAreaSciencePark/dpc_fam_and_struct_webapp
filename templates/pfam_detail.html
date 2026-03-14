@@ -230,7 +230,6 @@
         font-style: italic;
     }
 </style>
-
 <div class="container">
     <div class="pfam-header">
         <h2>Pfam Domain: {{ pfam_id }}</h2>
@@ -251,20 +250,20 @@
             <div class="col-md-6">
                 <div class="column-container">
                     <div class="column-header">
-                        DPCFam
+                        DPCFam (Avg. Overlap: {{ dpcfam_count }} Metaclusters)
                     </div>
                     <div class="metaclusters-list">
-                        {% if metaclusters %}
+                        {% if dpcfam_metaclusters %}
                             <table class="metacluster-table">
                                 <thead>
                                     <tr>
                                         <th>Rank</th>
                                         <th>MCID</th>
-                                        <th>Overlap</th>
+                                        <th>Overlap Score</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for mc in metaclusters %}
+                                    {% for mc in dpcfam_metaclusters %}
                                     <tr>
                                         <td class="rank-cell">{{ forloop.counter }}</td>
                                         <td class="mcid-cell">
@@ -276,10 +275,10 @@
                                             <div class="battery-container">
                                                 <div class="battery-icon">
                                                     <div class="battery-fill {% if mc.avg_ov_percent >= 70 %}high{% elif mc.avg_ov_percent >= 40 %}medium{% else %}low{% endif %}" 
-                                                         style="width: {{ mc.avg_ov_percent }}%;">
+                                                         style="width: {{ mc.avg_ov_percent|default:0 }}%;">
                                                     </div>
                                                 </div>
-                                                <span class="battery-percent">{{ mc.avg_ov_percent|floatformat:1 }}%</span>
+                                                <span class="battery-percent">{{ mc.avg_ov_percent|default:'N/A'|floatformat:1 }}%</span>
                                             </div>
                                         </td>
                                     </tr>
@@ -299,25 +298,50 @@
             <div class="col-md-6">
                 <div class="column-container">
                     <div class="column-header">
-                        DPCStruct
+                        DPCStruct (Pfam Score: {{ dpcstruct_count }} Metaclusters)
                     </div>
                     <div class="metaclusters-list">
-                        <table class="metacluster-table">
-                            <thead>
-                                <tr>
-                                    <th>Rank</th>
-                                    <th>MCID</th>
-                                    <th>Overlap</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td colspan="3" class="empty-message">
-                                        DPCStruct data coming soon...
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        {% if dpcstruct_metaclusters %}
+                            <table class="metacluster-table">
+                                <thead>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>MCID</th>
+                                        <th>Pfam Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for mc in dpcstruct_metaclusters %}
+                                    <tr>
+                                        <td class="rank-cell">{{ forloop.counter }}</td>
+                                        <td class="mcid-cell">
+                                            <a href="{% url 'dpcstruct_detail' mc.mc_id %}" class="mcid-link">
+                                                {{ mc.mc_id }}
+                                            </a>
+                                        </td>
+                                        <td class="overlap-cell">
+                                            <div class="battery-container">
+                                                {% if mc.pfam_score %}
+                                                    <div class="battery-icon">
+                                                        <div class="battery-fill {% if mc.pfam_score >= 0.7 %}high{% elif mc.pfam_score >= 0.4 %}medium{% else %}low{% endif %}" 
+                                                             style="width: {{ mc.pfam_score_percent }}%;">
+                                                        </div>
+                                                    </div>
+                                                    <span class="battery-percent">{{ mc.pfam_score|floatformat:2 }}</span>
+                                                {% else %}
+                                                    <span class="battery-percent">N/A</span>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <div class="empty-message">
+                                No metaclusters found in DPCStruct
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>

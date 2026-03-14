@@ -16,21 +16,77 @@
     color: #999;
     font-style: italic;
   }
+  
+  /* Toggle buttons styling */
+  .view-toggle {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .view-toggle .btn {
+    flex: 1;
+    font-weight: 600;
+  }
+  
+  @media (max-width: 576px) {
+    .view-toggle {
+      flex-direction: column;
+    }
+  }
 </style>
 
 <div class="container mt-4">
-  <h1 class="mb-3">DPCStruct Metaclusters</h1>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">DPCStruct Metaclusters</h1>
+    <div class="view-toggle">
+      <a href="?view=properties" class="btn {% if view_type == 'properties' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
+        <i class="fas fa-table me-2"></i>Properties
+      </a>
+      <a href="?view=cath" class="btn {% if view_type == 'cath' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
+        <i class="fas fa-cube me-2"></i>CATH
+      </a>
+      <a href="?view=scop" class="btn {% if view_type == 'scop' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
+        <i class="fas fa-cubes me-2"></i>SCOP
+      </a>
+    </div>
+  </div>
 
   <form method="get" class="mb-3">
+    <input type="hidden" name="view" value="{{ view_type }}">
     <div class="d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center gap-2">
-      <label for="id_mc_id" class="mb-0 flex-shrink-0">Enter MC ID</label>
-      <div style="flex: 0 0 auto;">
-          <!-- Using the form field name from filters.py (mc_id) -->
-          <input type="text" name="mc_id" class="form-control" placeholder="Enter MCID" id="id_mc_id" value="{{ request.GET.mc_id }}">
+        {% if view_type == 'properties' %}
+          <label for="search_mcid" class="mb-0 flex-shrink-0">Search MCID:</label>
+          <div style="flex: 0 0 auto;">
+              <input type="text" name="search_mcid" class="form-control" placeholder="Exact MCID" id="search_mcid" value="{{ request.GET.search_mcid }}">
+          </div>
+        {% else %}
+          <label for="search_mcid" class="mb-0 flex-shrink-0">Search MCID:</label>
+          <div style="flex: 0 0 auto;">
+              <input type="text" name="search_mcid" class="form-control" placeholder="Exact MCID" id="search_mcid" value="{{ request.GET.search_mcid }}">
+          </div>
+          <label for="search_fold" class="mb-0 flex-shrink-0 ms-sm-3">Search Fold:</label>
+          <div style="flex: 0 0 auto;">
+              <input type="text" name="search_fold" class="form-control" placeholder="Exact {% if view_type == 'cath' %}CATH{% else %}SCOP{% endif %} Fold" id="search_fold" value="{{ request.GET.search_fold }}">
+          </div>
+        {% endif %}
+        <button type="submit" class="btn btn-primary flex-shrink-0 ms-sm-2">Search</button>
+        {% if request.GET.search_mcid or request.GET.search_fold %}
+          <a href="?view={{ view_type }}" class="btn btn-secondary flex-shrink-0 ms-sm-1">Clear</a>
+        {% endif %}
       </div>
-      <button type="submit" class="btn btn-primary flex-shrink-0">Search</button>
-    </div>
-  </form>
+    </form>
+
+  <div class="alert alert-info" role="alert">
+    <strong>Current View:</strong> 
+    {% if view_type == 'properties' %}
+      Metacluster Properties
+    {% elif view_type == 'cath' %}
+      CATH Fold Annotations
+    {% elif view_type == 'scop' %}
+      SCOP Fold Annotations
+    {% endif %}
+  </div>
 
   <div class="bg-white p-3 rounded text-dark table-wrapper" style="overflow-x: auto;">
       {% render_table table %}
@@ -42,10 +98,10 @@
     <ul class="pagination justify-content-center">
       {% if page_obj.has_previous %}
         <li class="page-item">
-          <a class="page-link" href="?page=1{% if request.GET.mc_id %}&mc_id={{ request.GET.mc_id }}{% endif %}">First</a>
+          <a class="page-link" href="?page=1&view={{ view_type }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">First</a>
         </li>
         <li class="page-item">
-          <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.mc_id %}&mc_id={{ request.GET.mc_id }}{% endif %}">Previous</a>
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}&view={{ view_type }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Previous</a>
         </li>
       {% else %}
         <li class="page-item disabled">
@@ -62,10 +118,10 @@
 
       {% if page_obj.has_next %}
         <li class="page-item">
-          <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.mc_id %}&mc_id={{ request.GET.mc_id }}{% endif %}">Next</a>
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}&view={{ view_type }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Next</a>
         </li>
         <li class="page-item">
-          <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.mc_id %}&mc_id={{ request.GET.mc_id }}{% endif %}">Last</a>
+          <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&view={{ view_type }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Last</a>
         </li>
       {% else %}
         <li class="page-item disabled">
@@ -82,6 +138,8 @@
   <!-- Legend Box -->
   <div class="mt-5 p-4 border rounded bg-light text-dark">
     <h5 class="mb-3 text-dark text-center fw-bold"><i class="fas fa-info-circle me-2"></i>Legend</h5>
+    
+    {% if view_type == 'properties' %}
     <div class="row g-4">
       <div class="col-md-6">
         <ul class="list-unstyled mb-0">
@@ -101,11 +159,46 @@
       <div class="col-md-6">
         <ul class="list-unstyled mb-0">
           <li class="mb-2"><strong>B</strong>. Comparison with Pfam-36 :</li>
-          <li class="mb-2"><strong class="text-primary">Pfam Score : </strong> Score against Pfam database. Not a Number (N/A) for some cases.</li>
-          <li class="mb-2"><strong class="text-primary">Pfam Labels : </strong> Pfam domain assignments (Clans or Families). NONE if no Pfam domains are assigned to the metacluster (Pfam Score is N/A).</li>
+          <li class="mb-2"><strong class="text-primary">Pfam Score : </strong> Score against Pfam database.</li>
+          <li class="mb-2"><strong class="text-primary">Pfam DA : </strong> Pfam domain assignments (Clans or Families). UNKNOWN if no Pfam domains are assigned to the metacluster (Pfam Score is N/A).</li>
         </ul>
       </div>
     </div>
+    
+    {% elif view_type == 'cath' %}
+    <div class="row g-4">
+      <div class="col-md-12">
+        <ul class="list-unstyled mb-0">
+          <li class="mb-2"><strong>CATH Fold Annotations Legend :</strong></li>
+          <li class="mb-2"><strong class="text-primary">CATH Fold : </strong> The CATH fold classification ID.</li>
+          <li class="mb-2"><strong class="text-primary">MCID : </strong> DPCStruct metacluster ID.</li>
+          <li class="mb-2"><strong class="text-primary">DPC Target : </strong> Target protein in the DPC database.</li>
+          <li class="mb-2"><strong class="text-primary">Q./T.Range : </strong> Amino acid coordinate ranges for query and target.</li>
+          <li class="mb-2"><strong class="text-primary">Q./T.Cov. : </strong> Coverage metrics (0-1) indicating how much of each sequence was covered in the alignment.</li>
+          <li class="mb-2"><strong class="text-primary">A.TM-Score : </strong> Template Modeling score of the structural alignment (0-1).</li>
+          <li class="mb-2"><strong class="text-primary">LDDT : </strong> Local Distance Difference Test score (0-1).</li>
+          <li class="mb-2"><strong class="text-primary">% Ident. : </strong> Percent sequence identity between query and target.</li>
+        </ul>
+      </div>
+    </div>
+    
+    {% elif view_type == 'scop' %}
+    <div class="row g-4">
+      <div class="col-md-12">
+        <ul class="list-unstyled mb-0">
+          <li class="mb-2"><strong>SCOP Fold Annotations Legend :</strong></li>
+          <li class="mb-2"><strong class="text-primary">SCOP Fold : </strong> The SCOP fold classification ID.</li>
+          <li class="mb-2"><strong class="text-primary">MCID : </strong> DPCStruct metacluster ID.</li>
+          <li class="mb-2"><strong class="text-primary">DPC Target : </strong> Target protein in the DPC database.</li>
+          <li class="mb-2"><strong class="text-primary">Q./T.Range : </strong> Amino acid coordinate ranges for query and target.</li>
+          <li class="mb-2"><strong class="text-primary">Q./T.Cov. : </strong> Coverage metrics (0-1) indicating how much of each sequence was covered in the alignment.</li>
+          <li class="mb-2"><strong class="text-primary">A.TM-Score : </strong> Template Modeling score of the structural alignment (0-1).</li>
+          <li class="mb-2"><strong class="text-primary">LDDT : </strong> Local Distance Difference Test score (0-1).</li>
+          <li class="mb-2"><strong class="text-primary">% Ident. : </strong> Percent sequence identity between query and target.</li>
+        </ul>
+      </div>
+    </div>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

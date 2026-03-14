@@ -11,6 +11,6 @@ class DpcStructMcsPropertyAdmin(admin.ModelAdmin):
 		'tmscore',
 		'pident',
 		'pfam_score',
-        'pfam_labels',
+        'pfam_da',
 	)
-	search_fields = ('mc_id', 'pfam_labels')
+	search_fields = ('mc_id', 'pfam_da')

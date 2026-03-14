@@ -1,4 +1,4 @@
--- This script creates a PostgreSQL user(enyanduk) and a database(dpcfam_mcs_db) for our project:
+-- This script creates a PostgreSQL user(dpc_admin) and a database(dpc_db) for our project:
 -- 0. Installation
 -- sudo apt update
 -- sudo apt install postgresql postgresql-contrib
@@ -11,25 +11,25 @@
 
 -- SQL COMMANDS:
 -- Create a user
-CREATE USER enyanduk WITH PASSWORD '***REMOVED***';
+CREATE USER dpc_admin WITH PASSWORD '***REMOVED***';
 
 -- Create the database
-CREATE DATABASE dpcfam_mcs_db OWNER enyanduk;
+CREATE DATABASE dpc_db OWNER dpc_admin;
 
 -- Grant all privileges on the database
-GRANT ALL PRIVILEGES ON DATABASE dpcfam_mcs_db TO enyanduk;
+GRANT ALL PRIVILEGES ON DATABASE dpc_db TO dpc_admin;
 
 -- Connect to the database to grant schema privileges
-\c dpcfam_mcs_db
+\c dpc_db
 
--- Grant schema permissions to enyanduk : Optional
-GRANT ALL ON SCHEMA public TO enyanduk;
+-- Grant schema permissions to dpc_admin : Optional
+GRANT ALL ON SCHEMA public TO dpc_admin;
 
 -- =========================================================================
 -- PERMISSIONS (Standardizing for Django access)
 -- =========================================================================
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO enyanduk;
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO enyanduk;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO dpc_admin;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO dpc_admin;
 
 
 
@@ -38,4 +38,4 @@ GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO enyanduk;
 \q
 
 -- 3. Verification (Run in the terminal; use password = ***REMOVED***)
---psql -U enyanduk -h localhost -d dpcfam_mcs_db -c "SELECT 1;"
+--psql -U dpc_admin -h localhost -d dpc_db -c "SELECT 1;"

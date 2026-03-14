@@ -1,10 +1,10 @@
 # dpcfam/tables.py
 import django_tables2 as tables
 from django.utils.html import format_html
-from .models import MCSProperty
+from .models import DpcfamMcsProperty
 
 
-class MCSPropertyTable(tables.Table):
+class DpcfamMcsPropertyTable(tables.Table):
     mcid = tables.LinkColumn("mcs_detail", args=[tables.A("mcid")], verbose_name="MCID")
     size_uniref50 = tables.Column(verbose_name="Size UniRef50")
     avg_len = tables.Column(verbose_name="Avg. Len.")
@@ -14,7 +14,6 @@ class MCSPropertyTable(tables.Table):
     tm = tables.Column(verbose_name="Avg. TM")
     pfam_da = tables.Column(verbose_name="Pfam DA")
     da_percent = tables.Column(verbose_name="% DA")
-    size_pfam = tables.Column(verbose_name="PfamA Count")
     avg_ov_percent = tables.Column(verbose_name="% Avg. Ov.")
     overlap_label = tables.Column(verbose_name="Overlap Label")
 
@@ -31,7 +30,7 @@ class MCSPropertyTable(tables.Table):
         return value
 
     class Meta:
-        model = MCSProperty
+        model = DpcfamMcsProperty
         template_name = "django_tables2/bootstrap.html"
         attrs = {"class": "table table-striped table-hover table-bordered"}
         fields = (
@@ -45,7 +44,6 @@ class MCSPropertyTable(tables.Table):
             'tm',
             'pfam_da',
             'da_percent',
-            'size_pfam',
             'avg_ov_percent',
             'overlap_label',
         )
