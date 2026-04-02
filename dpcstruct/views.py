@@ -1,3 +1,5 @@
+import os
+from django.conf import settings
 from django.views.generic import DetailView, TemplateView
 from django.shortcuts import render
 from django_tables2.views import SingleTableMixin
@@ -130,8 +132,28 @@ class DpcStructDetailView(DetailView):
         context['seqs_file'] = static(f"production_files/dpcstruct/dpcstruct_reps_seqs/{mc_id}.fasta")
         context['pdbs_dir'] = static(f"production_files/dpcstruct/dpcstruct_reps_pdbs_zipped/{mc_id}_pdb.zip")
 
+        # 3D Viewer: list PDB files in this MC's folder
+        pdb_folder = os.path.join(
+            settings.BASE_DIR, 'static',
+            'production_files', 'dpcstruct', 'dpcstruct_reps_pdbs',
+            f'{mc_id}_pdb'
+        )
+        pdb_files = []
+        if os.path.isdir(pdb_folder):
+            for fname in sorted(os.listdir(pdb_folder)):
+                if fname.endswith('.pdb'):
+                    pdb_files.append({
+                        'name': fname,
+                        'url': static(
+                            f"production_files/dpcstruct/dpcstruct_reps_pdbs/"
+                            f"{mc_id}_pdb/{fname}"
+                        ),
+                    })
+        context['pdb_files'] = pdb_files
+
+
         # Split Pfam labels if valid
-        if self.object.pfam_da and self.object.pfam_da != 'NONE':
+        if self.object.pfam_da and self.object.pfam_da != 'UNKNOWN':
             context['pfam_label_list'] = [l.strip() for l in self.object.pfam_da.split('-')]
         else:
             context['pfam_label_list'] = []
