@@ -3,14 +3,28 @@
 {% block title %}DPCStruct | {{ mc.mc_id }}{% endblock %}
 
 {% block content %}
+
+<!-- Mol* Viewer CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/molstar@latest/build/viewer/molstar.css">
+
 <style>
     .nav-tabs .nav-link.active {
         color: magenta !important;
         font-weight: bold;
     }
+
     .tab-pane h4 {
         color: magenta;
     }
+
+    #molstar-viewer {
+        width: 100%;
+        height: 600px;
+        position: relative;
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+    }
+
     /* Responsive tabs: scroll horizontally on small screens */
     @media (max-width: 575.98px) {
         .nav-tabs {
@@ -25,6 +39,7 @@
         }
     }
 </style>
+
 <div class="container mt-4">
     <h2 class="mb-4">DPCStruct | {{ mc.mc_id }}</h2>
 
@@ -139,8 +154,31 @@
 
         <!-- Tab 3: 3D Viewer -->
         <div class="tab-pane fade" id="viewer" role="tabpanel" aria-labelledby="viewer-tab">
-            <h4>3D Viewer</h4>
-            <p class="text-muted">3D viewer coming soon! In the meantime, you can download the representative PDB files from the Downloads tab.</p>
+            <h4>3D Structure Viewer</h4>
+            {% if pdb_files %}
+                <!-- PDB file selector (only shown if 2+ files) -->
+                {% if pdb_files|length > 1 %}
+                <div class="btn-group mb-3" role="group" aria-label="Select PDB">
+                    {% for pdb in pdb_files %}
+                    <button type="button"
+                            class="btn btn-outline-primary pdb-selector {% if forloop.first %}active{% endif %}"
+                            data-pdb-url="{{ pdb.url }}">
+                        {{ pdb.name|cut:".pdb" }}
+                    </button>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Mol* container -->
+                <div id="molstar-viewer"></div>
+
+                <!-- Pass PDB URLs to JavaScript -->
+                {{ pdb_files|json_script:"pdb-files-data" }}
+            {% else %}
+                <div class="alert alert-warning">
+                    No PDB files available for this metacluster.
+                </div>
+            {% endif %}
         </div>
 
 
@@ -168,6 +206,9 @@
     </div>
 </div>
 
+<!-- Mol* Viewer JS -->
+<script src="https://cdn.jsdelivr.net/npm/molstar@latest/build/viewer/molstar.js"></script>
+
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         // Activate tab based on URL hash
@@ -188,6 +229,65 @@
                 history.replaceState(null, null, targetId);
             })
         })
+
+    // --- Mol* 3D Viewer ---
+    var dataEl = document.getElementById('pdb-files-data');
+    if (!dataEl) return;
+    var PDB_FILES = JSON.parse(dataEl.textContent);
+    if (!PDB_FILES || PDB_FILES.length === 0) return;
+
+    var viewerInstance = null;
+    var viewerInitialized = false;
+
+    // Initialize Mol* when the 3D Viewer tab is first shown
+    var viewerTab = document.getElementById('viewer-tab');
+    viewerTab.addEventListener('shown.bs.tab', function () {
+        if (!viewerInitialized) {
+            viewerInitialized = true;
+            initViewer(PDB_FILES[0].url);
+        }
+    });
+
+    // If user landed directly on #viewer via URL hash
+    if (window.location.hash === '#viewer') {
+        setTimeout(function () {
+            if (!viewerInitialized) {
+                viewerInitialized = true;
+                initViewer(PDB_FILES[0].url);
+            }
+        }, 300);
+    }
+
+    async function initViewer(pdbUrl) {
+        viewerInstance = await molstar.Viewer.create('molstar-viewer', {
+            layoutIsExpanded: false,
+            layoutShowControls: true,
+            layoutShowRemoteState: false,
+            layoutShowSequence: true,
+            layoutShowLog: false,
+            layoutShowLeftPanel: true,
+            viewportShowExpand: true,
+            viewportShowSelectionMode: true,
+            viewportShowAnimation: false,
+        });
+        await viewerInstance.loadStructureFromUrl(pdbUrl, 'pdb', false);
+    }
+
+    // Handle PDB selector buttons
+    document.querySelectorAll('.pdb-selector').forEach(function (btn) {
+        btn.addEventListener('click', async function () {
+            document.querySelectorAll('.pdb-selector').forEach(function (b) {
+                b.classList.remove('active');
+            });
+            this.classList.add('active');
+            var url = this.getAttribute('data-pdb-url');
+            if (viewerInstance) {
+                viewerInstance.plugin.clear();
+                await viewerInstance.loadStructureFromUrl(url, 'pdb', false);
+            }
+        });
+    });
+
     });
 </script>
 {% endblock %}

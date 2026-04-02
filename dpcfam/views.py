@@ -23,10 +23,23 @@ class DpcfamMcsPropertyListView(SingleTableMixin, FilterView):
     def get_queryset(self):
         # Naturally sort MCIDs by converting numeric part to integer
         # This handles MC1, MC2, ..., MC10, ... instead of lexicographical order
-        return DpcfamMcsProperty.objects.extra(
+        qs = DpcfamMcsProperty.objects.extra(
             select={'mc_num': "CAST(SUBSTRING(mcid FROM '[0-9]+') AS INTEGER)"},
             order_by=['mc_num']
         )
+        
+        dataset = self.request.GET.get('dataset', 'all')
+        if dataset == 'standard':
+            qs = qs.filter(size_uniref50__gte=50)
+        elif dataset == 'b':
+            qs = qs.filter(size_uniref50__lt=50)
+            
+        return qs
+        
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['dataset'] = self.request.GET.get('dataset', 'all')
+        return context
 
 
 class DpcfamMcsDetailView(DetailView):
