@@ -253,8 +253,8 @@
     <div class="results-container">
         <div class="row">
             <!-- DPCFam Column -->
-            <div class="col-md-6">
-                <div class="column-container">
+            <div class="col-lg-5 mb-4">
+                <div class="column-container h-100">
                     <div class="column-header">
                         DPCFam (Avg. Overlap: {{ dpcfam_count }} Metaclusters)
                     </div>
@@ -301,8 +301,8 @@
             </div>
             
             <!-- DPCStruct Column -->
-            <div class="col-md-6">
-                <div class="column-container">
+            <div class="col-lg-7 mb-4">
+                <div class="column-container h-100">
                     <div class="column-header">
                         DPCStruct (Pfam Score: {{ dpcstruct_count }} Metaclusters)
                     </div>
@@ -314,6 +314,7 @@
                                         <th>Rank</th>
                                         <th>MCID</th>
                                         <th>Pfam Score</th>
+                                        <th>Pfam List</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -333,11 +334,22 @@
                                                              style="width: {{ mc.pfam_score_percent }}%;">
                                                         </div>
                                                     </div>
-                                                    <span class="battery-percent">{{ mc.pfam_score|floatformat:2 }}</span>
+                                                    <span class="battery-percent">{{ mc.pfam_score|floatformat:2 }}%</span>
                                                 {% else %}
                                                     <span class="battery-percent">N/A</span>
                                                 {% endif %}
                                             </div>
+                                        </td>
+                                        <td class="pfam-list-cell text-center align-middle">
+                                            {% if mc.pfam_links %}
+                                                <div class="d-flex flex-wrap justify-content-center" style="gap: 6px;">
+                                                {% for link in mc.pfam_links %}
+                                                    <a href="{{ link.url }}" class="badge text-decoration-none" style="background-color: #e8f4f8; color: #0b4f8a; border: 1px solid #bce0ec; font-size: 0.85rem; padding: 5px 8px; font-weight: 600;">{{ link.id }}</a>
+                                                {% endfor %}
+                                                </div>
+                                            {% else %}
+                                                <span class="text-muted">UNKNOWN</span>
+                                            {% endif %}
                                         </td>
                                     </tr>
                                     {% endfor %}

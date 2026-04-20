@@ -79,12 +79,24 @@ def pfam_detail(request, pfam_id):
         messages.error(request, f'Pfam ID "{pfam_id}" not found')
         return redirect('home')
     
-    # Handle pfam_score to display in template
+    # Handle pfam_score and pfam_da to display in template
     for mc in dpcstruct_metaclusters:
         if mc.pfam_score is not None:
             mc.pfam_score_percent = min(100, max(0, int(mc.pfam_score)))
         else:
             mc.pfam_score_percent = 0
+            
+        # Parse pfam_da for the Pfam List column
+        if mc.pfam_da and mc.pfam_da != 'UNKNOWN':
+            mc.pfam_links = []
+            for pfam in mc.pfam_da.split('-'):
+                if pfam.strip():
+                    mc.pfam_links.append({
+                        'id': pfam.strip(),
+                        'url': f'/search/?database=PFam&query_id={pfam.strip()}'
+                    })
+        else:
+            mc.pfam_links = []
     
     context = {
         'pfam_id': pfam_id,
