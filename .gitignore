@@ -14,16 +14,17 @@ dist/
 # Django local settings
 *.sqlite3
 
-# Static files : Only notebooks/ and scripts/ are tracked
+# Static files : Only notebooks/, scripts/ and profiling_reports/ are tracked
 # Ignore everything inside static
 static/*
 # But keep these directories
 !static/notebooks/
 !static/scripts/
+!static/profiling_reports/
 # And keep their contents
 !static/notebooks/**
 !static/scripts/**
-
+!static/profiling_reports/**
 
 # Jupyter
 .ipynb_checkpoints
