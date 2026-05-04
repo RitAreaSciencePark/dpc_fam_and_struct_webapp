@@ -232,8 +232,8 @@
 </style>
 <div class="container">
     <div class="pfam-header">
-        <h2>Pfam Domain: {{ pfam_id }}</h2>
-        <p class="mb-2">Metaclusters containing this Pfam domain</p>
+        <h2>Pfam ID: {{ pfam_id }}</h2>
+        <p class="mb-2">Metaclusters containing this Pfam ID</p>
         {% if pfam_id != 'UNKNOWN' %}
             {% if 'CL' in pfam_id %}
             <a href="https://www.ebi.ac.uk/interpro/set/pfam/{{ pfam_id }}" target="_blank" class="pfam-link">
@@ -330,7 +330,7 @@
                                             <div class="battery-container">
                                                 {% if mc.pfam_score %}
                                                     <div class="battery-icon">
-                                                        <div class="battery-fill {% if mc.pfam_score >= 0.7 %}high{% elif mc.pfam_score >= 0.4 %}medium{% else %}low{% endif %}" 
+                                                        <div class="battery-fill {% if mc.pfam_score >= 70 %}high{% elif mc.pfam_score >= 40 %}medium{% else %}low{% endif %}" 
                                                              style="width: {{ mc.pfam_score_percent }}%;">
                                                         </div>
                                                     </div>

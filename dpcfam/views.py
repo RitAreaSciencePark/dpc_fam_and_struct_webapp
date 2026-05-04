@@ -30,7 +30,7 @@ class DpcfamMcsPropertyListView(SingleTableMixin, FilterView):
         
         dataset = self.request.GET.get('dataset', 'all')
         if dataset == 'standard':
-            qs = qs.filter(size_uniref50__gte=50)
+            qs = qs.filter(size_uniref50__gte=50) 
         elif dataset == 'b':
             qs = qs.filter(size_uniref50__lt=50)
             

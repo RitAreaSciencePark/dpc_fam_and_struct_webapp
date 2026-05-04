@@ -1,0 +1,92 @@
+//This code is used to plot our schema at https://dbdiagram.io 
+// Core tables
+Table dpc_uniprot_proteins {
+  protein_id varchar [pk]
+  protein_length int
+  Note: 'Central source of truth for all identified proteins'
+}
+
+Table dpc_pfam_domains {
+  pfam_id varchar [pk]
+  pfam_type varchar
+  Note: 'Curated Pfam families and clans'
+}
+
+Table dpc_uniref50_pfam {
+  id serial [pk]
+  uniref50_id varchar [ref: > dpc_uniprot_proteins.protein_id]
+  pfam_ids varchar [ref: > dpc_pfam_domains.pfam_id]
+  pfam_ranges varchar
+  Note: 'Junction table mapping UniRef50 proteins to Pfam domains'
+}
+
+// Sequence-based metaclusters (dpcfam)
+Table dpcfam_mcs_properties {
+  mcid varchar [pk]
+  size_uniref50 int
+  avg_len float
+  pfam_da text
+  avg_ov_percent float
+  overlap_label varchar
+  // ... other properties
+  Note: 'Biological properties of sequence metaclusters'
+}
+
+Table dpcfam_mcs_sequences {
+  id serial [pk]
+  mcid varchar [ref: > dpcfam_mcs_properties.mcid]
+  protein_id varchar [ref: > dpc_uniprot_proteins.protein_id]
+  seq_range text
+  aa_seq text
+  Note: 'Links proteins to sequence metaclusters'
+}
+
+Table dpcfam_alphafold_reps {
+  id serial [pk]
+  mcid varchar [ref: > dpcfam_mcs_properties.mcid]
+  alphafold_prot text
+  avg_plddt float
+  // ... other AF metrics
+  Note: 'Representative AlphaFold structures per sequence metacluster'
+}
+
+// Structure-based metaclusters (dpcstruct)
+Table dpcstruct_mcs_properties {
+  mc_id varchar [pk]
+  mc_size int
+  len_aa float
+  plddt float
+  tmscore float
+  pident float
+  // ... other metrics
+  Note: 'Biological + structural properties of structure metaclusters'
+}
+
+Table dpcstruct_mcs_sequences {
+  id serial [pk]
+  mc_id varchar [ref: > dpcstruct_mcs_properties.mc_id]
+  protein_id varchar [ref: > dpc_uniprot_proteins.protein_id]
+  prot_range varchar
+  prot_seq text
+  Note: 'Links proteins to structure metaclusters'
+}
+
+Table dpcstruct_cath {
+  cath_query varchar [pk]
+  dpc_mcid varchar [ref: > dpcstruct_mcs_properties.mc_id]
+  dpc_target varchar
+  lddt float
+  pident float
+  // ... other metrics
+  Note: 'CATH annotations mapped to structural metaclusters'
+}
+
+Table dpcstruct_scop {
+  scop_query varchar [pk]
+  dpc_mcid varchar [ref: > dpcstruct_mcs_properties.mc_id]
+  dpc_target varchar
+  lddt float
+  pident float
+  // ... other metrics
+  Note: 'SCOP annotations mapped to structural metaclusters'
+}
