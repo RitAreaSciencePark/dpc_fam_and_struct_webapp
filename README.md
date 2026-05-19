@@ -137,6 +137,14 @@ cd dpc_fam_and_struct_webapp
    pip install -r requirements.txt
    ```
 
+3. Configure environment variables:
+   
+   Generate a secure, random Django Secret Key and Database Password to automatically create your `.env` file in one command:
+   ```bash
+   python3 -c "import secrets; from django.core.management.utils import get_random_secret_key; print(f'DJANGO_SECRET_KEY={get_random_secret_key()}\nDEBUG=True\nALLOWED_HOSTS=127.0.0.1,localhost\nDB_NAME=dpc_db\nDB_USER=dpc_admin\nDB_PASSWORD={secrets.token_urlsafe(16)}\nDB_HOST=localhost\nDB_PORT=5432')" > .env
+   ```
+   *Note: This command magically secures your environment so you do not need to manually configure or type any passwords below!*
+
  In order to build automatically DPCexplorer tree as shown above, please, run the following bash script (located at the root of the repository):
  
  > **Note:** Running this script for the first time will take a while as it downloads large datasets from Zenodo, you may grab some coffee!. You are expected to have at least 50 GB of free disk space and a stable internet connection. If the script is interrupted, running it again will resume where it left off!
@@ -159,12 +167,11 @@ sudo service postgresql start
 
 #### 4.1 Create User and Database
 
-> **Warning:** All database scripts use our default credentials (username & password). If you prefer to change them, make sure you also update the database settings in Django's `settings.py` accordingly.
-
-Use the provided script to set up the PostgreSQL user and database:
+We securely extract the credentials you generated in your `.env` file to set up PostgreSQL effortlessly. Run the following:
 
 ```bash
-sudo -u postgres psql -f static/scripts/dpc/create_a_user_and_a_database.sql
+export $(grep -v '^#' .env | xargs)
+sudo -u postgres psql -c "CREATE USER $DB_USER WITH PASSWORD '${DB_PASSWORD}'; CREATE DATABASE $DB_NAME OWNER $DB_USER;"
 ```
 
 #### 4.2 Create Tables and Indexes, then Populate Tables from CSV Files
@@ -174,13 +181,13 @@ sudo -u postgres psql -f static/scripts/dpc/create_a_user_and_a_database.sql
 1. Run the following script to create dpc tables and indexes:
 
    ```bash
-   PGPASSWORD="<YOUR_DB_PASSWORD>" psql -U dpc_admin -h localhost -d dpc_db -f static/scripts/dpc/create_dpc_tables.sql
+   PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -h $DB_HOST -d $DB_NAME -f static/scripts/dpc/create_dpc_tables.sql
    ```
 
 2. Run the following script to populate dpc tables by loading data from CSV files:
 
    ```bash
-   PGPASSWORD="<YOUR_DB_PASSWORD>" psql -U dpc_admin -h localhost -d dpc_db -f static/scripts/dpc/populate_dpc_tables.sql
+   PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -h $DB_HOST -d $DB_NAME -f static/scripts/dpc/populate_dpc_tables.sql
    ```
 
 ##### B. Application 2: dpcfam (Sequence-Based Metaclusters)
@@ -188,13 +195,13 @@ sudo -u postgres psql -f static/scripts/dpc/create_a_user_and_a_database.sql
 1. Run the following script to create dpcfam tables and indexes:
 
    ```bash
-   PGPASSWORD="<YOUR_DB_PASSWORD>" psql -U dpc_admin -h localhost -d dpc_db -f static/scripts/dpcfam/create_dpcfam_tables.sql
+   PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -h $DB_HOST -d $DB_NAME -f static/scripts/dpcfam/create_dpcfam_tables.sql
    ```
 
 2. Run the following script to populate dpcfam tables by loading data from CSV files. (This will take a while; please wait until the process completes!):
 
    ```bash
-   PGPASSWORD="<YOUR_DB_PASSWORD>" psql -U dpc_admin -h localhost -d dpc_db -f static/scripts/dpcfam/populate_dpcfam_tables.sql
+   PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -h $DB_HOST -d $DB_NAME -f static/scripts/dpcfam/populate_dpcfam_tables.sql
    ```
 
 ##### C. Application 3: dpcstruct (Structure-Based Metaclusters)
@@ -202,13 +209,13 @@ sudo -u postgres psql -f static/scripts/dpc/create_a_user_and_a_database.sql
 1. Run the following script to create dpcstruct tables and indexes:
 
    ```bash
-   PGPASSWORD="<YOUR_DB_PASSWORD>" psql -U dpc_admin -h localhost -d dpc_db -f static/scripts/dpcstruct/create_dpcstruct_tables.sql
+   PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -h $DB_HOST -d $DB_NAME -f static/scripts/dpcstruct/create_dpcstruct_tables.sql
    ```
 
 2. Run the following script to populate dpcstruct tables by loading data from CSV files:
 
    ```bash
-   PGPASSWORD="<YOUR_DB_PASSWORD>" psql -U dpc_admin -h localhost -d dpc_db -f static/scripts/dpcstruct/populate_dpcstruct_tables.sql
+   PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -h $DB_HOST -d $DB_NAME -f static/scripts/dpcstruct/populate_dpcstruct_tables.sql
    ```
 
 ### 5. Migrations
