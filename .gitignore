@@ -4,7 +4,16 @@ __pycache__/
 *$py.class
 
 # Virtual environment
-.area_internship_venv/
+.mdmc_venv/
+
+# Secrets -- NEVER commit 
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/*
+!logs/.gitkeep
 
 # Distribution / packaging
 build/
@@ -34,6 +43,3 @@ static/*
 
 # Misc
 .DS_Store
-
-# License files
-LICENSE

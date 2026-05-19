@@ -3,5 +3,6 @@ Django==6.0.1
 django-filter==25.2
 django-tables2==2.8.0
 psycopg2-binary==2.9.11
+python-decouple==3.8 # for managing environment variables
 sqlparse==0.5.5
 whitenoise==6.11.0
