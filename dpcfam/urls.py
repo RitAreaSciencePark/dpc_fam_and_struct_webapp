@@ -1,6 +1,6 @@
 from django.urls import path
 from django.views.generic import TemplateView
-from .views import DpcfamMcsPropertyListView, DpcfamMcsDetailView, MCSPropertyListView, MCSDetailView
+from .views import DpcfamMcsPropertyListView, DpcfamMcsDetailView
 
 urlpatterns = [
     # show the Metacluster properties table at the app root

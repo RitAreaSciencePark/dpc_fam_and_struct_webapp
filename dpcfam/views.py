@@ -62,7 +62,7 @@ class DpcfamMcsDetailView(DetailView):
         mcid = self.object.mcid
         
         # Pagination for sequences
-        sequences_list = self.object.sequences.order_by('id')
+        sequences_list = self.object.sequences.select_related('protein').order_by('id')
         paginator = Paginator(sequences_list, 20)  # Show 20 sequences per page
         page_number = self.request.GET.get('page')
         page_obj = paginator.get_page(page_number)
@@ -74,7 +74,7 @@ class DpcfamMcsDetailView(DetailView):
         
         # Paths based on the static structure: static/production_files/dpcfam/...
         context['fasta_file'] = static(f"production_files/dpcfam/metaclusters_fasta/{mcid}.fasta")
-        context['msa_file'] = static(f"production_files/dpcfam/metaclusters_msas_cdhit/{mcid}.msa")
+        context['msa_file'] = static(f"production_files/dpcfam/metaclusters_cdhit_msas/{mcid}_msa.fasta")
         context['hmm_file'] = static(f"production_files/dpcfam/metaclusters_hmms/{mcid}.hmm")
         
         # Split Pfam labels if valid (standardized with -)
@@ -86,6 +86,3 @@ class DpcfamMcsDetailView(DetailView):
         return context
 
 
-# Legacy aliases for backward compatibility
-MCSPropertyListView = DpcfamMcsPropertyListView
-MCSDetailView = DpcfamMcsDetailView

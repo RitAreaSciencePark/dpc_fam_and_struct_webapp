@@ -4,60 +4,97 @@
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/emmanuelnyandukagarabi/dpc_fam_and_struct_webapp)
 
-Hi! Thank you for visiting our repository. In this project we are building **DPCexplorer** : a Django project designed to facilitate the interactive exploration of DPCfam and DPCstruct protein domain classifications. We work with the [DPCFam](https://zenodo.org/records/6900559) and [DPCStruct](https://zenodo.org/records/13334296) datasets, which provide clusterings of protein sequences and protein structures, respectively, at the domain level.
+Hi! Thank you for visiting our repository.
+
+Welcome to **DPCexplorer**: a Django web application for the interactive exploration of protein domain families. Our platform relies primarily on two datasets, **DPCfam** and **DPCstruct**, where protein sequences and structures are automatically grouped into domain families (called **metaclusters**) using the Density Peak Clustering (DPC) algorithm.
+
 
 | Dataset | Description | Zenodo |
 |---------|-------------|--------|
 | **DPCFam** | Sequence-based domain clusters | [![DOI](https://img.shields.io/badge/Zenodo-DPCFam-blue?style=flat-square&logo=zenodo)](https://zenodo.org/records/6900559) |
 | **DPCStruct** | Structure-based domain clusters | [![DOI](https://img.shields.io/badge/Zenodo-DPCStruct-blue?style=flat-square&logo=zenodo)](https://zenodo.org/records/13334296) |
 
-Proteins are automatically grouped into families called `metaclusters`. Some of these families are equivalent to manually curated families in databases like `Pfam`. Most importantly, the pipelines have flagged out some potential new families, which we display as `UNKNOWN` on this portal. If you have some hints about their annotation, your feedback will be highly appreciated!
+Some of these metaclusters match known families from databases like **Pfam**. Others are completely new and labeled as **UNKNOWN**, and that is where it gets exciting!. If you have a hypothesis about what any of these unknown clusters could be, we would love to hear from you.
 
-
-The project currently consists of three django-applications: `dpc` (core: shared registry), `dpcfam` (sequence-based metaclusters), and `dpcstruct` (structure-based metaclusters). 
-
-To reproduce the current state of this project, we have defined a streamlined process. Whether you are a **new user** setting up the environment from scratch, or a **returning user** just updating the latest code, follow the instructions tailored to you below.
+This Django project consists of three applications: `dpc` (shared data registry), `dpcfam` (sequence-based metaclusters), and `dpcstruct` (structure-based metaclusters).
 
 ---
 
-## 🎯 Reproducibility: New Users vs. Returning Users
+## 🎯 Reproducibility: Who are you?
 
-### Option A: New Users (Full Setup)
+### Option A: New User (First-time setup)
 
-If this is your first time setting this up on your machine, follow **all steps** from 1 to 7 below in chronological order. This will clone the repository, install Python and system dependencies, download the datasets using the automated setup script, initialize the database, and explore the web application.
+Follow all steps (**1 to 7**) in order, as outlined in the **Table of Contents** below . This will clone the repository, install dependencies, download the datasets automatically, set up the database, and get the application running.
 
-### Option B: Returning Users (Updates)
+### Option B: Returning User (Already set up)
 
-If you already have a functional environment and simply `pulled` the latest commits:
+Welcome back! Run these quick steps to sync the latest changes:
 
-1. Activate your virtual environment: `source .venv/bin/activate`
-2. Install any new requirements: `pip install -r requirements.txt`
-3. Execute any new database migrations: `python3 manage.py migrate`
-4. Run the data setup script again to pull any missing/updated assets: `bash setup_dpcexporer_data.sh` *(Note: The script is idempotent and will skip already-downloaded files, saving time!)*
-5. Run the server: `python3 manage.py runserver`
+1. Move to the project directory: 
+
+```bash
+cd dpc_fam_and_struct_webapp
+```
+
+2. Pull the latest changes: 
+
+```bash
+git pull
+```
+
+3. Activate your virtual environment: 
+
+```bash
+source .venv/bin/activate
+```
+
+4. Install any new dependencies: 
+
+```bash
+pip install -r requirements.txt
+```
+
+5. Start the PostgreSQL service: 
+
+```bash
+sudo service postgresql start
+```
+
+6. Sync the database: 
+
+```bash
+python3 manage.py migrate
+```
+
+7. Run the server : 
+
+```bash
+python3 manage.py runserver
+```
+
+Then visit `http://127.0.0.1:8000/` in your browser. 
+
+ - To stop the server: Press `Ctrl+C`.
+
+ - To stop PostgreSQL: Run:
+ ```bash
+ sudo service postgresql stop
+ ```
 
 ---
 
 ## Table of Contents
 
-- [Web Application for DPCfam and DPCstruct Data Exploration](#web-application-for-dpcfam-and-dpcstruct-data-exploration)
-  - [🎯 Reproducibility: New Users vs. Returning Users](#-reproducibility-new-users-vs-returning-users)
-    - [Option A: New Users (Full Setup)](#option-a-new-users-full-setup)
-    - [Option B: Returning Users (Updates)](#option-b-returning-users-updates)
-  - [Table of Contents](#table-of-contents)
-    - [1. Prerequisites](#1-prerequisites)
-    - [2. Clone the Repository](#2-clone-the-repository)
-    - [3. Installation](#3-installation)
-    - [4. Database Initialization](#4-database-initialization)
-      - [4.1 Create User and Database](#41-create-user-and-database)
-      - [4.2 Create Tables and Indexes, then Populate Tables from CSV Files](#42-create-tables-and-indexes-then-populate-tables-from-csv-files)
-        - [A. Application 1: dpc (Core Registry)](#a-application-1-dpc-core-registry)
-        - [B. Application 2: dpcfam (Sequence-Based Metaclusters)](#b-application-2-dpcfam-sequence-based-metaclusters)
-        - [C. Application 3: dpcstruct (Structure-Based Metaclusters)](#c-application-3-dpcstruct-structure-based-metaclusters)
-    - [5. Migrations](#5-migrations)
-    - [6. Run the Server](#6-run-the-server)
-    - [7. Usage](#7-usage)
-    - [References](#references)
+- [1. Prerequisites](#1-prerequisites)
+- [2. Clone the Repository](#2-clone-the-repository)
+- [3. Installation](#3-installation)
+- [4. Database Initialization](#4-database-initialization)
+  - [4.1 Create User and Database](#41-create-user-and-database)
+  - [4.2 Create Tables and Populate Them](#42-create-tables-and-populate-them)
+- [5. Migrations](#5-migrations)
+- [6. Run the Server](#6-run-the-server)
+- [7. Usage](#7-usage)
+- [References](#references)
 
 ---
 
@@ -70,54 +107,60 @@ If you already have a functional environment and simply `pulled` the latest comm
 ![Git](https://img.shields.io/badge/Git-2.43.0-F05032?style=for-the-badge&logo=git&logoColor=white)
 ![VS Code](https://img.shields.io/badge/VS%20Code-1.109.3-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white)
 
-Our development environment uses:
+Our development environment runs smoothly on:
 
-* [Ubuntu](https://ubuntu.com/) 24.04.3 LTS
-* [Python](https://www.python.org/) 3.12.3
-* [Visual Studio Code](https://code.visualstudio.com/) 1.109.3
-* [Git](https://git-scm.com/) 2.43.0
-* [PostgreSQL](https://www.postgresql.org/) 16.11
+- [Ubuntu](https://ubuntu.com/) 24.04.3 LTS *(Required: or any modern Linux system)*
+- [Python](https://www.python.org/) 3.12.3 *(Required: check with `python3 --version`)*
+- [Git](https://git-scm.com/) 2.43.0 *(Required: check with `git --version`)*
+- [PostgreSQL](https://www.postgresql.org/) 16.11 *(Required: check with `psql --version`)*
+- [Visual Studio Code](https://code.visualstudio.com/) 1.109.3 *(Optional: use any editor you like!)*
 
-DPCexplorer expects the following file tree layout to work completely:
+
+> **Note:** If you are missing `Git` or `PostgreSQL`, you can install them on Ubuntu with these quick commands:
+```bash
+sudo apt update && sudo apt install -y git postgresql postgresql-contrib
+```
+
+**Expected file tree.** After Step 3, the `static/` directory will be organized as follows. The setup script builds this automatically; you do not need to create anything by hand.
 
 ```text
 static/
-├── dataframes/                                 # PostgreSQL-ready CSV files for DPCexplorer
-│   ├── dpc/                                    # CSV files for the core dpc application
-│   ├── dpcfam/                                 # CSV files for the dpcfam application
-│   └── dpcstruct/                              # CSV files for the dpcstruct application
-:
-├── downloads/                                  # DPCexplorer global downloads directory
+├── dataframes/                                 # PostgreSQL-ready CSV files
+│   ├── dpc/
 │   ├── dpcfam/
-│   │   ├── dpcfam_mcid_seeds.tar.gz            # Seed sequences for each MCID, in the format MCID.fasta
-│   │   ├── dpcfam_mcid_msas.tar.gz             # MSA for each MCID, in the format MCID_msa.fasta
-│   │   ├── dpcfam_mcid_hmms.tar.gz             # HMM for each MCID, in the format MCID.hmm
-│   │   └── dpcfam_all_metaclusters_hmms.tar.gz # All metacluster HMM profiles : 2 .hmm files, one for standard DPCfam and one for DPCfamB
 │   └── dpcstruct/
-│       ├── dpcstruct_mcid_seeds.tar.gz         # Representative seed sequences for each MCID, in the format MCID.fasta
-│       └── dpcstruct_mcid_pdbs.tar.gz          # Representative PDB files for each MCID, in the format MCID_pdb.zip 
 :
-└── production_files/                           # DPCexplorer local downloads files (Downlaodable per MCID)
+├── downloads/                                  # DPCexplorer global downloads
+│   ├── dpcfam/
+│   │   ├── dpcfam_mcid_seeds.tar.gz            # Seed FASTA files (one per MCID)
+│   │   ├── dpcfam_mcid_msas.tar.gz             # MSA files (one per MCID)
+│   │   ├── dpcfam_mcid_hmms.tar.gz             # HMM profiles (one per MCID)
+│   │   └── dpcfam_all_metaclusters_hmms.tar.gz # All MCs HMM profiles in two files (Standard + DPCfamB)
+│   └── dpcstruct/
+│       ├── dpcstruct_mcid_seeds.tar.gz         # Representative FASTA files (one per MCID)
+│       └── dpcstruct_mcid_pdbs.tar.gz          # Representative PDB files (one zip per MCID)
+:
+└── production_files/                           # DPCexplorer local downloads (Per-MCID files served on detail pages)
     ├── dpcfam/
-    │   ├── metaclusters_fasta/                  # MCID.fasta files
-    │   ├── metaclusters_hmms/                   # MCID.hmm files
-    │   └── metaclusters_cdhit_msas/             # MCID_msa.fasta files
+    │   ├── metaclusters_fasta/                 # MCID.fasta
+    │   ├── metaclusters_hmms/                  # MCID.hmm
+    │   └── metaclusters_cdhit_msas/            # MCID_msa.fasta
     └── dpcstruct/
-        ├── dpcstruct_reps_seqs/                 # MCID.fasta files
-        ├── dpcstruct_reps_pdbs_zipped/          # MCID_pdb.zip files
-        └── dpcstruct_reps_pdbs/                 # MCID/.pdb files  -> PDBe Mol* viewer
+        ├── dpcstruct_reps_seqs/                # MCID.fasta
+        ├── dpcstruct_reps_pdbs_zipped/         # MCID_pdb.zip
+        └── dpcstruct_reps_pdbs/                # MCID_pdb/ folders with .pdb files (for the Mol* viewer)
 ```
 
+---
+
 ### 2. Clone the Repository
-
-![GitHub](https://img.shields.io/badge/GitHub-Clone-181717?style=flat-square&logo=github&logoColor=white)
-
-Clone the project:
 
 ```bash
 git clone https://github.com/emmanuelnyandukagarabi/dpc_fam_and_struct_webapp
 cd dpc_fam_and_struct_webapp
 ```
+
+---
 
 ### 3. Installation
 
@@ -131,35 +174,36 @@ cd dpc_fam_and_struct_webapp
    source .venv/bin/activate
    ```
 
-2. Install dependencies:
+2. Install Python dependencies:
 
    ```bash
    pip install -r requirements.txt
    ```
 
-3. Configure environment variables:
-   
-   Generate a secure, random Django Secret Key and Database Password to automatically create your `.env` file in one command:
+3. Generate a `.env` file with secure credentials:
+
    ```bash
    python3 -c "import secrets; from django.core.management.utils import get_random_secret_key; print(f'DJANGO_SECRET_KEY={get_random_secret_key()}\nDEBUG=True\nALLOWED_HOSTS=127.0.0.1,localhost\nDB_NAME=dpc_db\nDB_USER=dpc_admin\nDB_PASSWORD={secrets.token_urlsafe(16)}\nDB_HOST=localhost\nDB_PORT=5432')" > .env
    ```
-   *Note: This command magically secures your environment so you do not need to manually configure or type any passwords below!*
 
- In order to build automatically DPCexplorer tree as shown above, please, run the following bash script (located at the root of the repository):
- 
- > **Note:** Running this script for the first time will take a while as it downloads large datasets from Zenodo, you may grab some coffee!. You are expected to have at least 50 GB of free disk space and a stable internet connection. If the script is interrupted, running it again will resume where it left off!
+    > **Note:** This creates a `.env` file with a `random Django secret key` and a `random database password`. You do not need to edit it manually. If you prefer your own values, simply open `.env` and change them.
 
- ```bash
-bash setup_dpcexplorer_data.sh
-```
+4. Download and organize all datasets by running the setup script:
 
+   ```bash
+   bash setup_dpcexplorer_data.sh
+   ```
+
+   > **Note:** This script downloads everything from Zenodo: CSV files, FASTA files, HMM profiles, MSA files, and PDB structures. It will take some time (~50 GB of data). So, you may grab a coffee (or two) ☕!. If it gets interrupted, just run it again, it resumes automatically.
+
+---
 
 ### 4. Database Initialization
 
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16.11-336791?style=flat-square&logo=postgresql&logoColor=white)
 ![SQL](https://img.shields.io/badge/SQL-Scripts-CC2927?style=flat-square&logo=microsoftsqlserver&logoColor=white)
 
-Start the PostgreSQL service:
+Start PostgreSQL:
 
 ```bash
 sudo service postgresql start
@@ -167,67 +211,62 @@ sudo service postgresql start
 
 #### 4.1 Create User and Database
 
-We securely extract the credentials you generated in your `.env` file to set up PostgreSQL effortlessly. Run the following:
+The following reads the credentials from your `.env` file and creates the PostgreSQL user and database:
 
 ```bash
 export $(grep -v '^#' .env | xargs)
 sudo -u postgres psql -c "CREATE USER $DB_USER WITH PASSWORD '${DB_PASSWORD}'; CREATE DATABASE $DB_NAME OWNER $DB_USER;"
 ```
 
-#### 4.2 Create Tables and Indexes, then Populate Tables from CSV Files
+#### 4.2 Create Tables and Populate Them
 
-##### A. Application 1: dpc (Core Registry)
+Run the three pairs of scripts below, in order. Each pair creates the tables (+ indexes) and then loads the data from CSV files.
 
-1. Run the following script to create dpc tables and indexes:
+##### A. dpc (Core Registry)
 
-   ```bash
-   PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -h $DB_HOST -d $DB_NAME -f static/scripts/dpc/create_dpc_tables.sql
-   ```
+```bash
+PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -h $DB_HOST -d $DB_NAME -f static/scripts/dpc/create_dpc_tables.sql
+```
 
-2. Run the following script to populate dpc tables by loading data from CSV files:
+```bash
+PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -h $DB_HOST -d $DB_NAME -f static/scripts/dpc/populate_dpc_tables.sql
+```
 
-   ```bash
-   PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -h $DB_HOST -d $DB_NAME -f static/scripts/dpc/populate_dpc_tables.sql
-   ```
+##### B. dpcfam (Sequence-Based Metaclusters)
 
-##### B. Application 2: dpcfam (Sequence-Based Metaclusters)
+```bash
+PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -h $DB_HOST -d $DB_NAME -f static/scripts/dpcfam/create_dpcfam_tables.sql
+```
 
-1. Run the following script to create dpcfam tables and indexes:
+> The following step loads ~16 million rows and will take a few minutes. Please wait until it finishes.
 
-   ```bash
-   PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -h $DB_HOST -d $DB_NAME -f static/scripts/dpcfam/create_dpcfam_tables.sql
-   ```
+```bash
+PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -h $DB_HOST -d $DB_NAME -f static/scripts/dpcfam/populate_dpcfam_tables.sql
+```
 
-2. Run the following script to populate dpcfam tables by loading data from CSV files. (This will take a while; please wait until the process completes!):
+##### C. dpcstruct (Structure-Based Metaclusters)
 
-   ```bash
-   PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -h $DB_HOST -d $DB_NAME -f static/scripts/dpcfam/populate_dpcfam_tables.sql
-   ```
+```bash
+PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -h $DB_HOST -d $DB_NAME -f static/scripts/dpcstruct/create_dpcstruct_tables.sql
+```
 
-##### C. Application 3: dpcstruct (Structure-Based Metaclusters)
+```bash
+PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -h $DB_HOST -d $DB_NAME -f static/scripts/dpcstruct/populate_dpcstruct_tables.sql
+```
 
-1. Run the following script to create dpcstruct tables and indexes:
-
-   ```bash
-   PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -h $DB_HOST -d $DB_NAME -f static/scripts/dpcstruct/create_dpcstruct_tables.sql
-   ```
-
-2. Run the following script to populate dpcstruct tables by loading data from CSV files:
-
-   ```bash
-   PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -h $DB_HOST -d $DB_NAME -f static/scripts/dpcstruct/populate_dpcstruct_tables.sql
-   ```
+---
 
 ### 5. Migrations
 
 ![Django](https://img.shields.io/badge/Django-Migrations-092E20?style=flat-square&logo=django&logoColor=white)
 
-We have already created and pushed all migrations in this project. Optionally, you may run:
+All Django migrations are already included in the repository. Just run:
 
 ```bash
-python3 manage.py makemigrations
 python3 manage.py migrate
 ```
+
+---
 
 ### 6. Run the Server
 
@@ -238,28 +277,48 @@ python3 manage.py migrate
 python3 manage.py runserver
 ```
 
+---
+
 ### 7. Usage
 
 ![Chrome](https://img.shields.io/badge/Google%20Chrome-Recommended-4285F4?style=flat-square&logo=googlechrome&logoColor=white)
 
-Visit the following URL in your web browser ([Chrome](https://www.google.com/chrome/) is my friend!):
+Open your browser and go to:
 
-```bash
+```
 http://127.0.0.1:8000/
 ```
 
-**Note:** Congratulations, you made it! To stop the server, press `Ctrl+C`. To stop PostgreSQL, run `sudo service postgresql stop`. Once the database is successfully populated, you may safely delete the CSV files located in `static/dataframes/` to save disk space. If you have any feedback or encounter issues, please reach out to us via any contact address on our GitHub profile. More features are coming soon!
+You can search by DPCfam MCID (e.g., `MC1`), DPCstruct MCID (e.g., `MC5`), Pfam ID (e.g., `PF02990`), or UniProt accession (e.g., `A0A182N2I3`).
 
-*Thank you for trying out this tool. Your feedback is highly appreciated!*
+> **Note:** Congratulations, you made it! 🎉. To stop the server, press `Ctrl+C`. To put PostgreSQL to sleep, run:
+```bash
+sudo service postgresql stop
+```
+
+> **Tip:** Once the database is fully loaded, you can delete the CSV files in `static/dataframes/` to free up disk space.
+
+If you find a bug or have feedback, open an issue on our GitHub page. We're actively building, and more features are definitely coming soon!
+
+> *Thank you for exploring with this tool. Your feedback would be much appreciated!*
 
 ---
 
 ### References
 
-If you use this project or the associated datasets, please cite:
+If you use this project, the web application, or the associated datasets, please cite:
 
-1. Nyandu Kagarabi, E., Piomponi, V., & Saadat, E. (2026). Preprocessed Datasets for Interactive Exploration of DPCfam and DPCstruct Protein Domain Classifications (1.0.0) [Data set]. Zenodo. [https://doi.org/10.5281/zenodo.20159208](https://doi.org/10.5281/zenodo.20159208)
+#### 1. Project & Preprocessed Datasets
+* **Web Application & Master Thesis:** Nyandu Kagarabi, E. (2026). *Web Application for DPCfam and DPCstruct Data Exploration*. Master's thesis, Master in Data Management and Curation. Supervised by Dr. Valerio Piomponi & Dr. Elaheh Saadat. [Zenodo Link Pending Review]
+* **Preprocessed Datasets:** Nyandu Kagarabi, E., Piomponi, V., & Saadat, E. (2026). Preprocessed Datasets for Interactive Exploration of DPCfam and DPCstruct Protein Domain Classifications (1.0.0) [Data set]. Zenodo. [https://doi.org/10.5281/zenodo.20159208](https://doi.org/10.5281/zenodo.20159208)
 
-2. Barone, F., Laio, A., Punta, M., Cozzini, S., Ansuini, A., & Cazzaniga, A. (2025). Unsupervised domain classification of AlphaFold2-predicted protein structures. *PRX Life*, *3*(2), 023009. [https://doi.org/10.1103/PRXLife.3.023009](https://doi.org/10.1103/PRXLife.3.023009)
+#### 2. DPCfam (Sequence-Based Metaclusters)
+* **Method Paper:** Russo, E. T., Barone, F., Bateman, A., Cozzini, S., Punta, M., & Laio, A. (2022). DPCfam: Unsupervised protein family classification by density peak clustering of large sequence datasets. *PLOS Computational Biology*, *18*(10), e1010610. [https://doi.org/10.1371/journal.pcbi.1010610](https://doi.org/10.1371/journal.pcbi.1010610)
+* **Source Dataset:** Russo, E. T., & Barone, F. (2022). Metaclusters by DPCfam clustering of UniRef50 v 2017_07 [Data set]. Zenodo. [https://doi.org/10.5281/zenodo.6900559](https://doi.org/10.5281/zenodo.6900559)
 
-3. Russo, E. T., Barone, F., Bateman, A., Cozzini, S., Punta, M., & Laio, A. (2022). DPCfam: Unsupervised protein family classification by density peak clustering of large sequence datasets. *PLOS Computational Biology*, *18*(10), e1010610. [https://doi.org/10.1371/journal.pcbi.1010610](https://doi.org/10.1371/journal.pcbi.1010610)
+#### 3. DPCstruct (Structure-Based Metaclusters)
+* **Method Paper:** Barone, F., Laio, A., Punta, M., Cozzini, S., Ansuini, A., & Cazzaniga, A. (2025). Unsupervised domain classification of AlphaFold2-predicted protein structures. *PRX Life*, *3*(2), 023009. [https://doi.org/10.1103/PRXLife.3.023009](https://doi.org/10.1103/PRXLife.3.023009)
+* **Source Dataset:** Barone, F., Laio, A., Punta, M., Cozzini, S., Ansuini, A., & Cazzaniga, A. (2024). DPCstruct classification of AlphaFold2-predicted protein structures [Data set]. Zenodo. [https://doi.org/10.5281/zenodo.13334296](https://doi.org/10.5281/zenodo.13334296)
+
+#### 4. Clustering Algorithm Foundations
+* Rodriguez, A., & Laio, A. (2014). Clustering by fast search and find of density peaks. *Science*, *344*(6191), 1492–1496. [https://doi.org/10.1126/science.1242072](https://doi.org/10.1126/science.1242072)

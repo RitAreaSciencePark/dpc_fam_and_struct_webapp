@@ -96,7 +96,7 @@
         
         <!-- Tab 1: Summary -->
         <div class="tab-pane fade show active" id="summary" role="tabpanel" aria-labelledby="summary-tab">
-            <h4>Metacluster Properties</h4>
+            <h4>Metacluster Properties and Pfam Annotations</h4>
             <div class="table-responsive">
             <table class="table table-striped table-bordered mt-3" style="max-width: 600px;">
                 <tbody>
@@ -125,7 +125,7 @@
 
         <!-- Tab 2: Sequences -->
         <div class="tab-pane fade" id="sequences" role="tabpanel" aria-labelledby="sequences-tab">
-            <h4>Sequences</h4>
+            <h4>Seed Sequences</h4>
             {% if sequences %}
             <div class="table-responsive">
                 <table class="table table-sm table-hover mt-3">
@@ -133,7 +133,7 @@
                         <tr>
                             <th>Protein ID</th>
                             <th>Range</th>
-                            <th>Amino Acids (Representatives)</th>
+                            <th>Seed Sequence (A maximum of 2 representative seed sequences is displayed)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -247,15 +247,15 @@
             <div class="list-group list-group-flush" style="max-width: 500px;">
                 <a href="{{ seqs_file }}" download class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                     <div>
-                        <strong class="mb-1">Representative Sequences</strong>
-                        <div class="text-muted small">Download .fasta file</div>
+                        <strong class="mb-1">Representative Seed Sequences</strong>
+                        <div class="text-muted small">Download FASTA file</div>
                     </div>
                     <span class="badge bg-primary rounded-pill">Download</span>
                 </a>
                 <a href="{{ pdbs_dir }}" download class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                     <div>
                         <strong class="mb-1">Representative PDBs</strong>
-                        <div class="text-muted small">Download PDB files</div>
+                        <div class="text-muted small">Download zipped PDB files</div>
                     </div>
                     <span class="badge bg-primary rounded-pill">Download</span>
                 </a>

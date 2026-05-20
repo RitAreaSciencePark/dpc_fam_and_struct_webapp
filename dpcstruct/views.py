@@ -92,20 +92,6 @@ class DpcStructMetaclustersListView(TemplateView):
         return context
 
 
-# Legacy views for backward compatibility
-class DpcStructPropertyListView(SingleTableMixin, FilterView):
-    model = DpcStructMcsProperty
-    table_class = DpcStructMcsPropertyTable
-    filterset_class = DpcStructMcsPropertyFilter
-    paginate_by = 10
-    template_name = 'dpcstruct/dpcstruct_list_metaclusters.html'
-
-    def get_queryset(self):
-        # We sort by numeric part of MCID
-        return DpcStructMcsProperty.objects.extra(
-            select={'mc_num': "CAST(SUBSTRING(mc_id FROM '[0-9]+') AS INTEGER)"}
-        ).order_by('mc_num')
-
 
 class DpcStructDetailView(DetailView):
     model = DpcStructMcsProperty
@@ -118,7 +104,7 @@ class DpcStructDetailView(DetailView):
         mc_id = self.object.mc_id
 
         # Pagination for sequences
-        sequences_list = self.object.sequences.order_by('id')
+        sequences_list = self.object.sequences.select_related('protein').order_by('id')
         paginator = Paginator(sequences_list, 20)
         page_number = self.request.GET.get('page')
         page_obj = paginator.get_page(page_number)
