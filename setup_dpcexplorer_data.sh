@@ -100,8 +100,13 @@ download_file "https://zenodo.org/records/6900559/files/B_metaclusters_hmms.tar.
 mkdir -p "$BASE_DIR/static/production_files/dpcfam/metaclusters_hmms/"
 if [ ! -f "dpcfam_mcid_hmms.tar.gz" ]; then
     echo "Extracting and merging HMM files ..."
-    tar -xzf standard_dpcfam_mcid_hmms.tar.gz -C "$BASE_DIR/static/production_files/dpcfam/metaclusters_hmms/"
-    tar -xzf dpcfamB_mcid_hmms.tar.gz -C "$BASE_DIR/static/production_files/dpcfam/metaclusters_hmms/"
+    mkdir -p hmms_temp
+    tar -xzf standard_dpcfam_mcid_hmms.tar.gz -C hmms_temp/
+    tar -xzf dpcfamB_mcid_hmms.tar.gz -C hmms_temp/
+
+    echo "Moving extracted HMM files to destination ..."
+    find hmms_temp -type f -name "*.hmm" -exec mv {} "$BASE_DIR/static/production_files/dpcfam/metaclusters_hmms/" \;
+    rm -rf hmms_temp
 
     echo "Creating merged HMM archive: dpcfam_mcid_hmms.tar.gz ..."
     tar -czf dpcfam_mcid_hmms.tar.gz -C "$BASE_DIR/static/production_files/dpcfam/metaclusters_hmms/" .
@@ -133,22 +138,18 @@ download_file "https://zenodo.org/records/6900559/files/metaclusters_msas.tar.gz
 mkdir -p "$BASE_DIR/static/production_files/dpcfam/metaclusters_cdhit_msas/"
 if [ ! -f "dpcfam_mcid_msas.tar.gz" ]; then
     echo "Extracting MSA files ..."
-    rm -rf dpcfam_mcid_msas_temp && mkdir dpcfam_mcid_msas_temp
+    mkdir -p dpcfam_mcid_msas_temp
     # DPCFamB file format: MCID_cdhit.fasta.msa
     tar -xzf dpcfamB_mcid_msas.tar.gz -C dpcfam_mcid_msas_temp/
-    # Standard DPCFam file format: MCID_cdhit.fasta.msa.gz
+    # Standard DPCfam file format: MCID_cdhit.fasta.msa.gz
     tar -xzf standard_dpcfam_mcid_msas.tar.gz -C dpcfam_mcid_msas_temp/
     echo "Decompressing inner .gz files ..."
-    for gz_file in dpcfam_mcid_msas_temp/*.gz; do
-        [ -f "$gz_file" ] && gunzip "$gz_file"
-    done
+    find dpcfam_mcid_msas_temp -type f -name "*.gz" -exec gunzip {} +
 
     echo "Renaming MSA files: MCID_cdhit.fasta.msa -> MCID_msa.fasta ..."
-    for msa_file in dpcfam_mcid_msas_temp/*.msa; do
-        if [ -f "$msa_file" ]; then
-            new_name=$(echo "$msa_file" | sed 's/_cdhit\.fasta\.msa/_msa.fasta/')
-            mv "$msa_file" "$BASE_DIR/static/production_files/dpcfam/metaclusters_cdhit_msas/$(basename "$new_name")"
-        fi
+    find dpcfam_mcid_msas_temp -type f -name "*.msa" | while read -r msa_file; do
+        new_name=$(echo "$msa_file" | sed 's/_cdhit\.fasta\.msa/_msa.fasta/')
+        mv "$msa_file" "$BASE_DIR/static/production_files/dpcfam/metaclusters_cdhit_msas/$(basename "$new_name")"
     done
 
     rm -rf dpcfam_mcid_msas_temp
@@ -156,6 +157,15 @@ if [ ! -f "dpcfam_mcid_msas.tar.gz" ]; then
     echo "Creating consolidated MSA archive: dpcfam_mcid_msas.tar.gz ..."
     tar -czf dpcfam_mcid_msas.tar.gz -C "$BASE_DIR/static/production_files/dpcfam/metaclusters_cdhit_msas/" .
 fi
+
+# Clean up all DPCfam intermediate archives before going to next section
+echo "Cleaning up DPCfam intermediate files..."
+rm -f "$BASE_DIR/static/downloads/dpcfam/dpcfamB_all_metaclusters_hmms.tar.gz" \
+      "$BASE_DIR/static/downloads/dpcfam/dpcfamB_mcid_hmms.tar.gz" \
+      "$BASE_DIR/static/downloads/dpcfam/dpcfamB_mcid_msas.tar.gz" \
+      "$BASE_DIR/static/downloads/dpcfam/standard_dpcfam_all_metaclusters_hmms.tar.gz" \
+      "$BASE_DIR/static/downloads/dpcfam/standard_dpcfam_mcid_hmms.tar.gz" \
+      "$BASE_DIR/static/downloads/dpcfam/standard_dpcfam_mcid_msas.tar.gz"
 
 # ==============================================================================
 # II. DPCstruct Data
@@ -192,10 +202,8 @@ if [ -z "$(ls -A "$BASE_DIR/static/production_files/dpcstruct/dpcstruct_reps_pdb
     echo "Unzipping individual PDB files for the Mol* viewer ..."
     for zip_file in "$BASE_DIR"/static/production_files/dpcstruct/dpcstruct_reps_pdbs_zipped/*.zip; do
         if [ -f "$zip_file" ]; then
-            # Each zip becomes its own MCID_pdb/ subfolder under dpcstruct_reps_pdbs/
-            dest_dir="$BASE_DIR/static/production_files/dpcstruct/dpcstruct_reps_pdbs/$(basename "$zip_file" .zip)_pdb/"
-            mkdir -p "$dest_dir"
-            unzip -q "$zip_file" -d "$dest_dir"
+            # The zip already contains MCID_pdb/ folder so we just extract into dpcstruct_reps_pdbs/
+            unzip -q "$zip_file" -d "$BASE_DIR/static/production_files/dpcstruct/dpcstruct_reps_pdbs/"
         fi
     done
 fi
@@ -224,6 +232,9 @@ if [ -z "$(ls -A "$BASE_DIR/static/dataframes/dpc/" 2>/dev/null)" ]; then
     rm -rf dpcexplorer_csv_files/
 fi
 
+# Clean up original archive unconditionally at the end to save space
+rm -f dpcexplorer_csv_files.tar.gz
+
 # ==============================================================================
 # Done!
 # ==============================================================================
@@ -234,4 +245,6 @@ echo ""
 echo "Directory preview:"
 tree "$BASE_DIR/static/downloads/" -L 2
 tree "$BASE_DIR/static/dataframes/" -L 2
-tree "$BASE_DIR/static/production_files/" -L 1
+tree -d "$BASE_DIR/static/production_files/" -L 2
+
+echo "Total uncompressed files in production directories: $(find "$BASE_DIR/static/production_files/" -type f | wc -l)"
