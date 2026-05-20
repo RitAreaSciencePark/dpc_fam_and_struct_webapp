@@ -4,6 +4,8 @@ from django.db.models import Q
 from dpcfam.models import DpcfamMcsProperty, DpcfamMcsSequence
 from dpc.models import DpcUniprotProtein, DpcPfamDomain, DpcUniref50Pfam
 from dpcstruct.models import DpcStructMcsProperty, DpcStructCath, DpcStructScop
+from django.db.models.expressions import RawSQL
+from django.db.models import IntegerField
 
 
 def search(request):
@@ -60,19 +62,33 @@ def pfam_detail(request, pfam_id):
     Shows results from both DPCFam and DPCStruct
     """
     pfam_id = pfam_id.strip().upper()
-    
+
+    # Guard against direct URL access bypassing the search() view.
+    # Reuses the existing DpcPfamDomain validation table.
+    if pfam_id != 'UNKNOWN' and not DpcPfamDomain.objects.filter(pfam_id=pfam_id).exists():
+        messages.error(request, f'Pfam ID "{pfam_id}" not found.')
+        return redirect('home')
+
     # Get DPCFam metaclusters with this Pfam domain
     dpcfam_metaclusters = DpcfamMcsProperty.objects.filter(
         pfam_da__regex=rf'(^|-){pfam_id}(-|$)'
-    ).exclude(pfam_da='UNKNOWN').extra(
-        select={'mc_num': "CAST(SUBSTRING(mcid FROM '[0-9]+') AS INTEGER)"}
+    ).exclude(pfam_da='UNKNOWN').annotate(
+        mc_num=RawSQL(
+            "CAST(SUBSTRING(mcid FROM '[0-9]+') AS INTEGER)",
+            [],
+            output_field=IntegerField()
+        )
     ).order_by('mc_num')
     
     # Get DPCStruct metaclusters with this Pfam domain
     dpcstruct_metaclusters = DpcStructMcsProperty.objects.filter(
         pfam_da__regex=rf'(^|-){pfam_id}(-|$)'
-    ).exclude(pfam_da='UNKNOWN').extra(
-        select={'mc_num': "CAST(SUBSTRING(mc_id FROM '[0-9]+') AS INTEGER)"}
+    ).exclude(pfam_da='UNKNOWN').annotate(
+        mc_num=RawSQL(
+            "CAST(SUBSTRING(mc_id FROM '[0-9]+') AS INTEGER)",
+            [],
+            output_field=IntegerField()
+        )
     ).order_by('mc_num')
     
     if not dpcfam_metaclusters.exists() and not dpcstruct_metaclusters.exists():
