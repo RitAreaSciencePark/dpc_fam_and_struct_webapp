@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Unified access to DPCFam and DPCStruct protein families and structures database. Search by Metacluster, Pfam, or UniProt ID.">
-    <title>{% block title %}DPCFam and DPCStruct Unified Database{% endblock %}</title>
+    <meta name="description" content="DPCexplorer: Interactive exploration of DPCfam and DPCstruct protein domain classifications. Search by Metacluster, Pfam, or UniProt ID.">
+    <title>{% block title %}DPCexplorer{% endblock %}</title>
 
     <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
@@ -238,8 +238,9 @@
     <header>
         <nav class="navbar navbar-expand-lg container-fluid px-3">
             <!-- Project Title -->
-            <a class="navbar-brand m-0" href="{% url 'home' %}" style="font-family: 'Georgia', serif; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">
-                DPCFam &amp; DPCStruct Unified Database
+            <a class="navbar-brand m-0 d-flex flex-column" href="{% url 'home' %}" style="font-family: 'Georgia', serif; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">
+                <span style="letter-spacing: 1px;">DPCexplorer</span>
+                <small style="font-size: 0.8rem; font-weight: normal; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; letter-spacing: normal; color: rgba(255,255,255,0.9);">Interactive exploration of DPCfam and DPCstruct protein domain classifications</small>
             </a>
 
             <!-- Hamburger toggler for small screens -->
@@ -285,7 +286,7 @@
             <div class="welcome-text">
                 <h2>Explore protein families at the domain level</h2> 
                 <p>
-                    Welcome to the unified portal for DPCFam and DPCStruct. 
+                    Welcome to the DPCexplorer portal. 
                     Select a database source below to discover detailed information about protein (families) at the domain level: Metaclusters.
                 </p>
             </div>
@@ -357,7 +358,7 @@
 
     <footer>
         <div class="container">
-            <p>&copy; 2026 DPCFam and DPCStruct Webapp | Area Science Park & SISSA. All rights reserved.</p>
+            <p>DPCexplorer browser is a project developed by SISSA and Area Science Park.</p>
         </div>
     </footer>
 
