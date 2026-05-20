@@ -6,6 +6,8 @@ from django_tables2.views import SingleTableMixin
 from django_filters.views import FilterView
 from django.core.paginator import Paginator
 from django.templatetags.static import static
+from django.db.models.expressions import RawSQL
+from django.db.models import IntegerField
 from .models import DpcStructMcsProperty, DpcStructCath, DpcStructScop
 from .tables import DpcStructMcsPropertyTable, DpcStructCathTable, DpcStructScopTable
 from .filters import DpcStructMcsPropertyFilter, DpcStructCathFilter, DpcStructScopFilter
@@ -37,8 +39,12 @@ class DpcStructMetaclustersListView(TemplateView):
 
         if view_type == 'properties':
             # Display metacluster properties
-            queryset = DpcStructMcsProperty.objects.extra(
-                select={'mc_num': "CAST(SUBSTRING(mc_id FROM '[0-9]+') AS INTEGER)"}
+            queryset = DpcStructMcsProperty.objects.annotate(
+                mc_num=RawSQL(
+                    "CAST(SUBSTRING(mc_id FROM '[0-9]+') AS INTEGER)",
+                    [],
+                    output_field=IntegerField()
+                )
             ).order_by('mc_num')
             
             if search_mcid:

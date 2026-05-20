@@ -4,6 +4,8 @@ from django_tables2.views import SingleTableMixin
 from django_filters.views import FilterView
 from django.core.paginator import Paginator
 from django.templatetags.static import static
+from django.db.models.expressions import RawSQL
+from django.db.models import IntegerField
 from .models import DpcfamMcsProperty
 from .tables import DpcfamMcsPropertyTable
 from .filters import DpcfamMcsPropertyFilter
@@ -23,10 +25,13 @@ class DpcfamMcsPropertyListView(SingleTableMixin, FilterView):
     def get_queryset(self):
         # Naturally sort MCIDs by converting numeric part to integer
         # This handles MC1, MC2, ..., MC10, ... instead of lexicographical order
-        qs = DpcfamMcsProperty.objects.extra(
-            select={'mc_num': "CAST(SUBSTRING(mcid FROM '[0-9]+') AS INTEGER)"},
-            order_by=['mc_num']
-        )
+        qs = DpcfamMcsProperty.objects.annotate(
+            mc_num=RawSQL(
+                "CAST(SUBSTRING(mcid FROM '[0-9]+') AS INTEGER)",
+                [],
+                output_field=IntegerField()
+            )
+        ).order_by('mc_num')
         
         dataset = self.request.GET.get('dataset', 'all')
         if dataset == 'standard':
