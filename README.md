@@ -6,29 +6,50 @@
 
 Hi! Thank you for visiting our repository.
 
-Welcome to **DPCexplorer**: a Django web application for the interactive exploration of protein domain families. Our platform relies primarily on two datasets, **DPCfam** and **DPCstruct**, where protein sequences and structures are automatically grouped into domain families (called **metaclusters**) using the Density Peak Clustering (DPC) algorithm.
+Welcome to **DPCexplorer**: a Django web application for the interactive exploration of *protein domain families*. Our platform relies primarily on two datasets, **DPCfam** and **DPCstruct**, where protein sequences and structures are automatically grouped into domain families (called *metaclusters*) using the Density Peak Clustering (DPC) algorithm.
 
+| Dataset | Description | Metaclusters | Original Source | Preprocessed Derivative |
+|---------|-------------|--------------|-----------------|-------------------------|
+| **DPCfam** | Sequence-based domain clusters | 81,384 | [DOI: 10.5281/zenodo.6900559](https://doi.org/10.5281/zenodo.6900559) | [DOI: 10.5281/zenodo.20159208](https://doi.org/10.5281/zenodo.20159208) |
+| **DPCstruct** | Structure-based domain clusters | 28,246 | [DOI: 10.5281/zenodo.13334296](https://doi.org/10.5281/zenodo.13334296) | [DOI: 10.5281/zenodo.20159208](https://doi.org/10.5281/zenodo.20159208) |
 
-| Dataset | Description | Zenodo |
-|---------|-------------|--------|
-| **DPCFam** | Sequence-based domain clusters | [![DOI](https://img.shields.io/badge/Zenodo-DPCFam-blue?style=flat-square&logo=zenodo)](https://zenodo.org/records/6900559) |
-| **DPCStruct** | Structure-based domain clusters | [![DOI](https://img.shields.io/badge/Zenodo-DPCStruct-blue?style=flat-square&logo=zenodo)](https://zenodo.org/records/13334296) |
-
-Some of these metaclusters match known families from databases like **Pfam**. Others are completely new and labeled as **UNKNOWN**, and that is where it gets exciting!. If you have a hypothesis about what any of these unknown clusters could be, we would love to hear from you.
+Some of these metaclusters match known families from databases like **Pfam**. Others are completely new and labeled as **UNKNOWN**, and that is where it gets exciting! If you have a hypothesis about what any of these unknown clusters could be, we would love to hear from you.
 
 This Django project consists of three applications: `dpc` (shared data registry), `dpcfam` (sequence-based metaclusters), and `dpcstruct` (structure-based metaclusters).
 
 ---
 
-## 🎯 Reproducibility: Who are you?
+## 🎯 Production Status & Reproducibility
 
-### Option A: New User (First-time setup)
+> 🌐 **Live Platform Deployment:** Our web platform will soon be officially hosted and available online at: [https://dpcexplorer.areasciencepark.it/](https://dpcexplorer.areasciencepark.it/)
+
+Identify your exact use case below to run or update the local application instance:
+
+### Scenario 1: First-Time Setup (New User)
 
 Follow all steps (**1 to 7**) in order, as outlined in the **Table of Contents** below . This will clone the repository, install dependencies, download the datasets automatically, set up the database, and get the application running.
 
-### Option B: Returning User (Already set up)
+### Scenario 2: Rerunning the App (Daily Use) 
 
-Welcome back! Run these quick steps to sync the latest changes:
+If you have already completed the first-time setup and just want to restart the application locally, open your terminal in the project root and run:
+
+```bash
+# 1. Start the database service
+sudo service postgresql start
+
+# 2. Activate your virtual environment
+source .venv/bin/activate
+
+# 3. Run the server
+python3 manage.py runserver
+```
+
+Then visit `http://127.0.0.1:8000/` in your browser. You are already familiar with the rest.
+
+
+### Scenario 3: Syncing Changes (Returning User Updates)
+
+If you are returning to the project after a while and need to pull down the latest codebase updates, schema migrations, or dependency changes, then, welcome back! Run these quick steps to sync the latest changes:
 
 1. Move to the project directory: 
 
@@ -66,7 +87,7 @@ sudo service postgresql start
 python3 manage.py migrate
 ```
 
-7. Run the server : 
+7. Run the server: 
 
 ```bash
 python3 manage.py runserver
@@ -77,6 +98,7 @@ Then visit `http://127.0.0.1:8000/` in your browser.
  - To stop the server: Press `Ctrl+C`.
 
  - To stop PostgreSQL: Run:
+  
  ```bash
  sudo service postgresql stop
  ```
@@ -87,11 +109,11 @@ Then visit `http://127.0.0.1:8000/` in your browser.
 
 - [1. Prerequisites](#1-prerequisites)
 - [2. Clone the Repository](#2-clone-the-repository)
-- [3. Installation](#3-installation)
+- [3. Installation & Data Fetching](#3-installation--data-fetching)
 - [4. Database Initialization](#4-database-initialization)
   - [4.1 Create User and Database](#41-create-user-and-database)
   - [4.2 Create Tables and Populate Them](#42-create-tables-and-populate-them)
-- [5. Migrations](#5-migrations)
+- [5. Django Migrations](#5-django-migrations)
 - [6. Run the Server](#6-run-the-server)
 - [7. Usage](#7-usage)
 - [References](#references)
@@ -112,11 +134,11 @@ Our development environment runs smoothly on:
 - [Ubuntu](https://ubuntu.com/) 24.04.3 LTS *(Required: or any modern Linux system)*
 - [Python](https://www.python.org/) 3.12.3 *(Required: check with `python3 --version`)*
 - [Git](https://git-scm.com/) 2.43.0 *(Required: check with `git --version`)*
-- [PostgreSQL](https://www.postgresql.org/) 16.11 *(Required: check with `psql --version`)*
+- [PostgreSQL](https://www.postgresql.org/) 16.13 *(Required: check with `psql --version`)*
 - [Visual Studio Code](https://code.visualstudio.com/) 1.109.3 *(Optional: use any editor you like!)*
 
+> **Note:** If you are missing `Git` or `PostgreSQL` on an Ubuntu system, you can install them with these quick commands:
 
-> **Note:** If you are missing `Git` or `PostgreSQL`, you can install them on Ubuntu with these quick commands:
 ```bash
 sudo apt update && sudo apt install -y git postgresql postgresql-contrib
 ```
@@ -162,7 +184,7 @@ cd dpc_fam_and_struct_webapp
 
 ---
 
-### 3. Installation
+### 3. Installation & Data Fetching
 
 ![pip](https://img.shields.io/badge/pip-Package%20Manager-3775A9?style=flat-square&logo=pypi&logoColor=white)
 ![venv](https://img.shields.io/badge/venv-Virtual%20Environment-3776AB?style=flat-square&logo=python&logoColor=white)
@@ -183,10 +205,21 @@ cd dpc_fam_and_struct_webapp
 3. Generate a `.env` file with secure credentials:
 
    ```bash
-   python3 -c "import secrets; from django.core.management.utils import get_random_secret_key; print(f'DJANGO_SECRET_KEY={get_random_secret_key()}\nDEBUG=True\nALLOWED_HOSTS=127.0.0.1,localhost\nDB_NAME=dpc_db\nDB_USER=dpc_admin\nDB_PASSWORD={secrets.token_urlsafe(16)}\nDB_HOST=localhost\nDB_PORT=5432')" > .env
+   python3 -c "
+   import secrets
+   from django.core.management.utils import get_random_secret_key
+   print(f'''DJANGO_SECRET_KEY={get_random_secret_key()}
+   DEBUG=True
+   ALLOWED_HOSTS=127.0.0.1,localhost
+   DB_NAME=dpc_db
+   DB_USER=dpc_admin
+   DB_PASSWORD={secrets.token_urlsafe(16)}
+   DB_HOST=localhost
+   DB_PORT=5432''')
+   " > .env
    ```
 
-    > **Note:** This creates a `.env` file with a `random Django secret key` and a `random database password`. You do not need to edit it manually. If you prefer your own values, simply open `.env` and change them.
+   > **Note:** This creates a `.env` file with a `random Django secret key` and a `random database password`. You do not need to edit it manually. If you prefer your own values, simply open `.env` and change them.
 
 4. Download and organize all datasets by running the setup script:
 
@@ -194,7 +227,7 @@ cd dpc_fam_and_struct_webapp
    bash setup_dpcexplorer_data.sh
    ```
 
-   > **Note:** This script downloads everything from Zenodo: CSV files, FASTA files, HMM profiles, MSA files, and PDB structures. It will take some time (~50 GB of data). So, you may grab a coffee (or two) ☕!. If it gets interrupted, just run it again, it resumes automatically.
+   > ⚠️ **Important Storage Notice:** This script downloads approximately **11 GB** of compressed data from Zenodo: CSV files, FASTA files, HMM profiles, MSA files, and PDB structures. It will take some time. So, you may grab a coffee (or two) ☕. However, after uncompressing over 200,000 structural/sequence files and importing the massive sequence datasets (~16 million rows) into PostgreSQL with full structural indexing, your system will require **at least 100 GB of free disk space**. High-speed SSD storage is strongly recommended.
 
 ---
 
@@ -203,7 +236,7 @@ cd dpc_fam_and_struct_webapp
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16.11-336791?style=flat-square&logo=postgresql&logoColor=white)
 ![SQL](https://img.shields.io/badge/SQL-Scripts-CC2927?style=flat-square&logo=microsoftsqlserver&logoColor=white)
 
-Start PostgreSQL:
+Start the local database service daemon:
 
 ```bash
 sudo service postgresql start
@@ -238,7 +271,7 @@ PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -h $DB_HOST -d $DB_NAME -f static/scrip
 PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -h $DB_HOST -d $DB_NAME -f static/scripts/dpcfam/create_dpcfam_tables.sql
 ```
 
-> The following step loads ~16 million rows and will take a few minutes. Please wait until it finishes.
+>**Note**: The following step loads ~16 million rows and will take a few minutes. Please wait until it finishes.
 
 ```bash
 PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -h $DB_HOST -d $DB_NAME -f static/scripts/dpcfam/populate_dpcfam_tables.sql
@@ -256,7 +289,7 @@ PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -h $DB_HOST -d $DB_NAME -f static/scrip
 
 ---
 
-### 5. Migrations
+### 5. Django Migrations
 
 ![Django](https://img.shields.io/badge/Django-Migrations-092E20?style=flat-square&logo=django&logoColor=white)
 
@@ -279,7 +312,7 @@ python3 manage.py runserver
 
 ---
 
-### 7. Usage
+## 7. Usage
 
 ![Chrome](https://img.shields.io/badge/Google%20Chrome-Recommended-4285F4?style=flat-square&logo=googlechrome&logoColor=white)
 
@@ -291,25 +324,28 @@ http://127.0.0.1:8000/
 
 You can search by DPCfam MCID (e.g., `MC1`), DPCstruct MCID (e.g., `MC5`), Pfam ID (e.g., `PF02990`), or UniProt accession (e.g., `A0A182N2I3`).
 
-> **Note:** Congratulations, you made it! 🎉. To stop the server, press `Ctrl+C`. To put PostgreSQL to sleep, run:
+> **Note:** Congratulations, you made it! 🎉
+
+> To stop the server, press `Ctrl+C`. 
+
+> To stop PostgreSQL, run:
+
 ```bash
 sudo service postgresql stop
 ```
 
 > **Tip:** Once the database is fully loaded, you can delete the CSV files in `static/dataframes/` to free up disk space.
 
-If you find a bug or have feedback, open an issue on our GitHub page. We're actively building, and more features are definitely coming soon!
+If you find a bug or have feedback, please open an issue on our GitHub page. We are actively developing DPCexplorer, and many more features are coming soon!
 
-> *Thank you for exploring with this tool. Your feedback would be much appreciated!*
+> Thank you for trying out **DPCexplorer**, your feedback is greatly appreciated!
 
----
-
-### References
+## References
 
 If you use this project, the web application, or the associated datasets, please cite:
 
 #### 1. Project & Preprocessed Datasets
-* **Web Application & Master Thesis:** Nyandu Kagarabi, E. (2026). *Web Application for DPCfam and DPCstruct Data Exploration*. Master's thesis, Master in Data Management and Curation. Supervised by Dr. Valerio Piomponi & Dr. Elaheh Saadat. [Zenodo Link Pending Review]
+* **Web Application & Master Thesis:** Nyandu Kagarabi, E. (2026). *Web Application for DPCfam and DPCstruct Data Exploration*. Master's thesis, Master in Data Management and Curation, SISSA. Supervised by Dr. Valerio Piomponi & Dr. Elaheh Saadat. [Zenodo Link Pending Review]
 * **Preprocessed Datasets:** Nyandu Kagarabi, E., Piomponi, V., & Saadat, E. (2026). Preprocessed Datasets for Interactive Exploration of DPCfam and DPCstruct Protein Domain Classifications (1.0.0) [Data set]. Zenodo. [https://doi.org/10.5281/zenodo.20159208](https://doi.org/10.5281/zenodo.20159208)
 
 #### 2. DPCfam (Sequence-Based Metaclusters)
@@ -322,3 +358,15 @@ If you use this project, the web application, or the associated datasets, please
 
 #### 4. Clustering Algorithm Foundations
 * Rodriguez, A., & Laio, A. (2014). Clustering by fast search and find of density peaks. *Science*, *344*(6191), 1492–1496. [https://doi.org/10.1126/science.1242072](https://doi.org/10.1126/science.1242072)
+
+---
+
+### 📜 Acknowledgments
+
+This work was carried out during a Research Internship at the **Laboratory of Data Engineering (LADE)**, Area Science Park, Trieste, Italy, as part of the MDMC Master's programme at SISSA. 
+
+This project was funded by the European Union - NextGenerationEU via:
+* **NFFA-DI** (cod. IR0000015)
+* **EFC** (cod. SSU2024-00002)
+  
+---
