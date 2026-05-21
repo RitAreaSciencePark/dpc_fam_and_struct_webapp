@@ -293,7 +293,8 @@ DPCFAM_HMM_COUNT=$(find "$BASE_DIR/static/production_files/dpcfam/metaclusters_h
 
 validate_count "DPCfam FASTA target profiles" 81384 "$DPCFAM_FASTA_COUNT"
 validate_count "DPCfam MSA alignment instances" 81384 "$DPCFAM_MSA_COUNT"
-validate_count "DPCfam HMM structural models" 81384 "$DPCFAM_HMM_COUNT"
+# Standard DPcfam : 26 missing HMMs (e.g> MC25450). Therefore, we expect 81358 files instead of 81384
+validate_count "DPCfam HMM structural models" 81358 "$DPCFAM_HMM_COUNT"
 
 echo ""
 echo "Checking DPCstruct localized structural coordinate data ..."
