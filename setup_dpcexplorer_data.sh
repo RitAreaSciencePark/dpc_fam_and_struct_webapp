@@ -163,7 +163,7 @@ if [ "$RUN_DPCFAM" = true ]; then
 
     # Step 1.3: Handle combined aggregate HMM model collections
     download_file "https://zenodo.org/records/6900559/files/all_metaclusters_hmm.tar.gz?download=1" "standard_dpcfam_all_metaclusters_hmms.tar.gz"
-    download_file "https://zenodo.org/records/6900559/files/B_all_metaclusters_hmm.tar.gz?download=1" "dpcfamB_all_metaclusters_hmms.tar.gz"
+    download_file "https://zenodo.org/records/6900559/files/B_all_metaclusters_hmms.tar.gz?download=1" "dpcfamB_all_metaclusters_hmms.tar.gz"
 
     if [ ! -f "dpcfam_all_metaclusters_hmms.tar.gz" ]; then
         echo "Extracting and merging aggregate HMM catalog profiles ..."
