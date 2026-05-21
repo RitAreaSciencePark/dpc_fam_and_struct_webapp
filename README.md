@@ -221,13 +221,29 @@ cd dpc_fam_and_struct_webapp
 
    > **Note:** This creates a `.env` file with a `random Django secret key` and a `random database password`. You do not need to edit it manually. If you prefer your own values, simply open `.env` and change them.
 
-4. Download and organize all datasets by running the setup script:
+4. **Download and prepare the datasets:**
+
+   Run the setup script in your terminal:
 
    ```bash
    bash setup_dpcexplorer_data.sh
    ```
 
-   > ⚠️ **Important Storage Notice:** This script downloads approximately **11 GB** of compressed data from Zenodo: CSV files, FASTA files, HMM profiles, MSA files, and PDB structures. It will take some time. So, you may grab a coffee (or two) ☕. However, after uncompressing over 200,000 structural/sequence files and importing the massive sequence datasets (~16 million rows) into PostgreSQL with full structural indexing, your system will require **at least 100 GB of free disk space**. High-speed SSD storage is strongly recommended.
+   When you run this script, you can choose between two installation choices depending on your computer's free space. You may want to grab a coffee (or two) ☕ because downloading and preparing the data takes some time.
+
+   * **Option 1: Full Installation (Default)**
+
+     This downloads and installs everything (DPCfam, DPCstruct, and all DPCexplorer CSV files).
+
+     > ⚠️ **Important Storage Notice:** This option downloads about **11 GB** of compressed data from Zenodo. After uncompressing over 200,000 files and loading millions of rows into the PostgreSQL database, your computer will need **at least 100 GB of free disk space**. We strongly recommend using a fast SSD.
+
+   * **Option 2: Lightweight Mode (Fast Review)**
+
+     This option downloads only the structural data (**DPCstruct files**) and the database tables (**DPCexplorer CSV files**). It skips the heavy DPCfam files completely.
+
+     > ⚠️ **Important Storage Notice:** This option needs **only about 15 GB of free disk space**.
+
+     > *Note:* If you choose this option, the web application Downloads pages for DPCfam will be empty. This mode is perfect for a quick review of the database queries and the 3D structure viewer.
 
 ---
 

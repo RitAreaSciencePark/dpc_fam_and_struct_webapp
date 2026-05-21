@@ -54,23 +54,56 @@ else
     echo "All required tools are available."
 fi
 
+# ==============================================================================
+# INSTALLATION MODALITY SELECTOR
+# ==============================================================================
+echo ""
+echo "Select your dataset installation profiling:"
+echo " 1) Full Installation (DPCfam, DPCstruct, and DPCexplorer CSVs) -> Requires ~100 GB space"
+echo " 2) Lightweight Evaluation (DPCstruct and DPCexplorer CSVs Only) -> Requires ~15 GB space"
+echo ""
+read -p "Enter your choice (1 or 2): " REPO_INSTALL_PROFILE
+
+# Default validation hooks
+RUN_DPCFAM=true
+
+if [ "$REPO_INSTALL_PROFILE" == "2" ]; then
+    RUN_DPCFAM=false
+    echo ""
+    echo "⚠️  WARNING: You selected the Lightweight Mode!"
+    echo "   - This option WILL NOT download any DPCfam biological files (FASTA, MSA, HMM)."
+    echo "   - You won't be able to download DPCfam data through the web application."
+    echo "   - DPCstruct (structure-based metaclusters) and PostgreSQL database tables will be fully active."
+    echo ""
+    read -p "Proceed with Lightweight Mode? (y/n): " CONFIRM_LIGHTWEIGHT
+    if [[ "$CONFIRM_LIGHTWEIGHT" != "y" && "$CONFIRM_LIGHTWEIGHT" != "Y" ]]; then
+        echo "Exiting setup script..."
+        exit 0
+    fi
+fi
+
 # ------------------------------------------------------------------------------
-# Check for sufficient free disk space (~100 GB recommended).
+# Check for sufficient free disk space based on selection.
 # ------------------------------------------------------------------------------
-REQUIRED_DISK_GB=100
+if [ "$RUN_DPCFAM" = true ]; then
+    REQUIRED_DISK_GB=100
+else
+    REQUIRED_DISK_GB=15
+fi
+
 AVAILABLE_DISK_GB=$(df "$BASE_DIR" --output=avail -BG | tail -1 | tr -dc '0-9')
 
 echo ""
 echo "========================================================"
 echo "              STORAGE REQUIREMENTS CHECK                "
 echo "========================================================"
-echo "Recommended free disk space : ${REQUIRED_DISK_GB} GB"
-echo "Detected available space    : ${AVAILABLE_DISK_GB} GB"
+echo "Recommended free disk space for configuration : ${REQUIRED_DISK_GB} GB"
+echo "Detected available workspace space             : ${AVAILABLE_DISK_GB} GB"
 echo ""
 
 if [ "$AVAILABLE_DISK_GB" -lt "$REQUIRED_DISK_GB" ]; then
     echo "WARNING: Low disk space detected!"
-    echo "DPCexplorer needs substantial local space for extraction and DB storage."
+    echo "DPCexplorer might experience database generation or extraction errors."
     echo ""
 else
     echo "Disk space check passed."
@@ -81,9 +114,6 @@ fi
 # Helper function: download_file
 # Downloads a file from a URL using wget with resume support (-c).
 # Skips the download if the file already exists locally.
-# Arguments:
-#   $1 - Download URL
-#   $2 - Output filename
 # ------------------------------------------------------------------------------
 download_file() {
     local url=$1
@@ -97,84 +127,84 @@ download_file() {
 }
 
 # ==============================================================================
-# I. DPCfam Data Processing Pipeline
+# I. DPCfam Data Processing Pipeline (Conditionally Executed)
 # ==============================================================================
-echo -e "\n--- I. Downloading and organizing DPCfam data ---"
+if [ "$RUN_DPCFAM" = true ]; then
+    echo -e "\n--- I. Downloading and organizing DPCfam data ---"
 
-mkdir -p "$BASE_DIR/static/downloads/dpcfam/"
-cd "$BASE_DIR/static/downloads/dpcfam/"
+    mkdir -p "$BASE_DIR/static/downloads/dpcfam/"
+    cd "$BASE_DIR/static/downloads/dpcfam/"
 
-# Step 1.1: Download preprocessed seeds from the derivative repository (Zenodo 1)
-download_file "https://zenodo.org/records/20159208/files/dpcfam_mcid_seeds.tar.gz?download=1" "dpcfam_mcid_seeds.tar.gz"
+    # Step 1.1: Download preprocessed seeds from the derivative repository (Zenodo 1)
+    download_file "https://zenodo.org/records/20159208/files/dpcfam_mcid_seeds.tar.gz?download=1" "dpcfam_mcid_seeds.tar.gz"
 
-mkdir -p "$BASE_DIR/static/production_files/dpcfam/metaclusters_fasta/"
-if [ -z "$(ls -A "$BASE_DIR/static/production_files/dpcfam/metaclusters_fasta/" 2>/dev/null)" ]; then
-    echo "Extracting seed FASTA files ..."
-    tar -xzf dpcfam_mcid_seeds.tar.gz -C "$BASE_DIR/static/production_files/dpcfam/metaclusters_fasta/"
+    mkdir -p "$BASE_DIR/static/production_files/dpcfam/metaclusters_fasta/"
+    if [ -z "$(ls -A "$BASE_DIR/static/production_files/dpcfam/metaclusters_fasta/" 2>/dev/null)" ]; then
+        echo "Extracting seed FASTA files ..."
+        tar -xzf dpcfam_mcid_seeds.tar.gz -C "$BASE_DIR/static/production_files/dpcfam/metaclusters_fasta/"
+    fi
+
+    # Step 1.2: Download biological alignments/HMM profiles from original repository (Zenodo 2)
+    download_file "https://zenodo.org/records/6900559/files/metaclusters_hmms.tar.gz?download=1" "standard_dpcfam_mcid_hmms.tar.gz"
+    download_file "https://zenodo.org/records/6900559/files/B_metaclusters_hmms.tar.gz?download=1" "dpcfamB_mcid_hmms.tar.gz"
+
+    mkdir -p "$BASE_DIR/static/production_files/dpcfam/metaclusters_hmms/"
+    if [ ! -f "dpcfam_mcid_hmms.tar.gz" ]; then
+        echo "Extracting and merging single HMM files ..."
+        mkdir -p hmms_temp
+        tar -xzf standard_dpcfam_mcid_hmms.tar.gz -C hmms_temp/
+        tar -xzf dpcfamB_mcid_hmms.tar.gz -C hmms_temp/
+        find hmms_temp -type f -name "*.hmm" -exec mv {} "$BASE_DIR/static/production_files/dpcfam/metaclusters_hmms/" \;
+        rm -rf hmms_temp
+        
+        echo "Packaging consolidated individual HMMs archive for frontend downloads..."
+        tar -czf dpcfam_mcid_hmms.tar.gz -C "$BASE_DIR/static/production_files/dpcfam/metaclusters_hmms/" .
+    fi
+
+    # Step 1.3: Handle combined aggregate HMM model collections
+    download_file "https://zenodo.org/records/6900559/files/all_metaclusters_hmm.tar.gz?download=1" "standard_dpcfam_all_metaclusters_hmms.tar.gz"
+    download_file "https://zenodo.org/records/6900559/files/B_all_metaclusters_hmm.tar.gz?download=1" "dpcfamB_all_metaclusters_hmms.tar.gz"
+
+    if [ ! -f "dpcfam_all_metaclusters_hmms.tar.gz" ]; then
+        echo "Extracting and merging aggregate HMM catalog profiles ..."
+        tar -xzf standard_dpcfam_all_metaclusters_hmms.tar.gz -C .
+        tar -xzf dpcfamB_all_metaclusters_hmms.tar.gz -C .
+        tar -czf dpcfam_all_metaclusters_hmms.tar.gz *.hmm
+        rm -f *.hmm
+    fi
+
+    # Step 1.4: Download and extract raw Multiple Sequence Alignments (MSAs)
+    download_file "https://zenodo.org/records/6900559/files/B_metaclusters_msas.tar.gz?download=1" "dpcfamB_mcid_msas.tar.gz"
+    download_file "https://zenodo.org/records/6900559/files/metaclusters_msas.tar.gz?download=1" "standard_dpcfam_mcid_msas.tar.gz"
+
+    mkdir -p "$BASE_DIR/static/production_files/dpcfam/metaclusters_cdhit_msas/"
+    if [ ! -f "dpcfam_mcid_msas.tar.gz" ]; then
+        echo "Extracting, unzipping, and standardizing MSA files ..."
+        mkdir -p dpcfam_mcid_msas_temp
+        tar -xzf dpcfamB_mcid_msas.tar.gz -C dpcfam_mcid_msas_temp/
+        tar -xzf standard_dpcfam_mcid_msas.tar.gz -C dpcfam_mcid_msas_temp/
+        find dpcfam_mcid_msas_temp -type f -name "*.gz" -exec gunzip {} +
+        
+        find dpcfam_mcid_msas_temp -type f -name "*.msa" | while read -r msa_file; do
+            new_name=$(echo "$msa_file" | sed 's/_cdhit\.fasta\.msa/_msa.fasta/')
+            mv "$msa_file" "$BASE_DIR/static/production_files/dpcfam/metaclusters_cdhit_msas/$(basename "$new_name")"
+        done
+        rm -rf dpcfam_mcid_msas_temp
+        
+        echo "Packaging unified MSA file collection archive for web downloads..."
+        tar -czf dpcfam_mcid_msas.tar.gz -C "$BASE_DIR/static/production_files/dpcfam/metaclusters_cdhit_msas/" .
+    fi
+
+    echo "Cleaning up intermediate DPCfam raw source archives..."
+    rm -f "$BASE_DIR/static/downloads/dpcfam/dpcfamB_all_metaclusters_hmms.tar.gz" \
+          "$BASE_DIR/static/downloads/dpcfam/dpcfamB_mcid_hmms.tar.gz" \
+          "$BASE_DIR/static/downloads/dpcfam/dpcfamB_mcid_msas.tar.gz" \
+          "$BASE_DIR/static/downloads/dpcfam/standard_dpcfam_all_metaclusters_hmms.tar.gz" \
+          "$BASE_DIR/static/downloads/dpcfam/standard_dpcfam_mcid_hmms.tar.gz" \
+          "$BASE_DIR/static/downloads/dpcfam/standard_dpcfam_mcid_msas.tar.gz"
+else
+    echo -e "\n--- I. Skipping DPCfam data deployment (Lightweight Option Active) ---"
 fi
-
-# Step 1.2: Download biological alignments/HMM profiles from original repository (Zenodo 2)
-download_file "https://zenodo.org/records/6900559/files/metaclusters_hmms.tar.gz?download=1" "standard_dpcfam_mcid_hmms.tar.gz"
-download_file "https://zenodo.org/records/6900559/files/B_metaclusters_hmms.tar.gz?download=1" "dpcfamB_mcid_hmms.tar.gz"
-
-mkdir -p "$BASE_DIR/static/production_files/dpcfam/metaclusters_hmms/"
-if [ ! -f "dpcfam_mcid_hmms.tar.gz" ]; then
-    echo "Extracting and merging single HMM files ..."
-    mkdir -p hmms_temp
-    tar -xzf standard_dpcfam_mcid_hmms.tar.gz -C hmms_temp/
-    tar -xzf dpcfamB_mcid_hmms.tar.gz -C hmms_temp/
-    find hmms_temp -type f -name "*.hmm" -exec mv {} "$BASE_DIR/static/production_files/dpcfam/metaclusters_hmms/" \;
-    rm -rf hmms_temp
-    
-    echo "Packaging consolidated individual HMMs archive for frontend downloads..."
-    tar -czf dpcfam_mcid_hmms.tar.gz -C "$BASE_DIR/static/production_files/dpcfam/metaclusters_hmms/" .
-fi
-
-# Step 1.3: Handle combined aggregate HMM model collections
-download_file "https://zenodo.org/records/6900559/files/all_metaclusters_hmm.tar.gz?download=1" "standard_dpcfam_all_metaclusters_hmms.tar.gz"
-download_file "https://zenodo.org/records/6900559/files/B_all_metaclusters_hmms.tar.gz?download=1" "dpcfamB_all_metaclusters_hmms.tar.gz"
-
-if [ ! -f "dpcfam_all_metaclusters_hmms.tar.gz" ]; then
-    echo "Extracting and merging aggregate HMM catalog profiles ..."
-    tar -xzf standard_dpcfam_all_metaclusters_hmms.tar.gz -C .
-    tar -xzf dpcfamB_all_metaclusters_hmms.tar.gz -C .
-    tar -czf dpcfam_all_metaclusters_hmms.tar.gz *.hmm
-    rm -f *.hmm
-fi
-
-# Step 1.4: Download and extract raw Multiple Sequence Alignments (MSAs)
-download_file "https://zenodo.org/records/6900559/files/B_metaclusters_msas.tar.gz?download=1" "dpcfamB_mcid_msas.tar.gz"
-download_file "https://zenodo.org/records/6900559/files/metaclusters_msas.tar.gz?download=1" "standard_dpcfam_mcid_msas.tar.gz"
-
-mkdir -p "$BASE_DIR/static/production_files/dpcfam/metaclusters_cdhit_msas/"
-if [ ! -f "dpcfam_mcid_msas.tar.gz" ]; then
-    echo "Extracting, unzipping, and standardizing MSA files ..."
-    mkdir -p dpcfam_mcid_msas_temp
-    # DPCFamB file format: MCID_cdhit.fasta.msa
-    tar -xzf dpcfamB_mcid_msas.tar.gz -C dpcfam_mcid_msas_temp/
-    # Standard DPCfam file format: MCID_cdhit.fasta.msa.gz
-    tar -xzf standard_dpcfam_mcid_msas.tar.gz -C dpcfam_mcid_msas_temp/
-    find dpcfam_mcid_msas_temp -type f -name "*.gz" -exec gunzip {} +
-    
-    # Process and rename extensions to align with web server application rules
-    find dpcfam_mcid_msas_temp -type f -name "*.msa" | while read -r msa_file; do
-        new_name=$(echo "$msa_file" | sed 's/_cdhit\.fasta\.msa/_msa.fasta/')
-        mv "$msa_file" "$BASE_DIR/static/production_files/dpcfam/metaclusters_cdhit_msas/$(basename "$new_name")"
-    done
-    rm -rf dpcfam_mcid_msas_temp
-    
-    echo "Packaging unified MSA file collection archive for web downloads..."
-    tar -czf dpcfam_mcid_msas.tar.gz -C "$BASE_DIR/static/production_files/dpcfam/metaclusters_cdhit_msas/" .
-fi
-
-# Remove redundant heavy source archives to keep local runtime footprint safe
-echo "Cleaning up intermediate DPCfam raw source archives..."
-rm -f "$BASE_DIR/static/downloads/dpcfam/dpcfamB_all_metaclusters_hmms.tar.gz" \
-      "$BASE_DIR/static/downloads/dpcfam/dpcfamB_mcid_hmms.tar.gz" \
-      "$BASE_DIR/static/downloads/dpcfam/dpcfamB_mcid_msas.tar.gz" \
-      "$BASE_DIR/static/downloads/dpcfam/standard_dpcfam_all_metaclusters_hmms.tar.gz" \
-      "$BASE_DIR/static/downloads/dpcfam/standard_dpcfam_mcid_hmms.tar.gz" \
-      "$BASE_DIR/static/downloads/dpcfam/standard_dpcfam_mcid_msas.tar.gz"
 
 # ==============================================================================
 # II. DPCstruct Data Processing Pipeline
@@ -235,16 +265,15 @@ fi
 # Drop root payload package to optimize server storage
 rm -f dpcexplorer_csv_files.tar.gz
 
-
 # ==============================================================================
-# DPCexplorer Tree
+# DPCexplorer Tree Visualizer
 # ==============================================================================
 echo -e "\n========================================================"
 echo "DPCexplorer Tree -- static/"
 echo "========================================================"
 echo ""
 echo "Directory preview:"
-tree "$BASE_DIR/static/downloads/" -L 2
+if [ -d "$BASE_DIR/static/downloads/" ]; then tree "$BASE_DIR/static/downloads/" -L 2; fi
 tree "$BASE_DIR/static/dataframes/" -L 2
 tree -d "$BASE_DIR/static/production_files/" -L 2
 
@@ -258,7 +287,6 @@ echo "========================================================"
 
 VALIDATION_FAILED=0
 
-# Formatted assertion utility to test element metrics against metadata counts
 validate_count() {
     local label="$1"
     local expected="$2"
@@ -276,25 +304,31 @@ echo ""
 echo "Checking downloaded consolidated production archives ..."
 echo "--------------------------------------------------------"
 
-DPCFAM_DOWNLOADS_COUNT=$(find "$BASE_DIR/static/downloads/dpcfam/" -maxdepth 1 -type f | wc -l)
-DPCSTRUCT_DOWNLOADS_COUNT=$(find "$BASE_DIR/static/downloads/dpcstruct/" -maxdepth 1 -type f | wc -l)
+if [ "$RUN_DPCFAM" = true ]; then
+    DPCFAM_DOWNLOADS_COUNT=$(find "$BASE_DIR/static/downloads/dpcfam/" -maxdepth 1 -type f | wc -l)
+    validate_count "static/downloads/dpcfam/ consolidated files" 4 "$DPCFAM_DOWNLOADS_COUNT"
+else
+    echo " [SKIP] static/downloads/dpcfam/ files (Lightweight option active)"
+fi
 
-# Assertions match exactly against the 4 active entries in your HTML download page
-validate_count "static/downloads/dpcfam/ consolidated files" 4 "$DPCFAM_DOWNLOADS_COUNT"
+DPCSTRUCT_DOWNLOADS_COUNT=$(find "$BASE_DIR/static/downloads/dpcstruct/" -maxdepth 1 -type f | wc -l)
 validate_count "static/downloads/dpcstruct/ archive files" 2 "$DPCSTRUCT_DOWNLOADS_COUNT"
 
 echo ""
 echo "Checking DPCfam parsed biological features components ..."
 echo "--------------------------------------------------------"
 
-DPCFAM_FASTA_COUNT=$(find "$BASE_DIR/static/production_files/dpcfam/metaclusters_fasta/" -type f | wc -l)
-DPCFAM_MSA_COUNT=$(find "$BASE_DIR/static/production_files/dpcfam/metaclusters_cdhit_msas/" -type f | wc -l)
-DPCFAM_HMM_COUNT=$(find "$BASE_DIR/static/production_files/dpcfam/metaclusters_hmms/" -type f | wc -l)
+if [ "$RUN_DPCFAM" = true ]; then
+    DPCFAM_FASTA_COUNT=$(find "$BASE_DIR/static/production_files/dpcfam/metaclusters_fasta/" -type f | wc -l)
+    DPCFAM_MSA_COUNT=$(find "$BASE_DIR/static/production_files/dpcfam/metaclusters_cdhit_msas/" -type f | wc -l)
+    DPCFAM_HMM_COUNT=$(find "$BASE_DIR/static/production_files/dpcfam/metaclusters_hmms/" -type f | wc -l)
 
-validate_count "DPCfam FASTA target profiles" 81384 "$DPCFAM_FASTA_COUNT"
-validate_count "DPCfam MSA alignment instances" 81384 "$DPCFAM_MSA_COUNT"
-# Standard DPcfam : 26 missing HMMs (e.g> MC25450). Therefore, we expect 81358 files instead of 81384
-validate_count "DPCfam HMM structural models" 81358 "$DPCFAM_HMM_COUNT"
+    validate_count "DPCfam FASTA files" 81384 "$DPCFAM_FASTA_COUNT"
+    validate_count "DPCfam MSA files" 81384 "$DPCFAM_MSA_COUNT"
+    validate_count "DPCfam HMM files" 81358 "$DPCFAM_HMM_COUNT"
+else
+    echo " [SKIP] DPCfam biological file validations (Lightweight mode active)"
+fi
 
 echo ""
 echo "Checking DPCstruct localized structural coordinate data ..."
@@ -305,18 +339,21 @@ DPCSTRUCT_FASTA_COUNT=$(find "$BASE_DIR/static/production_files/dpcstruct/dpcstr
 DPCSTRUCT_PDB_DIR_COUNT=$(find "$BASE_DIR/static/production_files/dpcstruct/dpcstruct_reps_pdbs/" -mindepth 1 -maxdepth 1 -type d | wc -l)
 DPCSTRUCT_PDB_FILE_COUNT=$(find "$BASE_DIR/static/production_files/dpcstruct/dpcstruct_reps_pdbs/" -type f -name "*.pdb" | wc -l)
 
-validate_count "DPCstruct representative sequence assets" 28246 "$DPCSTRUCT_FASTA_COUNT"
-validate_count "DPCstruct indexed partition zip targets" 28246 "$DPCSTRUCT_ZIPPED_COUNT"
-validate_count "DPCstruct subfolder mapping nodes" 28246 "$DPCSTRUCT_PDB_DIR_COUNT"
-validate_count "DPCstruct molecular coordinate PDB sheets" 56438 "$DPCSTRUCT_PDB_FILE_COUNT"
+validate_count "DPCstruct representative seed sequences" 28246 "$DPCSTRUCT_FASTA_COUNT"
+validate_count "DPCstruct representative zipped PDB archives" 28246 "$DPCSTRUCT_ZIPPED_COUNT"
+validate_count "DPCstruct representative per-MCID PDB directories" 28246 "$DPCSTRUCT_PDB_DIR_COUNT"
+validate_count "DPCstruct representative PDB files" 56438 "$DPCSTRUCT_PDB_FILE_COUNT"
 
 echo ""
 echo "========================================================"
 
 if [ "$VALIDATION_FAILED" -eq 0 ]; then
-    echo " Congratulations! All DPCexplorer datasets were installed correctly."
+    echo " Congratulations! All selected DPCexplorer datasets were installed correctly."
+    if [ "$RUN_DPCFAM" = false ]; then
+        echo " NOTE: Running in Lightweight Mode. DPCfam biological files will not be available."
+    fi
     echo ""
-    echo " Your local workspace instance is complete and ready to deploy."
+    echo " Your local workspace instance is ready to deploy."
 else
     echo " WARNING: Dataset validation integrity faults found. Inspect log data."
 fi
