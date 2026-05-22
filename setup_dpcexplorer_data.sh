@@ -1,27 +1,32 @@
 #!/bin/bash
 
-# ==============================================================================
+# ===================================================================================================
 # Script Name : setup_dpcexplorer_data.sh
-# Description : Downloads, extracts, and organizes all datasets (FASTA, HMM,
-#               MSA, PDB, CSV) from Zenodo so that DPCexplorer is ready to run.
+# Description : Downloads, extracts, and organizes all datasets (FASTA, HMM, MSA, PDB, CSV) 
+#               from dedicated Zenodo repositories so that DPCexplorer is ready to run.
 #
-# Usage       : bash setup_dpcexplorer_data.sh
-# Note        : Run this from the root of the repository (where manage.py is).
-#               If the script is interrupted, just run it again; it resumes.
-# ==============================================================================
+# Zenodo Repository 1 (DPCfam & DPCstruct: preprocessed dataset): https://zenodo.org/records/20159208
+# Zenodo Repository 2 (DPCfam dataset): https://zenodo.org/records/6900559
+#
+# Usage             : bash setup_dpcexplorer_data.sh
+# Note              : Run this from the root of our cloned GitHub repository (where manage.py is).
+#                     If the script is interrupted, just run it again; it resumes.
+#
+# GitHub Repository : https://github.com/emmanuelnyandukagarabi/dpc_fam_and_struct_webapp
+# ===================================================================================================
 
 # Stop immediately if any command fails.
 set -e
 
 echo "========================================"
-echo "         DPC EXPLORER DATA SETUP        "
+echo "         DPCEXPLORER DATA SETUP        "
 echo "========================================"
 echo ""
 
 # Make sure the script is running from the repository root.
 BASE_DIR="$(pwd)"
 if [ ! -f "manage.py" ]; then
-    echo "Error: Please run this script from the root of the repository (where manage.py is located)."
+    echo "Error: Please run this script from the root of the cloned GitHub repository (where manage.py is located)."
     exit 1
 fi
 
@@ -140,7 +145,7 @@ if [ "$RUN_DPCFAM" = true ]; then
 
     mkdir -p "$BASE_DIR/static/production_files/dpcfam/metaclusters_fasta/"
     if [ -z "$(ls -A "$BASE_DIR/static/production_files/dpcfam/metaclusters_fasta/" 2>/dev/null)" ]; then
-        echo "Extracting seed FASTA files ..."
+        echo "Extracting DPCfam seed sequences in FASTA format ..."
         tar -xzf dpcfam_mcid_seeds.tar.gz -C "$BASE_DIR/static/production_files/dpcfam/metaclusters_fasta/"
     fi
 
@@ -181,10 +186,12 @@ if [ "$RUN_DPCFAM" = true ]; then
     if [ ! -f "dpcfam_mcid_msas.tar.gz" ]; then
         echo "Extracting, unzipping, and standardizing MSA files ..."
         mkdir -p dpcfam_mcid_msas_temp
+        # DPCFamB file format: MCID_cdhit.fasta.msa
         tar -xzf dpcfamB_mcid_msas.tar.gz -C dpcfam_mcid_msas_temp/
+        # Standard DPCfam file format: MCID_cdhit.fasta.msa.gz
         tar -xzf standard_dpcfam_mcid_msas.tar.gz -C dpcfam_mcid_msas_temp/
         find dpcfam_mcid_msas_temp -type f -name "*.gz" -exec gunzip {} +
-        
+        # Process and rename extensions to align with web server application rules
         find dpcfam_mcid_msas_temp -type f -name "*.msa" | while read -r msa_file; do
             new_name=$(echo "$msa_file" | sed 's/_cdhit\.fasta\.msa/_msa.fasta/')
             mv "$msa_file" "$BASE_DIR/static/production_files/dpcfam/metaclusters_cdhit_msas/$(basename "$new_name")"
@@ -203,7 +210,7 @@ if [ "$RUN_DPCFAM" = true ]; then
           "$BASE_DIR/static/downloads/dpcfam/standard_dpcfam_mcid_hmms.tar.gz" \
           "$BASE_DIR/static/downloads/dpcfam/standard_dpcfam_mcid_msas.tar.gz"
 else
-    echo -e "\n--- I. Skipping DPCfam data deployment (Lightweight Option Active) ---"
+    echo -e "\n--- I. Skipping DPCfam biological files (Lightweight Option Active) ---"
 fi
 
 # ==============================================================================
@@ -219,7 +226,7 @@ download_file "https://zenodo.org/records/20159208/files/dpcstruct_mcid_seeds.ta
 
 mkdir -p "$BASE_DIR/static/production_files/dpcstruct/dpcstruct_reps_seqs/"
 if [ -z "$(ls -A "$BASE_DIR/static/production_files/dpcstruct/dpcstruct_reps_seqs/" 2>/dev/null)" ]; then
-    echo "Extracting DPCstruct representative sequence files ..."
+    echo "Extracting DPCstruct representative seed sequences ..."
     tar -xzf dpcstruct_mcid_seeds.tar.gz -C "$BASE_DIR/static/production_files/dpcstruct/dpcstruct_reps_seqs/"
 fi
 
@@ -230,10 +237,10 @@ mkdir -p "$BASE_DIR/static/production_files/dpcstruct/dpcstruct_reps_pdbs_zipped
 mkdir -p "$BASE_DIR/static/production_files/dpcstruct/dpcstruct_reps_pdbs/"
 
 if [ -z "$(ls -A "$BASE_DIR/static/production_files/dpcstruct/dpcstruct_reps_pdbs_zipped/" 2>/dev/null)" ]; then
-    echo "Extracting multi-subfolder PDB coordinates bundle ..."
+    echo "Extracting per-MCID zipped PDB files - DPCexplorer local download (per MCID)..."
     tar -xzf dpcstruct_mcid_pdbs.tar.gz -C "$BASE_DIR/static/production_files/dpcstruct/dpcstruct_reps_pdbs_zipped/"
 
-    echo "Decompressing internal zip partitions into production environment paths..."
+    echo "Decompressing internal zipped per-MCID PDB files - PDBe Mol* viewer input..."
     for zip_file in "$BASE_DIR"/static/production_files/dpcstruct/dpcstruct_reps_pdbs_zipped/*.zip; do
         if [ -f "$zip_file" ]; then
             unzip -q "$zip_file" -d "$BASE_DIR/static/production_files/dpcstruct/dpcstruct_reps_pdbs/"
@@ -244,7 +251,7 @@ fi
 # ==============================================================================
 # III. Database Tables Extraction Engine (CSV Schema)
 # ==============================================================================
-echo -e "\n--- III. Downloading and organizing CSV files for the database ---"
+echo -e "\n--- III. Downloading and organizing DPCexplorer CSV files for the PostgreSQL database ---"
 
 mkdir -p "$BASE_DIR/static/dataframes/"
 cd "$BASE_DIR/static/dataframes/"
@@ -254,7 +261,7 @@ download_file "https://zenodo.org/records/20159208/files/dpcexplorer_csv.tar.gz?
 
 mkdir -p dpcexplorer_csv_files dpc dpcfam dpcstruct
 if [ -z "$(ls -A "$BASE_DIR/static/dataframes/dpc/" 2>/dev/null)" ]; then
-    echo "Extracting relational tables metadata structures ..."
+    echo "Extracting DPCexplorer CSV files for PostgreSQL relational tables - per django app (dpc, dpcfam, dpcstruct) ..."
     tar -xzf dpcexplorer_csv_files.tar.gz -C dpcexplorer_csv_files/
     tar -xzf dpcexplorer_csv_files/dpc_csv.tar.gz -C dpc/
     tar -xzf dpcexplorer_csv_files/dpcfam_csv.tar.gz -C dpcfam/
@@ -315,7 +322,7 @@ DPCSTRUCT_DOWNLOADS_COUNT=$(find "$BASE_DIR/static/downloads/dpcstruct/" -maxdep
 validate_count "static/downloads/dpcstruct/ archive files" 2 "$DPCSTRUCT_DOWNLOADS_COUNT"
 
 echo ""
-echo "Checking DPCfam parsed biological features components ..."
+echo "Checking DPCfam parsed biological files - DPCexplorer local download (per MCID) ..."
 echo "--------------------------------------------------------"
 
 if [ "$RUN_DPCFAM" = true ]; then
@@ -325,6 +332,7 @@ if [ "$RUN_DPCFAM" = true ]; then
 
     validate_count "DPCfam FASTA files" 81384 "$DPCFAM_FASTA_COUNT"
     validate_count "DPCfam MSA files" 81384 "$DPCFAM_MSA_COUNT"
+    # Standard DPCfam : 26 missing HMMs (e.g: MC25450). Therefore, we expect 81358 files instead of 81384.
     validate_count "DPCfam HMM files" 81358 "$DPCFAM_HMM_COUNT"
 else
     echo " [SKIP] DPCfam biological file validations (Lightweight mode active)"
@@ -339,10 +347,10 @@ DPCSTRUCT_FASTA_COUNT=$(find "$BASE_DIR/static/production_files/dpcstruct/dpcstr
 DPCSTRUCT_PDB_DIR_COUNT=$(find "$BASE_DIR/static/production_files/dpcstruct/dpcstruct_reps_pdbs/" -mindepth 1 -maxdepth 1 -type d | wc -l)
 DPCSTRUCT_PDB_FILE_COUNT=$(find "$BASE_DIR/static/production_files/dpcstruct/dpcstruct_reps_pdbs/" -type f -name "*.pdb" | wc -l)
 
-validate_count "DPCstruct representative seed sequences" 28246 "$DPCSTRUCT_FASTA_COUNT"
-validate_count "DPCstruct representative zipped PDB archives" 28246 "$DPCSTRUCT_ZIPPED_COUNT"
+validate_count "DPCstruct representative per-MCID seed sequences" 28246 "$DPCSTRUCT_FASTA_COUNT"
+validate_count "DPCstruct representative per-MCID zipped PDB archives" 28246 "$DPCSTRUCT_ZIPPED_COUNT"
 validate_count "DPCstruct representative per-MCID PDB directories" 28246 "$DPCSTRUCT_PDB_DIR_COUNT"
-validate_count "DPCstruct representative PDB files" 56438 "$DPCSTRUCT_PDB_FILE_COUNT"
+validate_count "DPCstruct representative per-MCID PDB files" 56438 "$DPCSTRUCT_PDB_FILE_COUNT"
 
 echo ""
 echo "========================================================"
@@ -353,9 +361,38 @@ if [ "$VALIDATION_FAILED" -eq 0 ]; then
         echo " NOTE: Running in Lightweight Mode. DPCfam biological files will not be available."
     fi
     echo ""
-    echo " Your local workspace instance is ready to deploy."
+    echo " Your local workspace instance is ready to deploy, follow the README for next steps."
 else
-    echo " WARNING: Dataset validation integrity faults found. Inspect log data."
+    echo " WARNING: Dataset validation failed. Inspect log data."
+    echo ""
+    echo " Some files are missing or incomplete."
+    echo " This usually happens because:"
+    echo ""
+    echo "   - the download was interrupted"
+    echo "   - disk space ran out"
+    echo "   - extraction failed midway"
+    echo "   - the machine ran out of memory"
+    echo ""
+    echo " Recommended fix:"
+    echo ""
+    echo "   1. Delete the following directories completely:"
+    echo ""
+    echo "      static/dataframes/"
+    echo "      static/downloads/"
+    echo "      static/production_files/"
+    echo ""
+    echo "   2. Ensure your machine has:"
+    echo ""
+    echo "      - sufficient free disk space"
+    echo "      - enough RAM available"
+    echo "      - a stable internet connection"
+    echo ""
+    echo "   3. Run the setup script again:"
+    echo ""
+    echo "      bash setup_dpcexplorer_data.sh"
+    echo ""
+    echo " The script supports resumable downloads, but a clean reinstall"
+    echo " is recommended if validation mismatches persist."
 fi
 echo "========================================================"
 echo ""
