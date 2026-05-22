@@ -263,8 +263,13 @@ sudo service postgresql start
 The following reads the credentials from your `.env` file and creates the PostgreSQL user and database:
 
 ```bash
+# 1. Load your local environment configurations
 export $(grep -v '^#' .env | xargs)
-sudo -u postgres psql -c "CREATE USER $DB_USER WITH PASSWORD '${DB_PASSWORD}'; CREATE DATABASE $DB_NAME OWNER $DB_USER;"
+
+# 2. Create the user role and database independently
+sudo -u postgres psql \
+  -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASSWORD';" \
+  -c "CREATE DATABASE $DB_NAME OWNER $DB_USER;"
 ```
 
 #### 4.2 Create Tables and Populate Them
