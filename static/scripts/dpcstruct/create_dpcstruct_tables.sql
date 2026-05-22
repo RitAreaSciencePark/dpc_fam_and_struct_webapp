@@ -109,5 +109,5 @@ CREATE INDEX IF NOT EXISTS idx_dpcstruct_scop_per_target ON dpcstruct_scop(dpc_t
 
 -- Trigram Index: Optimizes Regex/Text searches on "Fused" Pfam strings
 -- Allows the app to quickly find Metaclusters containing a specific Pfam domain.
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
+-- CREATE EXTENSION IF NOT EXISTS pg_trgm : Already created in dpcfam_tables.sql, no need to repeat here.;
 CREATE INDEX IF NOT EXISTS idx_dpcstruct_mcs_per_pfam_da ON dpcstruct_mcs_properties USING gin (pfam_da gin_trgm_ops);

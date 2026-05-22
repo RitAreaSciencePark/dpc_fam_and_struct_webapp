@@ -22,7 +22,7 @@ class DpcfamMcsProperty(models.Model):
     - Overlap metrics: avg_ov_percent, overlap_label
     """
     mcid = models.CharField(max_length=50, primary_key=True)
-    size_uniref50 = models.IntegerField(null=True, blank=True)
+    size_uniref50 = models.IntegerField()
     avg_len = models.FloatField(null=True, blank=True)
     std_avg_len = models.FloatField(null=True, blank=True)
     lc_percent = models.FloatField(null=True, blank=True)

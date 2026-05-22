@@ -13,7 +13,7 @@ class DpcUniprotProtein(models.Model):
     Acts as the central reference for all protein sequences used in both applications.
     """
     protein_id = models.CharField(max_length=50, primary_key=True)
-    protein_length = models.IntegerField(null=True, blank=True)
+    protein_length = models.IntegerField()
 
     class Meta:
         db_table = 'dpc_uniprot_proteins'

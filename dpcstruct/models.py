@@ -10,7 +10,7 @@ class DpcStructMcsProperty(models.Model):
     mc_id = models.CharField(max_length=50, primary_key=True)
     
     # Cluster metrics
-    mc_size = models.IntegerField(null=True, blank=True)
+    mc_size = models.IntegerField()
     
     # Length metrics
     len_aa = models.FloatField(null=True, blank=True)
