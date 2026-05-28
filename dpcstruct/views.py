@@ -15,7 +15,7 @@ from .filters import DpcStructMcsPropertyFilter, DpcStructCathFilter, DpcStructS
 
 class DpcStructMetaclustersListView(TemplateView):
     """
-    Main view for DPCStruct metaclusters with tabs to toggle between:
+    Main view for DPCstruct metaclusters with tabs to toggle between:
     - Metacluster Properties (default)
     - CATH fold annotations
     - SCOP fold annotations
@@ -94,10 +94,16 @@ class DpcStructMetaclustersListView(TemplateView):
 
 
 class DpcStructDetailView(DetailView):
+    """
+    Detail view for a single DPCstruct Metacluster.
+    Must match dpcstruct/urls.py:
+        path('mcs/<str:mc_id>/', DpcStructDetailView.as_view(), name='dpcstruct_detail')
+    """
     model = DpcStructMcsProperty
     template_name = 'dpcstruct/dpcstruct_detail.html'
-    context_object_name = 'mc'
-    pk_url_kwarg = 'mc_id'
+    context_object_name = 'mc'      # template uses {{ mc.mc_id }}, {{ mc.plddt }}, etc.
+    pk_url_kwarg = 'mc_id'          # URL captures <str:mc_id>
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -105,7 +111,7 @@ class DpcStructDetailView(DetailView):
 
         # Pagination for sequences
         sequences_list = self.object.sequences.select_related('protein').order_by('id')
-        paginator = Paginator(sequences_list, 20)
+        paginator = Paginator(sequences_list, 10)
         page_number = self.request.GET.get('page')
         page_obj = paginator.get_page(page_number)
         context['sequences'] = page_obj
@@ -144,7 +150,8 @@ class DpcStructDetailView(DetailView):
         context['pdb_files'] = pdb_files
 
 
-        # Split Pfam labels if valid
+        # context key is 'pfam_label_list' — must match template:
+        #   {% for label in pfam_label_list %}
         if self.object.pfam_da and self.object.pfam_da != 'UNKNOWN':
             context['pfam_label_list'] = [l.strip() for l in self.object.pfam_da.split('-')]
         else:
