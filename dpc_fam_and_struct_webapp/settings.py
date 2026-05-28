@@ -40,9 +40,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # --- GIN Indexes require Postgres-specific features, so we include the contrib package for reference ---
+    'django.contrib.postgres',
+    # -- DPC application ---
     'dpc',
+    # --- DPCfam application ---
     'dpcfam',
+    # --- DPCstruct application ---
     'dpcstruct',
+    # --- Django Tables and Filters ---
     "django_tables2",
     "django_filters",
 ]
@@ -84,8 +90,8 @@ WSGI_APPLICATION = 'dpc_fam_and_struct_webapp.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME', default='dpc_db'),
-        'USER': config('DB_USER', default='dpc_admin'),
+        'NAME': config('DB_NAME', default='dpcexplorer_db'),
+        'USER': config('DB_USER', default='dpcexplorer_admin'),
         'PASSWORD': config('DB_PASSWORD'),
         'HOST': config('DB_HOST', default='localhost'),
         'PORT': config('DB_PORT', default='5432'),
