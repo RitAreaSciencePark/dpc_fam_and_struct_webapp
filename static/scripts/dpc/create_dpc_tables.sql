@@ -2,6 +2,7 @@
 -- I. DPC CORE TABLES - CENTRAL REGISTRY
 -- =========================================================================
 
+BEGIN;
 -- 1. Master Table: UniProt Proteins
 -- Function: Acts as the central registry for all protein sequences in dpcfam and dpcstruct.
 -- Interconnection: All mapping tables (dpcfam_mcs_sequences, dpc_uniref50_pfam, dpcstruct_mcs_sequences) link back here.
@@ -13,7 +14,7 @@ CREATE TABLE IF NOT EXISTS dpc_uniprot_proteins (
 
 -- 2. Master Table: Pfam Domains
 -- Function: Stores unique Pfam domain IDs available in both dpcfam and dpcstruct.
--- Interconnection: Referenced by dpc_uniref50_pfam, dpcfam_mcs_properties (pfam_labels), dpcstruct_mcs_properties (pfam_labels)
+-- Interconnection: Referenced by dpc_uniref50_pfam
 
 CREATE TABLE IF NOT EXISTS dpc_pfam_domains (
     pfam_id VARCHAR(50) PRIMARY KEY,
@@ -31,11 +32,4 @@ CREATE TABLE IF NOT EXISTS dpc_uniref50_pfam (
     pfam_ranges VARCHAR(100)
 );
 
--- =========================================================================
--- OPTIMIZATION: INDEXES & PERFORMANCE
--- =========================================================================
-
--- Fast lookup of Pfam domains per protein
-CREATE INDEX IF NOT EXISTS idx_dpc_uniref50_pfam_per_protein ON dpc_uniref50_pfam(uniref50_id);
-CREATE INDEX IF NOT EXISTS idx_dpc_uniref50_pfam_per_domain ON dpc_uniref50_pfam(pfam_ids);
--- PGPASSWORD="***REMOVED***" psql -U dpc_admin -h localhost -d postgres -c "DROP DATABASE dpc_db;"
+COMMIT;

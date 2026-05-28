@@ -1,9 +1,10 @@
 -- =========================================================================
 -- III. DPCFAM TABLES CREATION
 -- =========================================================================
+BEGIN;
 
--- 1. Core Table: DPCFam Metacluster Properties
--- Function: Stores biological and structural properties of protein metaclusters from DPCFam database
+-- 1. Core Table: DPCfam Metacluster Properties
+-- Function: Stores biological properties and Pfam mappings of DPCfam Metaclusters
 -- Fields:
 --   - Cluster metrics: size_uniref50 (cluster size)
 --   - Length metrics: avg_len, std_avg_len (average and standard deviation of protein lengths)
@@ -27,7 +28,7 @@ CREATE TABLE IF NOT EXISTS dpcfam_mcs_properties (
     overlap_label VARCHAR(50)
 );
 
--- 2. Mapping Table: DPCFam Metacluster Sequences
+-- 2. Mapping Table: DPCfam Metacluster Sequences
 -- Function: Links specific UniRef50 proteins to Metaclusters with position information (sequence ranges).
 -- Interconnection: Links protein_id (FK -> dpc_uniprot_proteins) and mcid (FK -> dpcfam_mcs_properties).
 
@@ -40,7 +41,7 @@ CREATE TABLE IF NOT EXISTS dpcfam_mcs_sequences (
     aa_seq TEXT NOT NULL
 );
 
--- 3. Structural Table: DPCFam AlphaFold Representatives
+-- 3. Structural Table: DPCfam AlphaFold Representatives
 -- Function: Stores AlphaFold representative structures for each metacluster
 -- Interconnection: Links back to dpcfam_mcs_properties(mcid)
 
@@ -53,22 +54,4 @@ CREATE TABLE IF NOT EXISTS dpcfam_alphafold_reps (
     avg_plddt DOUBLE PRECISION NOT NULL
 );
 
--- =========================================================================
--- OPTIMIZATION: INDEXES & PERFORMANCE
--- =========================================================================
-
--- Natural Numeric Sorting: Extracts numbers from 'MC123' for fast integer-based sorting.
--- Used to sort metaclusters numerically (MC1, MC2, MC10) instead of alphabetically.
-CREATE INDEX IF NOT EXISTS idx_per_mcid_dpcfam ON dpcfam_mcs_properties (CAST(SUBSTRING(mcid FROM '[0-9]+') AS INTEGER));
-
--- High-Speed Discovery: Indexes for frequent search queries
-CREATE INDEX IF NOT EXISTS idx_dpcfam_mcs_per_protein ON dpcfam_mcs_sequences(protein_id);
-CREATE INDEX IF NOT EXISTS idx_dpcfam_seqs_per_mcid ON dpcfam_mcs_sequences(mcid);
-
--- AlphaFold Representatives: Filter by metacluster
-CREATE INDEX IF NOT EXISTS idx_dpcfam_reps_per_mcid ON dpcfam_alphafold_reps(mcid);
-
--- Trigram Index: Optimizes Regex/Text searches on "Fused" Pfam strings
--- Allows the app to quickly find Metaclusters containing a specific Pfam domain.
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
-CREATE INDEX IF NOT EXISTS idx_dpcfam_mcs_per_pfam_da ON dpcfam_mcs_properties USING gin (pfam_da gin_trgm_ops);
+COMMIT;
