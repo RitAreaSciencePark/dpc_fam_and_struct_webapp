@@ -64,8 +64,8 @@ fi
 # ==============================================================================
 echo ""
 echo "Select your dataset installation profiling:"
-echo " 1) Full Installation (DPCfam, DPCstruct, and DPCexplorer CSVs) -> Requires ~100 GB space"
-echo " 2) Lightweight Evaluation (DPCstruct and DPCexplorer CSVs Only) -> Requires ~15 GB space"
+echo " 1) Full Installation (DPCfam, DPCstruct, and DPCexplorer CSVs) -> Requires ~50 GB space"
+echo " 2) Lightweight Evaluation (DPCstruct and DPCexplorer CSVs Only) -> Requires ~25 GB space"
 echo ""
 read -p "Enter your choice (1 or 2): " REPO_INSTALL_PROFILE
 
@@ -91,9 +91,9 @@ fi
 # Check for sufficient free disk space based on selection.
 # ------------------------------------------------------------------------------
 if [ "$RUN_DPCFAM" = true ]; then
-    REQUIRED_DISK_GB=100
+    REQUIRED_DISK_GB=50
 else
-    REQUIRED_DISK_GB=15
+    REQUIRED_DISK_GB=25
 fi
 
 AVAILABLE_DISK_GB=$(df "$BASE_DIR" --output=avail -BG | tail -1 | tr -dc '0-9')
