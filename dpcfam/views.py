@@ -1,4 +1,6 @@
 # dpcfam/views.py
+import os
+from django.conf import settings
 from django.views.generic import DetailView
 from django_tables2.views import SingleTableMixin
 from django_filters.views import FilterView
@@ -13,7 +15,7 @@ from .filters import DpcfamMcsPropertyFilter
 
 class DpcfamMcsPropertyListView(SingleTableMixin, FilterView):
     """
-    List view for DPCFam Metacluster Properties
+    List view for DPCfam Metacluster Properties
     Displays all metaclusters with filtering and pagination
     """
     model = DpcfamMcsProperty
@@ -49,13 +51,13 @@ class DpcfamMcsPropertyListView(SingleTableMixin, FilterView):
 
 class DpcfamMcsDetailView(DetailView):
     """
-    Detail view for a single DPCFam Metacluster
+    Detail view for a single DPCfam Metacluster
     Shows sequences, AlphaFold data, and downloadable files
     """
     model = DpcfamMcsProperty
     template_name = 'dpcfam/metacluster_detail.html'
-    context_object_name = 'mc'
-    pk_url_kwarg = 'mcid'
+    context_object_name = 'mc'  # template uses {{ mc.mcid }}, {{ mc.pfam_da }}, etc.
+    pk_url_kwarg = 'mcid'       # URL captures <str:mcid>
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -63,7 +65,7 @@ class DpcfamMcsDetailView(DetailView):
         
         # Pagination for sequences
         sequences_list = self.object.sequences.select_related('protein').order_by('id')
-        paginator = Paginator(sequences_list, 20)  # Show 20 sequences per page
+        paginator = Paginator(sequences_list, 10)  # Show 10 sequences per page
         page_number = self.request.GET.get('page')
         page_obj = paginator.get_page(page_number)
         context['sequences'] = page_obj
@@ -75,7 +77,12 @@ class DpcfamMcsDetailView(DetailView):
         # Paths based on the static structure: static/production_files/dpcfam/...
         context['fasta_file'] = static(f"production_files/dpcfam/metaclusters_fasta/{mcid}.fasta")
         context['msa_file'] = static(f"production_files/dpcfam/metaclusters_cdhit_msas/{mcid}_msa.fasta")
-        context['hmm_file'] = static(f"production_files/dpcfam/metaclusters_hmms/{mcid}.hmm")
+        # We are missing 26 HMM files in Standard DPCfam (e.g., MC25450), so check if it exists before adding to context
+        hmm_path = os.path.join(settings.BASE_DIR, "static", "production_files", "dpcfam", "metaclusters_hmms", f"{mcid}.hmm")
+        if os.path.exists(hmm_path):
+            context['hmm_file'] = static(f"production_files/dpcfam/metaclusters_hmms/{mcid}.hmm")
+        else:
+            context['hmm_file'] = None
         
         # Split Pfam labels if valid (standardized with -)
         if self.object.pfam_da and self.object.pfam_da != 'UNKNOWN':
