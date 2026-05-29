@@ -3,39 +3,289 @@
 {% block title %}FAQs | DPCexplorer{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2 class="mb-4">Frequently Asked Questions</h2>
-    
-    <div class="accordion" id="faqAccordion">
-        
-        <!-- Question 1 -->
-        <div class="accordion-item">
-            <h2 class="accordion-header" id="headingOne">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                    What is dpc_fam?
-                </button>
-            </h2>
-            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
-                <div class="accordion-body text-dark">
-                    <strong>DPCFam</strong> is a database of density peak clustered protein families...
-                </div>
-            </div>
-        </div>
+<style>
+  .faq-wrapper {
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+    border-radius: 12px;
+    padding: 40px 48px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    max-width: 960px;
+    margin: 0 auto 32px auto;
+  }
+  .faq-wrapper h2 {
+    color: #0b4f8a;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+  }
+  .faq-wrapper .faq-subtitle {
+    color: #555;
+    font-size: 1.05rem;
+    margin-bottom: 2rem;
+  }
+  .accordion-button {
+    font-weight: 600;
+    color: #0b4f8a;
+  }
+  .accordion-button:not(.collapsed) {
+    color: #0b4f8a;
+    background-color: #f1f8ff;
+    box-shadow: none;
+  }
+  .accordion-button:focus {
+    box-shadow: none;
+  }
+  .accordion-body a {
+    color: #0b4f8a;
+    font-weight: 600;
+  }
+  @media (max-width: 767.98px) {
+    .faq-wrapper {
+      padding: 24px 18px;
+    }
+  }
+</style>
 
-        <!-- Question 2 -->
-        <div class="accordion-item">
-            <h2 class="accordion-header" id="headingTwo">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                    How do I search for a metacluster?
-                </button>
-            </h2>
-            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
-                <div class="accordion-body text-dark">
-                    Use the search bar on the homepage, select <strong>DPCFam</strong> as the source, and enter a valid ID such as <code>MC1</code>.
-                </div>
-            </div>
+<div class="container mt-4 mb-5">
+  <div class="faq-wrapper">
+    <h2>Frequently Asked Questions</h2>
+    <p class="faq-subtitle">Quick answers about DPCexplorer, its datasets, and how to use it.</p>
+
+    <div class="accordion" id="faqAccordion">
+
+      <!-- Q1 -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingOne">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+            Q1. What is DPCexplorer?
+          </button>
+        </h2>
+        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            <strong>DPCexplorer</strong> is an interactive web portal for exploring two protein domain family classifications: <strong>DPCfam</strong> and <strong>DPCstruct</strong>, both built with the Density Peak Clustering (DPC) algorithm. Instead of downloading and parsing multi-gigabyte archives, you can search by metacluster ID, Pfam ID, or UniProt accession and get results instantly in your browser.
+          </div>
         </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingTwo">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+            Q2. What is a metacluster?
+          </button>
+        </h2>
+        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            A <strong>metacluster (MC)</strong> is a group of protein domains that the DPC algorithm has identified as evolutionary relatives: a putative protein family. <strong>DPCfam</strong> metaclusters are built from sequence similarity; <strong>DPCstruct</strong> metaclusters are built from 3D structural similarity. Each metacluster has a unique ID (e.g., MC1, MC5) and comes with biological properties, seed sequences, and, where available, Pfam annotations.
+          </div>
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingThree">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+            Q3. What is the difference between DPCfam and DPCstruct?
+          </button>
+        </h2>
+        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            <p><strong>DPCfam</strong> works in sequence space. It clustered roughly 23 million sequences from UniRef50 (v. 2017_07) and produced 81,384 metaclusters: a Standard subset (&ge; 50 domains, 46,828 metaclusters) and a DPCfamB subset (25 - 49 domains, 34,556 metaclusters).</p>
+            <p class="mb-0"><strong>DPCstruct</strong> works in structure space. It clustered roughly 15 million AlphaFold2-predicted structures from the Foldseek Cluster database and produced 28,246 structural metaclusters. Because protein structures are more conserved than sequences, DPCstruct is particularly powerful for detecting remote homologs: proteins that share a common fold even when their sequences have diverged below 30% identity (the twilight zone).</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingFour">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+            Q4. What does <span class="badge" style="background-color: #dc3545; color: white;">UNKNOWN</span> mean in the Pfam column?
+          </button>
+        </h2>
+        <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            It means that no seed sequence in that metacluster carries a Pfam annotation. These metaclusters are also called "dark matter": protein families that exist in nature but have not yet been characterized. They are among the most scientifically interesting results in DPCexplorer: roughly 40% of DPCfam metaclusters and 49% of DPCstruct metaclusters fall into this category. If you have a hypothesis about what one of them might be, we would love to hear from you.
+          </div>
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingFive">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+            Q5. How do I search for a metacluster?
+          </button>
+        </h2>
+        <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            <p>From the home page, select DPCfam or DPCstruct as the database source, type a valid metacluster ID (e.g., MC1 or MC5), and click Search. You will land directly on the detail page for that metacluster, where you can explore its properties, seed sequences, AlphaFold representative structure, and download the associated biological files.</p>
+            <p class="mb-0">You can also browse all metaclusters by clicking <strong>Metaclusters</strong> in the top navigation bar and selecting DPCfam or DPCstruct.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q6 -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingSix">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+            Q6. Can I search by Pfam ID?
+          </button>
+        </h2>
+        <div id="collapseSix" class="accordion-collapse collapse" aria-labelledby="headingSix" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            Yes. Select Pfam from the landing page, enter a valid Pfam family identifier (e.g., PF02990) or clan identifier (e.g., CL0263), and click Search. The results page will show all DPCfam metaclusters that overlap with that Pfam family (listed by average overlap percentage) and all DPCstruct metaclusters that are annotated with it (listed by Pfam consistency score). Each metacluster ID is a direct link to its detail page.
+          </div>
+        </div>
+      </div>
+
+      <!-- Q7 -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingSeven">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">
+            Q7. Can I search by UniProt accession?
+          </button>
+        </h2>
+        <div id="collapseSeven" class="accordion-collapse collapse" aria-labelledby="headingSeven" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            Yes. Select UniProt from the landing page, enter a valid UniProt accession (e.g., P05067), and click Search. You will see a domain architecture diagram that maps all DPCfam domains, DPCstruct domains, and Pfam annotations onto the full-length protein sequence: three horizontal tracks drawn to scale above and below a ruler line. You can toggle each track on and off using the checkboxes below the diagram.
+          </div>
+        </div>
+      </div>
+
+      <!-- Q8 -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingEight">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEight" aria-expanded="false" aria-controls="collapseEight">
+            Q8. How does the 3D viewer work?
+          </button>
+        </h2>
+        <div id="collapseEight" class="accordion-collapse collapse" aria-labelledby="headingEight" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            <p>The 3D viewer is powered by <strong>PDBe-Molstar</strong>, an open-source molecular viewer developed by the Protein Data Bank in Europe (EMBL-EBI). It runs entirely in your browser using WebGL, so no plugins or external software are required.</p>
+            <p>For DPCstruct metaclusters, the viewer loads the AlphaFold2-predicted PDB structures of the cluster's representatives directly from our server and colors each residue by its <strong>pLDDT confidence score</strong>:</p>
+
+            <div style="overflow-x: auto; margin: 15px 0;">
+              <table style="border-collapse: collapse; font-family: sans-serif; width: 100%; max-width: 500px; box-shadow: 0 2px 5px rgba(0,0,0,0.08); border-radius: 6px; overflow: hidden; font-size: 0.95rem;">
+                <thead>
+                  <tr style="background-color: #2c3e50; color: #ffffff; text-align: left;">
+                    <th style="padding: 10px 12px;">Color Key</th>
+                    <th style="padding: 10px 12px;">Confidence Level</th>
+                    <th style="padding: 10px 12px;">Interval (pLDDT)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="border-bottom: 1px solid #eeeeee;">
+                    <td style="padding: 10px 12px; display: flex; align-items: center; gap: 8px;">
+                      <span style="display: inline-block; width: 18px; height: 18px; background-color: #0053D6; border-radius: 4px; flex-shrink: 0;"></span>
+                      <strong>Dark Blue</strong>
+                    </td>
+                    <td style="padding: 10px 12px;">Very high confidence</td>
+                    <td style="padding: 10px 12px;">pLDDT &gt; 90</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #eeeeee; background-color: #fdfdfd;">
+                    <td style="padding: 10px 12px; display: flex; align-items: center; gap: 8px;">
+                      <span style="display: inline-block; width: 18px; height: 18px; background-color: #65CBFF; border-radius: 4px; flex-shrink: 0;"></span>
+                      <strong>Light Blue</strong>
+                    </td>
+                    <td style="padding: 10px 12px;">Confident</td>
+                    <td style="padding: 10px 12px;">70 - 90</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #eeeeee;">
+                    <td style="padding: 10px 12px; display: flex; align-items: center; gap: 8px;">
+                      <span style="display: inline-block; width: 18px; height: 18px; background-color: #FFDB13; border-radius: 4px; flex-shrink: 0;"></span>
+                      <strong>Yellow</strong>
+                    </td>
+                    <td style="padding: 10px 12px;">Low confidence</td>
+                    <td style="padding: 10px 12px;">50 - 70</td>
+                  </tr>
+                  <tr style="border-bottom: 2px solid #2c3e50; background-color: #fdfdfd;">
+                    <td style="padding: 10px 12px; display: flex; align-items: center; gap: 8px;">
+                      <span style="display: inline-block; width: 18px; height: 18px; background-color: #FF7D45; border-radius: 4px; flex-shrink: 0;"></span>
+                      <strong>Orange</strong>
+                    </td>
+                    <td style="padding: 10px 12px;">Very low confidence</td>
+                    <td style="padding: 10px 12px;">&lt; 50</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p class="mb-0">For DPCfam metaclusters, the 3D Viewer tab links out to the corresponding entry in the AlphaFold Protein Structure Database, where you can explore the full structural coordinate maps interactively.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q9 -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingNine">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNine" aria-expanded="false" aria-controls="collapseNine">
+            Q9. What files can I download?
+          </button>
+        </h2>
+        <div id="collapseNine" class="accordion-collapse collapse" aria-labelledby="headingNine" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            <p>From each <strong>DPCfam</strong> metacluster detail page (Downloads tab):<br>
+            &bull; Seed sequences (FASTA format)<br>
+            &bull; Multiple Sequence Alignment (MSA) (FASTA format)<br>
+            &bull; Profile Hidden Markov Model (HMM)</p>
+            <p>From each <strong>DPCstruct</strong> metacluster detail page (Downloads tab):<br>
+            &bull; Representative seed sequences (FASTA format)<br>
+            &bull; Representative PDB structures (ZIP archive)</p>
+            <p class="mb-0">Bulk archives for all metaclusters are also available from the <strong>Downloads</strong> menu in the navigation bar.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q10 -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingTen">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTen" aria-expanded="false" aria-controls="collapseTen">
+            Q10. Is there an API?
+          </button>
+        </h2>
+        <div id="collapseTen" class="accordion-collapse collapse" aria-labelledby="headingTen" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            <p>Not yet in this version. A REST API built on Django REST Framework is planned for a future release. It will accept one or more metacluster IDs and return properties as JSON or biological files in their native formats, making the platform fully machine-accessible.</p>
+            <p class="mb-0">For now, all data are available through the web interface and the Downloads section. The underlying preprocessed CSV files are openly available on
+            <a href="https://zenodo.org/record/20159208" target="_blank">Zenodo (DOI: 10.5281/zenodo.20159208)</a>.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q11 -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingEleven">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEleven" aria-expanded="false" aria-controls="collapseEleven">
+            Q11. Can I reproduce the database from scratch?
+          </button>
+        </h2>
+        <div id="collapseEleven" class="accordion-collapse collapse" aria-labelledby="headingEleven" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            Yes. The full pipeline, from raw Zenodo archives to a running web server, is documented step by step in the repository's <code>README.md</code>. All preprocessing notebooks, Python scripts, and SQL schemas are version-controlled on <a href="https://github.com/RitAreaSciencePark/dpc_fam_and_struct_webapp" target="_blank">GitHub</a> under the MIT license. The preprocessed Zenodo deposit also lets you skip the heavy HPC preprocessing and go straight to loading the database.
+          </div>
+        </div>
+      </div>
+
+      <!-- Q12 -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingTwelve">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwelve" aria-expanded="false" aria-controls="collapseTwelve">
+            Q12. How do I cite this work?
+          </button>
+        </h2>
+        <div id="collapseTwelve" class="accordion-collapse collapse" aria-labelledby="headingTwelve" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            <p>If you use <strong>DPCexplorer</strong> in your research, please cite our platform alongside the original method papers.</p>
+            <p class="mb-0">
+              You can find the full bibliography and official dataset identifiers on our
+              <a href="{% url 'about' %}#references">About Page &rarr; References</a>.
+            </p>
+          </div>
+        </div>
+      </div>
 
     </div>
+  </div>
 </div>
 {% endblock %}
