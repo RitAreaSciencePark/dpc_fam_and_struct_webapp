@@ -1,6 +1,6 @@
 {% extends "index.html" %}
 
-{% block title %}DPCFam | {{ mc.mcid }}{% endblock %}
+{% block title %}DPCfam | {{ mc.mcid }}{% endblock %}
 
 {% block content %}
 <style>
@@ -27,7 +27,7 @@
     }
 </style>
 <div class="container mt-4">
-    <h2 class="mb-4">DPCFam | {{ mc.mcid }}</h2>
+    <h2 class="mb-4">DPCfam | {{ mc.mcid }}</h2>
 
     <ul class="nav nav-tabs" id="mcTabs" role="tablist">
         <li class="nav-item" role="presentation">
@@ -52,24 +52,39 @@
             <div class="table-responsive">
             <table class="table table-striped table-bordered mt-3" style="max-width: 600px;">
                 <tbody>
-                    <tr><th>Number of sequences in UniRef50</th><td>{{ mc.size_uniref50 }}</td></tr>
-                    <tr><th>Average sequence length</th><td>{{ mc.avg_len|floatformat:0 }} ± {{ mc.std_avg_len|floatformat:0 }} aa</td></tr>
-                    <tr><th>Percent of amino-acids in a Low Complexity region</th><td>{{ mc.lc_percent }}</td></tr>
-                    <tr><th>Percent of amino-acids in a Coiled Coil region</th><td>{{ mc.cc_percent }}</td></tr>
-                    <tr><th>Percent of amino-acids in a Disordered region</th><td>{{ mc.dis_percent }}</td></tr>
-                    <tr><th>Average number of TransMembrane regions</th><td>{{ mc.tm|default:"0" }}</td></tr>
+                    <tr><th>Number of UniRef50 seed sequences</th><td>{{ mc.size_uniref50 }}</td></tr>
+                    <tr><th>Mean domain length (aa)</th><td>{{ mc.avg_len|floatformat:0 }} ± {{ mc.std_avg_len|floatformat:0 }} aa</td></tr>
+                    <tr><th>Residues in low-complexity regions (%)</th><td>{{ mc.lc_percent }}</td></tr>
+                    <tr><th>Residues in coiled-coil regions (%)</th><td>{{ mc.cc_percent }}</td></tr>
+                    <tr><th>Predicted disordered residues (%)</th><td>{{ mc.dis_percent }}</td></tr>
+                    <tr><th>Average transmembrane regions</th><td>{{ mc.tm|default:"0" }}</td></tr>
                     <tr><th>Dominant Pfam architecture(s)</th><td>
                         {% if pfam_architectures %}
                             {% for pfam_id in pfam_architectures %}
-                                <a href="/search/?database=PFam&query_id={{ pfam_id }}" style="color: #0b4f8a; font-weight: bold; text-decoration: none;">{{ pfam_id }}</a>{% if not forloop.last %}-{% endif %}
+                                <a href="/search/?database=Pfam&query_id={{ pfam_id }}" style="color: #0b4f8a; font-weight: bold; text-decoration: none;">{{ pfam_id }}</a>{% if not forloop.last %}-{% endif %}
                             {% endfor %}
+                        {% elif mc.pfam_da == 'UNKNOWN' %}
+                            <span style="background-color: #dc3545; color: #fff; padding: 4px 10px; border-radius: 4px; font-weight: bold; display: inline-block;">UNKNOWN</span>
                         {% else %}
                             {{ mc.pfam_da|default:"None" }}
                         {% endif %}
                     </td></tr>
-                    <tr><th>Percent of sequences matching the DA</th><td>{{ mc.da_percent }}</td></tr>
+                    <tr><th>Sequences matching dominant architecture (%)</th><td>{{ mc.da_percent }}</td></tr>
                     <tr><th>Average overlap percent</th><td>{{ mc.avg_ov_percent }}</td></tr>
-                    <tr><th>Pfam overlap type</th><td>{{ mc.overlap_label|default:"None" }}</td></tr>
+                    <tr><th>Pfam Overlap Label</th><td>
+                        {% if mc.overlap_label %}
+                            <span style="{% if mc.overlap_label|lower == 'equivalent' %}background-color: #ffc107; color: #000; padding: 4px 10px; border-radius: 4px; font-weight: bold; display: inline-block;
+                                          {% elif mc.overlap_label|lower == 'reduced' %}background-color: #0d6efd; color: #fff; padding: 4px 10px; border-radius: 4px; font-weight: bold; display: inline-block;
+                                          {% elif mc.overlap_label|lower == 'extended' %}background-color: #e83e8c; color: #fff; padding: 4px 10px; border-radius: 4px; font-weight: bold; display: inline-block;
+                                          {% elif mc.overlap_label|lower == 'shifted' %}background-color: #198754; color: #fff; padding: 4px 10px; border-radius: 4px; font-weight: bold; display: inline-block;
+                                          {% elif mc.overlap_label|lower == 'none' %}font-weight: 900;
+                                          {% endif %}">
+                                {{ mc.overlap_label }}
+                            </span>
+                        {% else %}
+                            None
+                        {% endif %}
+                    </td></tr>
                 </tbody>
             </table>
             </div>
@@ -93,7 +108,7 @@
                         {% for seq in sequences %}
                         <tr>
                             <td>
-                                <a href="/search/?database=UniProt&query_id={{ seq.protein_id }}" style="color: #0b4f8a; font-weight: bold; text-decoration: none;">{{ seq.protein_id }}</a>
+                                <a href="/search/?database=UniProt&query_id={{ seq.protein.protein_id }}" style="color: #0b4f8a; font-weight: bold; text-decoration: none;">{{ seq.protein.protein_id }}</a>
                             </td>
                             <td>{{ seq.seq_range }}</td>
                             <td>{{ seq.seq_length }}</td>
@@ -148,7 +163,7 @@
                 <table class="table table-sm table-hover mt-3">
                     <thead class="table-dark">
                         <tr>
-                            <th>AlphaFold Protein</th>
+                            <th>AlphaFold ID</th>
                             <th>Sequence Range</th>
                             <th>HMM Coverage</th>
                             <th>Avg pLDDT</th>
@@ -162,14 +177,16 @@
                             <td>{{ af.seq_range }}</td>
                             <td>{{ af.hmm_coverage|floatformat:2 }}</td>
                             <td>{{ af.avg_plddt|floatformat:2 }}</td>
-                            <td><a href="https://alphafold.ebi.ac.uk/entry/{{ af.alphafold_prot }}" target="_blank" class="btn btn-sm btn-info">Click me</a></td>
+                            <td><a href="https://alphafold.ebi.ac.uk/entry/{{ af.alphafold_prot }}" target="_blank" class="btn btn-sm btn-info">View in AlphaFoldDB &nearr;</a></td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
             {% else %}
-                <p>No AlphaFold data available for this metacluster.</p>
+                <div class="alert alert-warning mt-3">
+                    No AlphaFold representative is available for this metacluster.
+                </div>
             {% endif %}
         </div>
 
@@ -180,24 +197,34 @@
                 <a href="{{ fasta_file }}" download class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                     <div>
                         <strong class="mb-1">Seed Sequences</strong>
-                        <div class="text-muted small">Download FASTA file</div>
+                        <div class="text-muted small">Download the FASTA file containing the seed sequences</div>
                     </div>
                     <span class="badge bg-primary rounded-pill">Download</span>
                 </a>
                 <a href="{{ msa_file }}" download class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                     <div>
-                        <strong class="mb-1">MSA</strong>
-                        <div class="text-muted small">Download MSA file</div>
+                        <strong class="mb-1">Multiple Sequence Alignment (MSA)</strong>
+                        <div class="text-muted small">Download the FASTA file containing the multiple sequence alignments</div>
                     </div>
                     <span class="badge bg-primary rounded-pill">Download</span>
                 </a>
+                {% if hmm_file %}
                 <a href="{{ hmm_file }}" download class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                     <div>
                         <strong class="mb-1">HMM Model</strong>
-                        <div class="text-muted small">Download HMM file</div>
+                        <div class="text-muted small">Download the HMM file containing the hidden Markov model</div>
                     </div>
                     <span class="badge bg-primary rounded-pill">Download</span>
                 </a>
+                {% else %}
+                <div class="list-group-item d-flex justify-content-between align-items-center bg-light">
+                    <div>
+                        <strong class="mb-1 text-muted">HMM Model</strong>
+                        <div class="text-muted small">Download the HMM file containing the hidden Markov model</div>
+                    </div>
+                    <span class="badge bg-secondary rounded-pill">Not available</span>
+                </div>
+                {% endif %}
             </div>
         </div>
 
