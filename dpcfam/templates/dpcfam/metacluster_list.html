@@ -1,7 +1,7 @@
 {% extends "index.html" %}
 {% load render_table from django_tables2 %}
 
-{% block title %}DPCFam | Metaclusters{% endblock %}
+{% block title %}DPCfam | Metaclusters{% endblock %}
 
 {% block content %}
 <style>
@@ -37,45 +37,70 @@
 
 <div class="container mt-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="mb-0">DPCFam Metaclusters</h1>
+    <div>
+      <h1 class="mb-0">DPCfam Metaclusters</h1>
+      <span class="badge bg-info text-dark mt-2 px-2 py-1 fs-6 fw-semibold" style="display: inline-block;">
+        🧬 Domain Classification in Sequence Space
+      </span>
+    </div>
+    
     <div class="view-toggle">
       <a href="?dataset=all{% if request.GET.mcid %}&mcid={{ request.GET.mcid }}{% endif %}" 
          class="btn {% if dataset == 'all' or not dataset %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
-        <i class="fas fa-list me-2"></i>DPCFam
+        <i class="fas fa-list me-2"></i>DPCfam
       </a>
       <a href="?dataset=standard{% if request.GET.mcid %}&mcid={{ request.GET.mcid }}{% endif %}" 
          class="btn {% if dataset == 'standard' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
-        <i class="fas fa-filter me-2"></i>DPCFam Standard
+        <i class="fas fa-filter me-2"></i>Standard DPCfam
       </a>
       <a href="?dataset=b{% if request.GET.mcid %}&mcid={{ request.GET.mcid }}{% endif %}" 
          class="btn {% if dataset == 'b' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
-        <i class="fas fa-filter me-2"></i>DPCFamB
+        <i class="fas fa-filter me-2"></i>DPCfamB
       </a>
     </div>
+  </div>
+
+  <div class="mb-4 p-3 p-md-4 rounded-3 border border-primary border-opacity-25 bg-white text-dark shadow-sm">
+    <p class="mb-3 lh-lg">
+     The DPCfam pipeline applied the Density Peak Clustering (DPC)
+     algorithm to roughly 23 million UniRef50 sequences and
+     automatically grouped homologous domain segments into 81,384
+     protein families called <strong>metaclusters</strong>, entirely without manual
+     curation. Each metacluster was then used to build a multiple
+     sequence alignment and a profile-HMM for downstream analysis.
+    </p>
+    <p class="mb-0 lh-lg">
+      The table below lists all 81,384 DPCfam metaclusters by default.
+      Use the toggle buttons above to switch to the <strong>Standard</strong> subset
+      (size &ge; 50 seeds, 46,828 metaclusters) or the <strong>DPCfamB</strong> subset
+      (25 to 49 seeds, 34,556 metaclusters). Intrinsic metacluster
+      properties appear on the left; Pfam annotations on the right.
+      Click any MCID to open its detail page.
+    </p>
   </div>
 
   <form method="get" class="mb-3">
     <input type="hidden" name="dataset" value="{{ dataset|default:'all' }}">
     <div class="d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center gap-2">
-      <label for="id_mcid" class="mb-0 flex-shrink-0">Enter MCID</label>
+      <label for="id_mcid" class="mb-0 flex-shrink-0 fw-semibold text-white">Enter MCID:</label>
       <div style="flex: 0 0 auto;">
         {{ filter.form.mcid }}
       </div>
-      <button type="submit" class="btn btn-primary flex-shrink-0">Search</button>
+      <button type="submit" class="btn btn-warning flex-shrink-0 fw-bold">Search</button>
       {% if request.GET.mcid %}
         <a href="?dataset={{ dataset|default:'all' }}" class="btn btn-secondary flex-shrink-0 ms-sm-1">Clear</a>
       {% endif %}
     </div>
   </form>
 
-  <div class="alert alert-info" role="alert">
-    <strong>Current Dataset:</strong> 
+  <div class="alert alert-info py-2 px-3 shadow-sm" role="alert">
+    <strong>Current View:</strong> 
     {% if dataset == 'standard' %}
-      DPCFam Standard (50 &le; Size UniRef50 &le; 131,827)
+      Standard DPCfam: 46,828 metaclusters (Size UniRef50 &ge; 50)
     {% elif dataset == 'b' %}
-      DPCFamB (25 &le; Size UniRef50 &lt; 50)
+      DPCfamB: 34,556 metaclusters (Size UniRef50: 25 to 49)
     {% else %}
-      DPCFam (25 &le; Size UniRef50 &le; 131,827)
+     DPCfam (full): 81,384 metaclusters (Size UniRef50: 25 to 131,827)
     {% endif %}
   </div>
 
@@ -132,24 +157,39 @@
     <div class="row g-4">
       <div class="col-md-6">
         <ul class="list-unstyled mb-0">
-          <li class="mb-2"> <strong>A</strong>. Some measures regarding intrinsic properties of the MC based on its seed sequences :</li>
-          <li class="mb-2"><strong class="text-primary">MCID : </strong> Metacluster identifier.</li>
-          <li class="mb-2">1. <strong class="text-primary">Size UniRef50 : </strong> Number of seed sequences belonging to MCID in UniRef50 v.2017_07.</li>
-          <li class="mb-2">2. <strong class="text-primary">Avg. Len. :</strong> Average amino-acidic length of seed sequences.</li>
-          <li class="mb-2">3. <strong class="text-primary">Std. Avg. Len. :</strong> Standard Deviation of the former.</li>
-          <li class="mb-2">4. <strong class="text-primary">% LC :</strong> Percent of amino-acids in a Low Complexity region.</li>
-          <li class="mb-2">5. <strong class="text-primary">% CC :</strong> Percent of amino-acids in a Coiled Coil region.</li>
-          <li class="mb-2">6. <strong class="text-primary">% DIS :</strong> Percent of amino-acids in a Disordered region.</li>
-          <li class="mb-2">7. <strong class="text-primary">Avg.TM :</strong> Average number of TransMembrane regions.</li>
+          <li class="mb-2"> <strong>A</strong>. Metacluster Intrinsic Properties:</li>
+          <li class="mb-2"><strong class="text-primary">MCID</strong>: Unique identifier per metacluster.</li>
+          <li class="mb-2">1. <strong class="text-primary">Size UniRef50 : </strong> Number of UniRef50 seed sequences in the metacluster.</li>
+          <li class="mb-2">2. <strong class="text-primary">Avg. Len.</strong>: Mean domain length of the seeds (in amino acids).</li>
+          <li class="mb-2">3. <strong class="text-primary">Std. Avg. Len.</strong>: Standard deviation of seed domain lengths.</li>
+          <li class="mb-2">4. <strong class="text-primary">% LC</strong> Percent of residues located in low-complexity regions.</li>
+          <li class="mb-2">5. <strong class="text-primary">% CC</strong>: Percent of residues located in coiled-coil regions.</li>
+          <li class="mb-2">6. <strong class="text-primary">% DIS</strong>: Percent of residues predicted as intrinsically disordered.</li>
+          <li class="mb-2">7. <strong class="text-primary">Avg.TM</strong>: Average number of transmembrane regions per domain.</li>
         </ul>
       </div>
       <div class="col-md-6">
         <ul class="list-unstyled mb-0">
-          <li class="mb-2"><strong>B</strong>. Some measures to compare the MC with its Pfam ground truth, if any :</li>
-          <li class="mb-2">1. <strong class="text-primary">Pfam DA : </strong> Dominant Pfam Architecture(s) ( DA ) [UNKNOWN if %DA=0].</li>
-          <li class="mb-2">2. <strong class="text-primary">% DA : </strong> Percent of sequences in the MC matching the DA.</li>
-          <li class="mb-2">4. <strong class="text-primary">% Avg. Ov. : </strong> Average overlap percent between MC seed sequences and their best matching DA sequence in Pfam.</li>
-          <li class="mb-2">5. <strong class="text-primary">Overlap Label : </strong> Label describing qualitatively the overlap of the MC with its DA, which can be : equivalent, reduced, extended or shifted. NONE otherwise.</li>
+          <li class="mb-2"><strong>B</strong>. Pfam Annotations:</li>
+          <li class="mb-2">1. <strong class="text-primary">Pfam DA</strong>: Pfam architecture which best overlaps with MC. We refer to it as the dominant architecture (DA). If there is no overlap, the MC is tagged as <span style="background-color: #dc3545; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 0.85em;">UNKNOWN</span> (representing 'dark matter').</li>
+          <li class="mb-2">2. <strong class="text-primary">% DA</strong>: Percent of sequences in the MC matching the DA.</li>
+          <li class="mb-2">3. <strong class="text-primary">% Avg. Ov.</strong>: Average % boundary overlap between the MC and Pfam, computed only for seeds that match the DA.</li>
+          <li class="mb-2">4. <strong class="text-primary">Overlap Label</strong>: Label describing qualitatively the overlap of the MC with its DA, which can be : equivalent, reduced, extended or shifted. <strong style="font-weight: 900;">NONE</strong>, otherwise.
+            <br><em class="mt-2 d-inline-block">Color-coded based on boundary agreement:</em>
+            <ul class="mt-1 small">
+                <li><span class="badge text-dark mb-1" style="background-color: #ffc107;">Yellow (Equivalent)</span>:
+                  the MC and its dominant architecture share very similar boundaries.
+                 </li>
+                <li><span class="badge text-white mb-1" style="background-color: #0d6efd;">Blue (Reduced)</span>:
+                 the MC covers only part of the dominant architecture.
+                </li>
+                <li><span class="badge text-white mb-1" style="background-color: #e83e8c;">Pink (Extended)</span>:
+                 the MC extends beyond the dominant architecture boundaries.
+                </li>
+                <li><span class="badge text-white mb-1" style="background-color: #198754;">Green (Shifted)</span>:
+                 the MC and the dominant architecture share a boundary offset, with poor positional agreement.
+                </li>      
+            </ul>
         </ul>
       </div>
     </div>
