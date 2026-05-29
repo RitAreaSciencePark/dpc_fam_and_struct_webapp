@@ -192,15 +192,27 @@
     
     <div class="uniprot-link-container text-center mb-4">
         <a href="https://www.uniprot.org/uniprot/{{ protein.protein_id }}" target="_blank" class="uniprot-link">
-            View on UniProt
+            View in UniProt &nearr;
         </a>
+    </div>
+
+    <div class="text-center mt-4 mx-auto" style="max-width: 800px;">
+        <h5 class="fw-bold mb-1">Domain Architecture for {{ protein.protein_id }}</h5>
+        <h6 class="text-muted mb-3">- {{ protein.protein_length }} amino acids -</h6>
+        <p class="text-muted small">
+            Three tracks are drawn to scale against the full protein length:
+            DPCfam domains (top), DPCstruct domains
+            (middle), and Pfam annotations (bottom). Hover over any block to see the identifier and exact
+            residue range. Use the checkboxes below to show or hide
+            individual tracks.
+        </p>
     </div>
 
     <!-- Domain Architecture Diagram -->
     <div class="architecture-container">
-        <!-- DPCFam Track (ABOVE the line) -->
-        <div class="track" id="diagramDPCFam" style="margin-bottom: 20px;">
-            <span class="track-label" style="top: 2px;">DPCFam</span>
+        <!-- DPCfam Track (ABOVE the line) -->
+        <div class="track" id="diagramDPCfam" style="margin-bottom: 20px;">
+            <span class="track-label" style="top: 2px;">DPCfam</span>
             {% for d in dpcfam_domains %}
             <div class="domain-box" 
                  style="left: {{ d.left }}%; width: {{ d.width }}%; background-color: {% cycle '#28a745' '#17a2b8' '#ffc107' '#fd7e14' '#e83e8c' '#6f42c1' %};" 
@@ -210,9 +222,9 @@
             {% endfor %}
         </div>
 
-        <!-- DPCStruct Track (BETWEEN the lines) -->
-        <div class="track" id="diagramDPCStruct" style="margin: 10px 0;">
-            <span class="track-label" style="top: 2px;">DPCStruct</span>
+        <!-- DPCstruct Track (BETWEEN the lines) -->
+        <div class="track" id="diagramDPCstruct" style="margin: 10px 0;">
+            <span class="track-label" style="top: 2px;">DPCstruct</span>
             {% for d in dpcstruct_domains %}
             <div class="domain-box" 
                  style="left: {{ d.left }}%; width: {{ d.width }}%; background-color: {% cycle '#ff6b6b' '#ee5a6f' '#ff8c92' '#ff99ac' '#ffb3ba' '#ffc6cc' %};" 
@@ -243,12 +255,12 @@
 
     <div class="d-flex justify-content-center gap-5 mt-5">
         <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="checkDPCFam" checked onchange="toggleColumns()">
-            <label class="form-check-label fw-bold" for="checkDPCFam">DPCFam</label>
+            <input class="form-check-input" type="checkbox" id="checkDPCfam" checked onchange="toggleColumns()">
+            <label class="form-check-label fw-bold" for="checkDPCfam">DPCfam</label>
         </div>
         <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="checkDPCStruct" checked onchange="toggleColumns()">
-            <label class="form-check-label fw-bold" for="checkDPCStruct">DPCStruct</label>
+            <input class="form-check-input" type="checkbox" id="checkDPCstruct" checked onchange="toggleColumns()">
+            <label class="form-check-label fw-bold" for="checkDPCstruct">DPCstruct</label>
         </div>
         <div class="form-check">
             <input class="form-check-input" type="checkbox" id="checkPfam" checked onchange="toggleColumns()">
@@ -259,14 +271,14 @@
 
 <div class="domain-container">
     <div class="row">
-        <!-- DPCFam Column -->
-        <div class="col-md-4" id="colDPCFam">
-            <h4 class="column-title text-center">DPCFam</h4>
+        <!-- DPCfam Column -->
+        <div class="col-md-4" id="colDPCfam">
+            <h4 class="column-title text-center">DPCfam</h4>
             {% if dpcfam_domains %}
             <table class="table table-hover table-domain">
                 <thead>
                     <tr>
-                        <th class="text-center">Rank</th>
+                        <th class="text-center">List</th>
                         <th class="text-center">Metaclusters</th>
                         <th class="text-center">Range</th>
                     </tr>
@@ -282,20 +294,20 @@
                 </tbody>
             </table>
             {% else %}
-            <p class="text-center text-muted">No DPCFam matching.</p>
+            <p class="text-center text-muted">No DPCfam domains found for this protein.</p>
             {% endif %}
         </div>
 
-        <!-- DPCStruct Column -->
-        <div class="col-md-4" id="colDPCStruct">
-            <h4 class="column-title text-center">DPCStruct</h4>
+        <!-- DPCstruct Column -->
+        <div class="col-md-4" id="colDPCstruct">
+            <h4 class="column-title text-center">DPCstruct</h4>
             {% if dpcstruct_qs %}
             <table class="table table-hover table-domain">
                 <thead>
                     <tr>
-                        <th class="text-center">Rank</th>
+                        <th class="text-center">List</th>
                         <th class="text-center">Metaclusters</th>
-                        <th class="text-center">Range</th>
+                        <th class="text-center">Ranges</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -309,7 +321,7 @@
                 </tbody>
             </table>
             {% else %}
-            <p class="text-center text-muted">No DPCStruct matching.</p>
+            <p class="text-center text-muted">No DPCstruct domains found for this protein.</p>
             {% endif %}
         </div>
 
@@ -320,10 +332,10 @@
             <table class="table table-hover table-domain">
                 <thead>
                     <tr>
-                        <th class="text-center">Rank</th>
+                        <th class="text-center">List</th>
                         <th class="text-center">Domains</th>
-                        <th class="text-center">Range</th>
-                        <th class="text-center">Pfam Web</th>
+                        <th class="text-center">Ranges</th>
+                        <th class="text-center">View in InterPro (Pfam) &nearr;</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -333,13 +345,13 @@
                         <td class="text-center"><a href="{% url 'pfam_detail' p.pfam_id.pfam_id %}" class="domain-link">{{ p.pfam_id.pfam_id }}</a></td>
                         <td class="text-center">{{ p.pfam_ranges }}</td>
                         <!-- Visit InterPro for Pfam details -->
-                        <td class="text-center"><a href="https://www.ebi.ac.uk/interpro/entry/pfam/{{ p.pfam_id.pfam_id }}" target="_blank" class="domain-link">Visit me</a></td>
+                        <td class="text-center"><a href="https://www.ebi.ac.uk/interpro/entry/pfam/{{ p.pfam_id.pfam_id }}" target="_blank" class="domain-link">View &nearr;</a></td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
             {% else %}
-            <p class="text-center text-muted">No Pfam domains matching.</p>
+            <p class="text-center text-muted">No Pfam annotations found for this protein.</p>
             {% endif %}
         </div>
     </div>
@@ -347,34 +359,34 @@
 
 <script>
 function toggleColumns() {
-    const showDPCFam = document.getElementById('checkDPCFam').checked;
-    const showDPCStruct = document.getElementById('checkDPCStruct').checked;
+    const showDPCfam = document.getElementById('checkDPCfam').checked;
+    const showDPCstruct = document.getElementById('checkDPCstruct').checked;
     const showPfam = document.getElementById('checkPfam').checked;
     
     // Tables
-    const colDPCFam = document.getElementById('colDPCFam');
-    const colDPCStruct = document.getElementById('colDPCStruct');
+    const colDPCfam = document.getElementById('colDPCfam');
+    const colDPCstruct = document.getElementById('colDPCstruct');
     const colPfam = document.getElementById('colPfam');
     
     // Diagram tracks
-    const diagramDPCFam = document.getElementById('diagramDPCFam');
-    const diagramDPCStruct = document.getElementById('diagramDPCStruct');
+    const diagramDPCfam = document.getElementById('diagramDPCfam');
+    const diagramDPCstruct = document.getElementById('diagramDPCstruct');
     const diagramPfam = document.getElementById('diagramPfam');
     
-    colDPCFam.style.display = showDPCFam ? 'block' : 'none';
-    colDPCStruct.style.display = showDPCStruct ? 'block' : 'none';
+    colDPCfam.style.display = showDPCfam ? 'block' : 'none';
+    colDPCstruct.style.display = showDPCstruct ? 'block' : 'none';
     colPfam.style.display = showPfam ? 'block' : 'none';
     
-    if (diagramDPCFam) diagramDPCFam.style.opacity = showDPCFam ? '1' : '0.2';
-    if (diagramDPCStruct) diagramDPCStruct.style.opacity = showDPCStruct ? '1' : '0.2';
+    if (diagramDPCfam) diagramDPCfam.style.opacity = showDPCfam ? '1' : '0.2';
+    if (diagramDPCstruct) diagramDPCstruct.style.opacity = showDPCstruct ? '1' : '0.2';
     if (diagramPfam) diagramPfam.style.opacity = showPfam ? '1' : '0.2';
     
     // Adjust column widths based on visible columns
-    const numVisible = [showDPCFam, showDPCStruct, showPfam].filter(Boolean).length;
+    const numVisible = [showDPCfam, showDPCstruct, showPfam].filter(Boolean).length;
     const colWidth = numVisible === 1 ? 'col-md-12' : numVisible === 2 ? 'col-md-6' : 'col-md-4';
     
-    colDPCFam.className = colWidth;
-    colDPCStruct.className = colWidth;
+    colDPCfam.className = colWidth;
+    colDPCstruct.className = colWidth;
     colPfam.className = colWidth;
 }
 </script>

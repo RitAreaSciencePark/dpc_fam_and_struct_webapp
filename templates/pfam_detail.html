@@ -237,35 +237,44 @@
         {% if pfam_id != 'UNKNOWN' %}
             {% if 'CL' in pfam_id %}
             <a href="https://www.ebi.ac.uk/interpro/set/pfam/{{ pfam_id }}" target="_blank" class="pfam-link">
-                🔗 Visit {{ pfam_id }} in InterPro Database
+                🔗 View {{ pfam_id }} in InterPro (Pfam) &nearr;
             </a>
             {% else %}
             <a href="https://www.ebi.ac.uk/interpro/entry/pfam/{{ pfam_id }}" target="_blank" class="pfam-link">
-                🔗 Visit {{ pfam_id }} in InterPro Database
+                🔗 View {{ pfam_id }} in InterPro (Pfam) &nearr;
             </a>
             {% endif %}
         {% endif %}
-        <div class="mt-3">
+        <div class="mt-3 mb-3">
             <span class="count-badge">{{ total_count }} Metacluster{{ total_count|pluralize }} Found</span>
         </div>
+        <p class="text-muted small text-start mx-auto mt-2" style="max-width: 800px;">
+            DPCfam results are listed by average boundary overlap with the
+            queried Pfam ID (higher is better). DPCstruct results are
+            listed by Pfam consistency score, a global measure of how
+            uniformly the members of the metacluster share the same Pfam label.
+            Because the DPCstruct Pfam score is assigned to a group of up
+            to five Pfam IDs per metacluster, all associated IDs are shown
+            in the rightmost column.
+        </p>
     </div>
     
     <div class="results-container">
         <div class="row">
-            <!-- DPCFam Column -->
+            <!-- DPCfam Column -->
             <div class="col-lg-5 mb-4">
                 <div class="column-container h-100">
                     <div class="column-header">
-                        DPCFam (Avg. Overlap: {{ dpcfam_count }} Metaclusters)
+                        DPCfam (Avg. Overlap: {{ dpcfam_count }} Metaclusters)
                     </div>
                     <div class="metaclusters-list">
                         {% if dpcfam_metaclusters %}
                             <table class="metacluster-table">
                                 <thead>
                                     <tr>
-                                        <th>Rank</th>
+                                        <th>List</th>
                                         <th>MCID</th>
-                                        <th>Overlap Score</th>
+                                        <th>Average Overlap Score</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -293,28 +302,28 @@
                             </table>
                         {% else %}
                             <div class="empty-message">
-                                No metaclusters found in DPCFam
+                                No metaclusters found in DPCfam
                             </div>
                         {% endif %}
                     </div>
                 </div>
             </div>
             
-            <!-- DPCStruct Column -->
+            <!-- DPCstruct Column -->
             <div class="col-lg-7 mb-4">
                 <div class="column-container h-100">
                     <div class="column-header">
-                        DPCStruct (Pfam Score: {{ dpcstruct_count }} Metaclusters)
+                        DPCstruct (Pfam Score: {{ dpcstruct_count }} Metaclusters)
                     </div>
                     <div class="metaclusters-list">
                         {% if dpcstruct_metaclusters %}
                             <table class="metacluster-table">
                                 <thead>
                                     <tr>
-                                        <th>Rank</th>
+                                        <th>List</th>
                                         <th>MCID</th>
                                         <th>Pfam Score</th>
-                                        <th>Pfam List</th>
+                                        <th>Pfam Labels</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -357,7 +366,7 @@
                             </table>
                         {% else %}
                             <div class="empty-message">
-                                No metaclusters found in DPCStruct
+                                No metaclusters found in DPCstruct
                             </div>
                         {% endif %}
                     </div>
