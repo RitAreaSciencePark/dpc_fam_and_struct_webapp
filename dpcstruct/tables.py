@@ -9,24 +9,36 @@ class DpcStructMcsPropertyTable(tables.Table):
     len_aa = tables.Column(verbose_name="Avg. Len.")
     len_std = tables.Column(verbose_name="Len. Std")
     len_ratio = tables.Column(verbose_name="Len. Ratio")
-    plddt = tables.Column(verbose_name="Plddt")
+    plddt = tables.Column(verbose_name="pLDDT")
     disorder = tables.Column(verbose_name="Disorder")
     tmscore = tables.Column(verbose_name="TM-Score")
-    lddt = tables.Column(verbose_name="Lddt")
-    pident = tables.Column(verbose_name="Pident")
-    pfam_score = tables.Column(verbose_name="Score Pfam", empty_values=())
-    pfam_da = tables.Column(verbose_name="Pfam DA")
+    lddt = tables.Column(verbose_name="lDDT")
+    pident = tables.Column(verbose_name="pIdent")
+    # Pfam Annotations
+    pfam_score = tables.Column(
+        verbose_name="Pfam Score", 
+        empty_values=(),
+        attrs={
+            "th": {"style": "border-left: 2px dotted #adb5bd;"},
+            "td": {"style": "border-left: 2px dotted #adb5bd;"}
+        }
+    )
+    pfam_da = tables.Column(verbose_name="Pfam Labels")
 
     def render_pfam_da(self, value):
-        if value and value != 'UNKNOWN':
-            # Split by - as standardized in DB
-            ids = value.split('-')
-            links = [
-                format_html('<a href="/search/?database=PFam&query_id={}" style="color: #0b4f8a; font-weight: bold; text-decoration: none;">{}</a>', id_val, id_val)
-                for id_val in ids
-            ]
-            from django.utils.safestring import mark_safe
-            return mark_safe('-'.join(links))
+        if value:
+            if value == 'UNKNOWN':
+                from django.utils.safestring import mark_safe
+                return mark_safe('<span style="background-color: #dc3545; color: #fff; padding: 4px 10px; border-radius: 4px; font-weight: bold; display: inline-block;">UNKNOWN</span>')
+            else:
+                # Split by - as standardized in DB
+                ids = value.split('-')
+                links = [
+                    format_html('<a href="/search/?database=Pfam&query_id={}" style="color: #0b4f8a; font-weight: bold; text-decoration: none;">{}</a>', id_val, id_val)
+                    for id_val in ids
+                ]
+                from django.utils.safestring import mark_safe
+                return mark_safe('-'.join(links))
         return value
 
     class Meta:
@@ -59,13 +71,13 @@ class DpcStructCathTable(tables.Table):
     dpc_target = tables.Column(verbose_name="DPC Target")
     q_range = tables.Column(verbose_name="Q.Range")
     t_range = tables.Column(verbose_name="T.Range")
-    qcov = tables.Column(verbose_name="Q.Cov.", empty_values=())
-    tcov = tables.Column(verbose_name="T.Cov.", empty_values=())
+    qcov = tables.Column(verbose_name="Q.Cov", empty_values=())
+    tcov = tables.Column(verbose_name="T.Cov", empty_values=())
     qtmscore = tables.Column(verbose_name="Q.TM-Score", empty_values=())
     ttmscore = tables.Column(verbose_name="T.TM-Score", empty_values=())
     alntmscore = tables.Column(verbose_name="A.TM-Score", empty_values=())
-    lddt = tables.Column(verbose_name="LDDT")
-    pident = tables.Column(verbose_name="% Ident.")
+    lddt = tables.Column(verbose_name="lDDT")
+    pident = tables.Column(verbose_name="pIdent")
 
     def render_cath_query(self, value):
         return format_html(
@@ -110,13 +122,13 @@ class DpcStructScopTable(tables.Table):
     dpc_target = tables.Column(verbose_name="DPC Target")
     q_range = tables.Column(verbose_name="Q.Range")
     t_range = tables.Column(verbose_name="T.Range")
-    qcov = tables.Column(verbose_name="Q.Cov.", empty_values=())
-    tcov = tables.Column(verbose_name="T.Cov.", empty_values=())
+    qcov = tables.Column(verbose_name="Q.Cov", empty_values=())
+    tcov = tables.Column(verbose_name="T.Cov", empty_values=())
     qtmscore = tables.Column(verbose_name="Q.TM-Score", empty_values=())
     ttmscore = tables.Column(verbose_name="T.TM-Score", empty_values=())
     alntmscore = tables.Column(verbose_name="A.TM-Score", empty_values=())
-    lddt = tables.Column(verbose_name="LDDT")
-    pident = tables.Column(verbose_name="% Ident.")
+    lddt = tables.Column(verbose_name="lDDT")
+    pident = tables.Column(verbose_name="pIdent")
 
     def render_scop_query(self, value):
         return format_html(
