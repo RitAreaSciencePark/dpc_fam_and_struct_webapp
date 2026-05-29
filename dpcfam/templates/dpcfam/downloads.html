@@ -1,12 +1,20 @@
 {% extends "index.html" %}
 {% load static %}
 
-{% block title %}DPCFam | Downloads{% endblock %}
+{% block title %}DPCfam | Downloads{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">DPCFam Downloads</h2>
-    <p>The following files are available for download :</p>
+    <h2 class="mb-4">DPCfam Downloads</h2>
+    <div class="mb-4 p-3 p-md-4 rounded-3 border border-primary border-opacity-25 bg-white text-dark shadow-sm">
+        <p class="mb-3 lh-lg">
+         The archives below package the biological data for all 81,384
+         DPCfam metaclusters as compressed bundles (<code>.tar.gz</code>). If you only need
+         the files for a specific metacluster, individual FASTA, MSA,
+         and HMM files are available directly on each metacluster's
+         detail page, under the Downloads tab.
+       </p>
+    </div>
 
     <div class="table-responsive">
         <table class="table table-striped table-bordered align-middle">
@@ -19,31 +27,55 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>DPCFam seed sequences</td>
-                    <td>Seed sequences for each MCID (FASTA format)</td>
+                    <td>DPCfam seed sequences</td>
+                    <td>One FASTA file per metacluster, bundled into a single compressed archive.</td>
                     <td class="text-center">
-                        <a href="{% static 'downloads/dpcfam/dpcfam_mcid_seeds.tar.gz' %}" class="btn btn-sm btn-primary" download>Click me</a>
+                    <a href="{% static 'downloads/dpcfam/dpcfam_mcid_seeds.tar.gz' %}"
+                        class="btn btn-sm btn-primary"
+                        download
+                        aria-label="Download DPCfam seed sequences (tar.gz)">
+                        <i class="fas fa-download me-1"></i> Download
+                    </a>
                     </td>
                 </tr>
                 <tr>
-                    <td>DPCFam MSAs</td>
-                    <td>Multiple Sequence Alignments for each MCID (FASTA format)</td>
+                    <td>DPCfam MSAs</td>
+                    <td>One Multiple Sequence Alignment file per metacluster, bundled into a single compressed archive.</td>
                     <td class="text-center">
-                        <a href="{% static 'downloads/dpcfam/dpcfam_mcid_msas.tar.gz' %}" class="btn btn-sm btn-primary" download>Click me</a>
+                    <a href="{% static 'downloads/dpcfam/dpcfam_mcid_msas.tar.gz' %}"
+                        class="btn btn-sm btn-primary"
+                        download
+                        aria-label="Download DPCfam MSA files (tar.gz)">
+                        <i class="fas fa-download me-1"></i> Download
+                    </a>
                     </td>
                 </tr>
                 <tr>
-                    <td>DPCFam HMMs per MCID</td>
-                    <td>HMM profile for each MCID</td>
+                    <td>DPCfam HMMs per MCID</td>
+                    <td>One profile-HMM file per metacluster, bundled into a single compressed archive. 
+                    Note: 26 metaclusters have no HMM file in the source data (e.g., MC25450).
+                    </td>
                     <td class="text-center">
-                        <a href="{% static 'downloads/dpcfam/dpcfam_mcid_hmms.tar.gz' %}" class="btn btn-sm btn-primary" download>Click me</a>
+                    <a href="{% static 'downloads/dpcfam/dpcfam_mcid_hmms.tar.gz' %}"
+                        class="btn btn-sm btn-primary"
+                        download
+                        aria-label="Download DPCfam HMM profiles (tar.gz)">
+                        <i class="fas fa-download me-1"></i> Download
+                    </a>
                     </td>
                 </tr>
                 <tr>
-                    <td>DPCFam All Metaclusters HMMs</td>
-                    <td>All metacluster HMM profiles (2 .hmm files: standard DPCfam and DPCfamB)</td>
+                    <td>DPCfam All Metaclusters HMMs</td>
+                    <td>
+                     Two comprehensive profile files: one covering the Standard DPCfam subset and one covering DPCfamB, bundled together.
+                     </td>
                     <td class="text-center">
-                        <a href="{% static 'downloads/dpcfam/dpcfam_all_metaclusters_hmms.tar.gz' %}" class="btn btn-sm btn-primary" download>Click me</a>
+                    <a href="{% static 'downloads/dpcfam/dpcfam_all_metaclusters_hmms.tar.gz' %}"
+                        class="btn btn-sm btn-primary"
+                        download
+                        aria-label="Download all DPCfam HMM profiles (tar.gz)">
+                        <i class="fas fa-download me-1"></i> Download
+                    </a>
                     </td>
                 </tr>
             </tbody>

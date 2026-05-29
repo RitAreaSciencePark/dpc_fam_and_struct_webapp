@@ -1,12 +1,22 @@
 {% extends "index.html" %}
 {% load static %}
 
-{% block title %}DPCStruct | Downloads{% endblock %}
+{% block title %}DPCstruct | Downloads{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">DPCStruct Downloads</h2>
-    <p>The following files are available for download :</p>
+    <h2 class="mb-4">DPCstruct Downloads</h2>
+    <div class="mb-4 p-3 p-md-4 rounded-3 border border-primary border-opacity-25 bg-white text-dark shadow-sm">
+        <p class="mb-3 lh-lg">
+         The archives below package the biological data for all 28,246 DPCstruct 
+         metaclusters as compressed bundles (<code>.tar.gz</code>). Each metacluster holds at
+         most two representative elements: the cluster center and the domain with
+         the highest pLDDT confidence score. When both point to the same domain, 
+         only one file is present (e.g. MC2011). If you only need the data for a 
+         specific metacluster, FASTA and PDB files are available directly from 
+         its detail page, under the Downloads tab.
+        </p>
+    </div>
 
     <div class="table-responsive">
         <table class="table table-striped table-bordered align-middle">
@@ -19,17 +29,27 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>DPCStruct Representative PDBs</td>
-                    <td>PDB structure files for representative domains of all DPCStruct metaclusters</td>
+                    <td>DPCstruct Representative PDBs</td>
+                    <td>One zipped PDB folder per metacluster, bundled into a single compressed archive.</td>
                     <td class="text-center">
-                        <a href="{% static 'downloads/dpcstruct/dpcstruct_mcid_pdbs.tar.gz' %}" class="btn btn-sm btn-primary" download>Click me</a>
+                    <a href="{% static 'downloads/dpcstruct/dpcstruct_mcid_pdbs.tar.gz' %}"
+                        class="btn btn-sm btn-primary"
+                        download
+                        aria-label="Download DPCStruct PDB files (tar.gz)">
+                        <i class="fas fa-download me-1"></i> Download
+                    </a>
                     </td>
                 </tr>
                 <tr>
-                    <td>DPCStruct Representative Seed Sequences</td>
-                    <td>FASTA seed sequence files for representative domains of all DPCStruct metaclusters</td>
+                    <td>DPCstruct Representative Seed Sequences</td>
+                    <td>One FASTA file per metacluster, bundled into a single compressed archive.</td>
                     <td class="text-center">
-                        <a href="{% static 'downloads/dpcstruct/dpcstruct_mcid_seeds.tar.gz' %}" class="btn btn-sm btn-primary" download>Click me</a>
+                    <a href="{% static 'downloads/dpcstruct/dpcstruct_mcid_seeds.tar.gz' %}"
+                        class="btn btn-sm btn-primary"
+                        download
+                        aria-label="Download DPCStruct seed sequences (tar.gz)">
+                        <i class="fas fa-download me-1"></i> Download
+                    </a>
                     </td>
                 </tr>
             </tbody>
