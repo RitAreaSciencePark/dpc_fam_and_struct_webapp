@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="DPCexplorer: Interactive exploration of DPCfam and DPCstruct protein domain classifications. Search by Metacluster, Pfam, or UniProt ID.">
+    <meta name="description" content="DPCexplorer: Interactive exploration of DPCfam and DPCstruct protein domain classifications. Search by Metacluster ID, Pfam ID, or UniProt accession number.">
     <title>{% block title %}DPCexplorer{% endblock %}</title>
 
     <!-- Bootstrap 5 CDN -->
@@ -238,9 +238,15 @@
     <header>
         <nav class="navbar navbar-expand-lg container-fluid px-3">
             <!-- Project Title -->
-            <a class="navbar-brand m-0 d-flex flex-column" href="{% url 'home' %}" style="font-family: 'Georgia', serif; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">
-                <span style="letter-spacing: 1px;">DPCexplorer</span>
-                <small style="font-size: 0.8rem; font-weight: normal; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; letter-spacing: normal; color: rgba(255,255,255,0.9);">Interactive exploration of DPCfam and DPCstruct protein domain classifications</small>
+            <a class="navbar-brand m-0 d-flex align-items-center gap-3" href="{% url 'home' %}" style="text-decoration: none;">
+                <!-- Wrapping logo in a white slightly-rounded box -->
+                <div style="background-color: white; padding: 4px; border-radius: 8px;">
+                    <img src="{% static 'images/logo_dpcexplorer_web.png' %}" alt="DPCexplorer Logo" style="height: 55px; object-fit: contain;">
+                </div>
+                <div class="d-flex flex-column" style="font-family: 'Georgia', serif; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">
+                    <span style="letter-spacing: 1px;">DPCexplorer</span>
+                    <small style="font-size: 0.8rem; font-weight: normal; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; letter-spacing: normal; color: rgba(255,255,255,0.9);">Interactive exploration of DPCfam and DPCstruct protein domain classifications</small>
+                </div>
             </a>
 
             <!-- Hamburger toggler for small screens -->
@@ -259,8 +265,8 @@
                             Metaclusters
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/dpcfam/mcs/">DPCFam</a></li>
-                            <li><a class="dropdown-item" href="/dpcstruct/">DPCStruct</a></li>
+                            <li><a class="dropdown-item" href="/dpcfam/mcs/">DPCfam</a></li>
+                            <li><a class="dropdown-item" href="/dpcstruct/">DPCstruct</a></li>
                         </ul>
                     </div>
 
@@ -269,8 +275,8 @@
                             Downloads
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'dpcfam_downloads' %}">DPCFam</a></li>
-                            <li><a class="dropdown-item" href="{% url 'dpcstruct_downloads' %}">DPCStruct</a></li>
+                            <li><a class="dropdown-item" href="{% url 'dpcfam_downloads' %}">DPCfam</a></li>
+                            <li><a class="dropdown-item" href="{% url 'dpcstruct_downloads' %}">DPCstruct</a></li>
                         </ul>
                     </div>
 
@@ -284,10 +290,16 @@
         {% block content %}
         <div class="container">
             <div class="welcome-text">
-                <h2>Explore protein families at the domain level</h2> 
+                <h2>Search and explore protein domain families in your browser</h2> 
                 <p>
-                    Welcome to the DPCexplorer portal. 
-                    Select a database source below to discover detailed information about protein (families) at the domain level: Metaclusters.
+                 Millions of proteins are still
+                 uncharacterised. DPCexplorer gives you instant access to
+                 <strong>109,630 protein domain families</strong>: 
+                 <strong>81,384</strong> sequence-based (<strong>DPCfam</strong>)
+                 and <strong>28,246</strong> structure-based
+                 (<strong>DPCstruct</strong>), automatically identified by the
+                 Density Peak Clustering (<strong>DPC</strong>) algorithm, without manual curation.
+                 <a href="{% url 'about' %}">Learn more &rarr;</a>
                 </p>
             </div>
 
@@ -305,20 +317,22 @@
                 <form action="/search/" method="GET" class="row g-3">
                     
                     <div class="col-12 text-center mb-3">
-                        <label class="form-label fw-bold mb-3 d-block">Select a database source :</label>
+                        <label class="form-label fw-bold mb-3 d-block">
+                         Select a source below and enter a valid identifier to get started.
+                        </label>
                         
                         <div class="d-flex flex-wrap justify-content-center">
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="database" id="db_dpcfam" value="DPCFam" required>
-                                <label class="form-check-label" for="db_dpcfam">DPCFam</label>
+                                <input class="form-check-input" type="radio" name="database" id="db_dpcfam" value="DPCfam" required>
+                                <label class="form-check-label" for="db_dpcfam">DPCfam</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="database" id="db_dpcstruct" value="DPCStruct">
-                                <label class="form-check-label" for="db_dpcstruct">DPCStruct</label>
+                                <input class="form-check-input" type="radio" name="database" id="db_dpcstruct" value="DPCstruct">
+                                <label class="form-check-label" for="db_dpcstruct">DPCstruct</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="database" id="db_pfam" value="PFam">
-                                <label class="form-check-label" for="db_pfam">PFam</label>
+                                <input class="form-check-input" type="radio" name="database" id="db_pfam" value="Pfam">
+                                <label class="form-check-label" for="db_pfam">Pfam</label>
                             </div>
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="database" id="db_uniprot" value="UniProt">
@@ -342,23 +356,59 @@
             </div>
 
             <div class="info-panel text-center">
-                <p class="mb-2"><strong>Search Guide :</strong> Select a database above, then enter a valid ID.</p>
-                <div class="d-flex justify-content-center flex-wrap gap-4">
-                    <p class="mb-1">Examples (Database - Valid ID) : </p>
-                    <span><span class="example-code">DPCFam</span> - MC100,</span>
-                    <span><span class="example-code">DPCStruct</span> - MC7,</span>
-                    <span><span class="example-code">Pfam</span> - PF03243,</span>
-                    <span><span class="example-code">UniProt</span> - P05067</span>
+                <p class="mb-3">
+                 <strong>Search Guide</strong>: select a source above, type a valid identifier, then press Search.
+                </p>
+                <div class="d-flex justify-content-center align-items-center flex-wrap gap-3 mb-3">
+                    <span class="fw-semibold">
+                     Examples (Source, Identifier):
+                    </span>
+                    <div class="d-flex justify-content-center flex-wrap gap-4 mb-2">
+                     <span>(<span class="example-code">DPCfam</span>, MC100)</span>
+                     <span class="text-white-50">|</span>
+                     <span>(<span class="example-code">DPCstruct</span>, MC7)</span>
+                     <span class="text-white-50">|</span>
+                     <span>(<span class="example-code">Pfam</span>, PF03243 or CL0263)</span>
+                     <span class="text-white-50">|</span>
+                     <span>(<span class="example-code">UniProt</span>, P05067)</span>
+                    </div>
+                    <p class="mb-0" style="opacity: 0.8;">
+                     Metacluster IDs are case-sensitive (<code>MC1</code> works,
+                     <code>mc1</code> does not). Pfam accepts both family
+                     (<code>PFxxxxx</code>) and clan (<code>CLxxxx</code>) identifiers.
+                    </p>
                 </div>
+
+                <div class="info-panel text-center mt-3"
+                    style="border-left-color: #ffd84d;">
+                    <p class="mb-0">
+                     <strong><strong>&#127381; 47,002 metaclusters</strong> (33,179 in DPCfam and 13,823 in DPCstruct) are currently labeled <span class="badge bg-danger">UNKNOWN</span>, meaning they carry no known Pfam annotation.
+                     If you have a biological hypothesis about one of them, we want to hear from you. 
+                     <a href="{% url 'about' %}" style="color: var(--accent-color);"> Find out how to contribute &rarr;
+                     </a>
+                    </p>
+                </div>
+
             </div>
         </div>
         {% endblock %}
 
     </main>
 
-    <footer>
-        <div class="container">
-            <p>DPCexplorer browser is a project developed by SISSA and Area Science Park.</p>
+    <footer class="border-top border-secondary mt-5 py-4">
+        <div class="container text-center">
+            <!-- Simplified Main Footer Content -->
+            <div class="d-flex flex-column flex-md-row justify-content-center align-items-center gap-4 text-white-50">
+                <img src="{% static 'images/logo_area_science_park.png' %}" alt="Area Science Park Logo" style="height: 55px; object-fit: contain; filter: brightness(0) invert(1) opacity(0.9);">
+                
+                <div>
+                 <p class="mb-0" style="font-size: 1.05rem;">
+                 DPCexplorer is developed at the Laboratory of Data Engineering (LADE), Area Science Park, in collaboration with SISSA, Trieste, Italy.
+                 </p>
+                </div>
+                
+                <img src="{% static 'images/logo_sissa.png' %}" alt="SISSA Logo" style="height: 55px; object-fit: contain; filter: brightness(0) invert(1) opacity(0.9);">
+            </div>
         </div>
     </footer>
 
