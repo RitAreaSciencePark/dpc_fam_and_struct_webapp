@@ -1,7 +1,7 @@
 ---
 
 <p align="center">
-  <img src="static/images/logo_dpcexplorer.png" alt="DPCexplorer Logo" height="100" />
+  <img src="https://raw.githubusercontent.com/RitAreaSciencePark/dpc_fam_and_struct_webapp/main/static/images/logo_dpcexplorer_web.png" alt="DPCexplorer Logo" height="100" />
 </p>
 
 ---
