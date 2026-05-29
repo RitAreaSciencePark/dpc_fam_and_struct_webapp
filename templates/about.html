@@ -1,23 +1,498 @@
 {% extends "index.html" %}
+{% load static %}
 
 {% block title %}About | DPCexplorer{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="card p-4 shadow-sm text-dark">
-        <h2 class="mb-4" style="color: var(--header-bg);">About the Project</h2>
-        <p>
-            The <strong>DPCFam</strong> and <strong>DPCStruct</strong> Unified Database is a comprehensive resource designed for the exploration and analysis of protein families and structures at the domain level.
-        </p>
-        <p>
-            Our goal is to provide researchers with high-quality data, including Sequence Seed Regions (SSR), Multiple Sequence Alignments (MSA), HMM profiles, and structural representations.
-        </p>
-        
-        <h4 class="mt-4">Credits</h4>
-        <ul>
-            <li><strong>Development Team:</strong> Area Science Park - SISSA</li>
-            <li><strong>Data Sources:</strong> Zenodo, UniRef50, AlphaFoldDB, Pfam</li>
-        </ul>
+<style>
+  .about-section {
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+    border-radius: 12px;
+    padding: 40px 48px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    max-width: 960px;
+    margin: 0 auto 32px auto;
+  }
+  .about-section h2 {
+    color: #0b4f8a;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .about-section h4 {
+    color: #0b4f8a;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 0.6rem;
+  }
+  .about-section p {
+    line-height: 1.75;
+    margin-bottom: 1rem;
+  }
+  .about-section a {
+    color: #0b4f8a;
+    font-weight: 600;
+  }
+  .highlight-box {
+    background-color: #f1f8ff;
+    border-left: 5px solid #0b4f8a;
+    border-radius: 4px;
+    padding: 18px 22px;
+    margin: 24px 0;
+    font-size: 0.97rem;
+    line-height: 1.75;
+  }
+  .highlight-box.call-to-action {
+    border-left-color: #ffd84d;
+    background-color: #fffbee;
+  }
+  .stat-row {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 12px;
+    margin: 24px 0;
+    padding-bottom: 8px;
+  }
+  .stat-card {
+    flex: 1 1 0;
+    min-width: 140px;
+    background: #0b4f8a;
+    color: white;
+    border-radius: 10px;
+    padding: 15px 12px;
+    text-align: center;
+  }
+  .stat-card .stat-number {
+    font-size: 1.7rem;
+    font-weight: 800;
+    display: block;
+  }
+  .stat-card .stat-label {
+    font-size: 0.88rem;
+    opacity: 0.88;
+  }
+  .credits-grid {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 16px;
+    margin-top: 12px;
+    padding-bottom: 8px;
+  }
+  .credit-item {
+    flex: 1 1 0;
+    min-width: 220px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 0.93rem;
+    line-height: 1.6;
+    border: 1px solid #dee2e6;
+  }
+  .credit-item strong {
+    display: block;
+    color: #0b4f8a;
+    margin-bottom: 4px;
+  }
+  .ref-list {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    padding-left: 1.2rem;
+  }
+  .ref-list li {
+    margin-bottom: 6px;
+  }
+  .toc-container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  .toc-nav .nav-link {
+    padding: 0.4rem 0;
+    font-size: 0.95rem;
+    color: #444 !important;
+    border-left: 2px solid transparent;
+    padding-left: 10px;
+    transition: all 0.2s ease;
+  }
+  .toc-nav .nav-link:hover {
+    color: #0b4f8a !important;
+    border-left-color: #0b4f8a;
+    background-color: #f8f9fa;
+  }
+  @media (max-width: 767.98px) {
+    .about-section {
+      padding: 24px 18px;
+    }
+    .stat-card .stat-number {
+      font-size: 1.5rem;
+    }
+  }
+</style>
+
+<div class="container mt-4 mb-5">
+  <div class="row gx-lg-5">
+
+    <!-- TABLE OF CONTENTS SIDEBAR -->
+    <div class="col-lg-3 mb-4 mb-lg-0">
+      <div class="sticky-top" style="top: 2rem; z-index: 1020; max-height: calc(100vh - 4rem); overflow-y: auto;">
+        <div class="text-center mb-4 pb-2">
+          <div style="background: white; padding: 25px; border-radius: 12px; display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%;">
+            <img src="{% static 'images/logo_dpcexplorer_web.png' %}" alt="DPCexplorer Logo" style="max-width: 100%; height: 100px; object-fit: contain;">
+          </div>
+        </div>
+        <div class="toc-container">
+          <h5 class="fw-bold mb-3" style="color: #0b4f8a;">On this page</h5>
+          <ul class="nav flex-column toc-nav">
+            <li class="nav-item"><a class="nav-link" href="#annotation-gap">The Annotation Gap</a></li>
+            <li class="nav-item"><a class="nav-link" href="#domain-classification">Domain Family Classification</a></li>
+            <li class="nav-item"><a class="nav-link" href="#dpc-approach">DPCfam &amp; DPCstruct</a></li>
+            <li class="nav-item"><a class="nav-link" href="#role-of-dpcexplorer">What DPCexplorer Does</a></li>
+            <li class="nav-item"><a class="nav-link" href="#credits">Credits &amp; Funding</a></li>
+            <li class="nav-item"><a class="nav-link" href="#references">References</a></li>
+          </ul>
+        </div>
+      </div>
     </div>
-</div>
+
+    <!-- MAIN CONTENT -->
+    <div class="col-lg-9">
+
+      <!-- SECTION 1: The Problem -->
+      <div class="about-section">
+        <h2 class="mb-1">About DPCexplorer</h2>
+        <p style="color:#555; font-size: 1.05rem; margin-bottom: 2rem;">
+          An interactive platform for exploring DPCfam and DPCstruct
+          protein domain classifications.
+        </p>
+
+        <h4 id="annotation-gap">The Annotation Gap</h4>
+        <p>
+          Every organism, from a simple bacterium to a human being, depends
+          on proteins to carry out the chemical reactions that make life possible. 
+          Understanding what a protein does, in other words, knowing its <em>function</em>, 
+          is therefore one of the most important goals in modern biology.
+          The gold standard for assigning function is direct experimental
+          characterisation. That method is reliable, but it is also slow and
+          expensive, and it cannot keep pace with the speed of discovery.
+        </p>
+        <p>
+          High-throughput sequencing has deposited millions of new sequences
+          every year. <a href="https://www.uniprot.org" target="_blank">UniProtKB</a>
+          now holds over <strong>245&nbsp;million sequences</strong>, yet only a
+          tiny fraction carry experimentally verified annotations. The launch of
+          <a href="https://alphafold.ebi.ac.uk/" target="_blank">AlphaFold2</a>
+          made things even more striking: reliable 3D structure predictions now
+          exist for over 200&nbsp;million proteins. The data is there. The
+          annotations are not.
+        </p>
+
+        <h4 id="domain-classification">Domain Family Classification</h4>
+        <p>
+          One practical shortcut is <em>protein domain family classification</em>.
+          The idea is simple: proteins in the same family share a common
+          evolutionary origin and, usually, a similar function. If one member
+          is well studied, that knowledge can be carefully extended to the rest.
+          This is the logic behind
+          <a href="https://www.ebi.ac.uk/interpro/" target="_blank">Pfam</a>,
+          the most widely used protein family database. Pfam builds families
+          from Multiple Sequence Alignments and profile Hidden Markov Models,
+          which lets it detect distant relatives even when raw sequence
+          similarity is low.
+        </p>
+        <p>
+          This approach works well. Expert curation improves annotation quality,
+          and recent deep learning additions push coverage further still. But
+          there is a fundamental limit: <strong>quality does not scale with
+          quantity.</strong> Expert curation is inherently limited by human bandwidth.
+          Deep learning models, however powerful, are probabilistic and always predict
+          based on their training data.
+        </p>
+
+        <div class="highlight-box">
+          <strong>The core problem.</strong> 
+          Only a tiny fraction of known proteins have been experimentally characterised.
+          The vast majority exist only as sequences or predicted structures in databases: proteins
+          without confirmed functions, without clear biological roles, and often without an assigned family.
+        </div>
+      </div>
+
+      <!-- SECTION 2: The DPC Approach -->
+      <div class="about-section">
+        <h4 id="dpc-approach" style="margin-top: 0;">
+          A fully unsupervised alternative: DPCfam and DPCstruct
+        </h4>
+        <p>
+          DPCfam and DPCstruct take a different approach. Instead of starting
+          from curated families or training on known annotations, they start
+          from raw pairwise similarity between proteins and let the data
+          organise itself.
+        </p>
+        <p>
+          For sequences, this means
+          <a href="https://blast.ncbi.nlm.nih.gov/Blast.cgi" target="_blank">BLASTp</a>
+          all-versus-all comparisons across 23&nbsp;million UniRef50 sequences,
+          producing roughly 55&nbsp;billion alignments. For structures, the same
+          idea is applied to 15&nbsp;million AlphaFold2-predicted structures
+          using
+          <a href="https://github.com/steineggerlab/foldseek" target="_blank">Foldseek</a>
+          and MMseqs2, which translate 3D shapes into a structural alphabet for
+          large-scale comparison.
+        </p>
+        <p>
+          The clustering itself is handled by the <strong>Density Peak
+          Clustering (DPC)</strong> algorithm (Rodriguez &amp; Laio, 2014).
+          DPC identifies cluster centres as points with high local density
+          and high isolation from other dense regions, <em> no prior assumption
+          about the number or shape of clusters needed </em>. A two-scale design
+          first segments individual proteins into domain-like units (primary
+          clusters), then groups those units globally into evolutionary
+          families called <strong>metaclusters</strong>.
+        </p>
+        <p>
+          Because no annotation database was consulted during clustering,
+          the resulting metaclusters are fully independent hypotheses about
+          evolutionary relationships. Validation results are strong:
+          DPCfam recovers <strong>81&thinsp;%</strong> of known Pfam families;
+          DPCstruct recovers <strong>91&thinsp;%</strong> of SCOP folds and
+          <strong>83&thinsp;%</strong> of CATH folds. The average intra-cluster
+          sequence identity in DPCstruct is only 34.5&thinsp;%, well within the
+          twilight zone where standard sequence-based tools become unreliable. 
+          Structure-based clustering reveals evolutionary relationships that 
+          sequence alone cannot detect.
+        </p>
+
+        <div class="stat-row">
+          <div class="stat-card">
+            <span class="stat-number">81,384</span>
+            <span class="stat-label">DPCfam metaclusters<br>(sequence-based)</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number">28,246</span>
+            <span class="stat-label">DPCstruct metaclusters<br>(structure-based)</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number">~40&thinsp;%</span>
+            <span class="stat-label">DPCfam metaclusters<br>with no Pfam match</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number">~49&thinsp;%</span>
+            <span class="stat-label">DPCstruct metaclusters<br>with no Pfam match</span>
+          </div>
+        </div>
+
+        <p>
+         A significant portion of metaclusters in both datasets carry 
+         <strong>no known Pfam annotation</strong>: exactly <strong>47,002</strong> metaclusters (<strong>33,179</strong> in DPCfam and <strong>13,823</strong> in DPCstruct). 
+         These are labeled <span class="badge" style="background-color:#dc3545; color:white;">UNKNOWN</span>
+          in DPCexplorer. They are not errors or noise; rather, they are structurally
+          and sequentially coherent protein families that simply have not been
+          named yet. Some may represent novel folds, while others may be ancient
+          families overlooked by curation-based approaches. The evidence for
+          their biological relevance is concrete: 63 DPCfam UNKNOWN
+          metaclusters were adopted as official new entries in
+          <strong>Pfam release 35.0</strong>.
+        </p>
+      </div>
+
+      <!-- SECTION 3: What DPCexplorer does -->
+      <div class="about-section">
+        <h4 id="role-of-dpcexplorer" style="margin-top: 0;">
+          What DPCexplorer does
+        </h4>
+        <p>
+          Both datasets were published on
+          <a href="https://zenodo.org" target="_blank">Zenodo</a> in line
+          with FAIR data principles. However, exploring them directly required
+          downloading and parsing gigabyte-scale archives, including an
+          <strong>81&thinsp;GB XML file</strong> for DPCfam. This presents a significant
+          barrier for most researchers.
+        </p>
+        <p>
+          <strong>DPCexplorer removes that barrier.</strong> The raw archives
+          were cleaned and preprocessed on the
+          <a href="https://orfeo-doc.areasciencepark.it/" target="_blank">ORFEO HPC cluster</a>,
+          then loaded into a <strong>PostgreSQL</strong> database optimized for
+          fast searches across millions of rows. A <strong>Django 6.0.1</strong>
+          backend serves this data through a responsive web interface, with no
+          login required.
+        </p>
+
+        <div class="highlight-box">
+          <strong>Four ways to query the database:</strong><br>
+          &bull;&ensp;<strong>DPCfam MCID</strong>
+            (e.g., <code>MC1</code>): opens a sequence-based metacluster page.<br>
+          &bull;&ensp;<strong>DPCstruct MCID</strong>
+            (e.g., <code>MC5</code>): opens a structure-based metacluster page.<br>
+          &bull;&ensp;<strong>Pfam ID</strong>
+            (e.g., <code>PF02990</code> or <code>CL0192</code>): displays every
+            metacluster in both datasets that overlaps with that Pfam family or clan.<br>
+          &bull;&ensp;<strong>UniProt accession</strong>
+            (e.g., <code>A0A182N2I3</code>): visualises all DPCfam, DPCstruct,
+            and Pfam domains mapped onto the full protein sequence as a
+            domain-architecture diagram.
+        </div>
+
+        <p>
+          Each metacluster detail page is organized into four tabs.
+          <strong>Summary</strong> displays key biological properties and Pfam
+          annotations. <strong>Sequences</strong> lists the seed domains with
+          UniProt links, paginated ten rows at a time.
+          <strong>3D Viewer</strong>: for DPCstruct, it renders
+          AlphaFold2-predicted structures directly in the browser via
+          <a href="https://molstar.org/" target="_blank">PDBe-Mol*</a>,
+          colored by per-residue pLDDT confidence; for DPCfam, it links to
+          the representative entry in
+          <a href="https://alphafold.ebi.ac.uk/" target="_blank">AlphaFoldDB</a>
+          where available. <strong>Downloads</strong> provides one-click access
+          to FASTA seed sequences, MSA profiles, and HMM models for DPCfam, as well as
+          representative FASTA sequences and zipped PDB files for DPCstruct.
+        </p>
+        <p>
+          All preprocessed files used to build this database are openly
+          available on Zenodo
+          (DOI:&nbsp;<a href="https://doi.org/10.5281/zenodo.20159208" target="_blank">10.5281/zenodo.20159208</a>),
+          so any researcher can reproduce a running instance of DPCexplorer
+          without re-running the heavy HPC preprocessing steps.
+        </p>
+
+        <div class="highlight-box call-to-action">
+          <strong>&#128270; Do you have a hypothesis about an UNKNOWN
+          metacluster?</strong><br>
+          Roughly half the metaclusters in DPCexplorer are unnamed in any
+          existing database. They represent coherent protein families waiting to be
+          identified. If you recognize a pattern, from structural biology,
+          biochemistry, evolutionary genomics, or metagenomics, we want to
+          hear from you. Open an issue on our
+          <a href="https://github.com/RitAreaSciencePark/dpc_fam_and_struct_webapp/issues"
+             target="_blank">GitHub repository</a>
+          or contact us directly. Every hypothesis matters.
+        </div>
+      </div>
+
+      <!-- SECTION 4: Credits -->
+      <div class="about-section">
+        <h4 id="credits" style="margin-top: 0;">Credits &amp; Funding</h4>
+
+        <div class="credits-grid">
+          <div class="credit-item">
+            <strong>Development &amp; Data Curation</strong>
+            Emmanuel Nyandu Kagarabi<br>
+            <em>Master in Data Management and Curation (MDMC), SISSA</em><br>
+            <a href="https://emmanuelnyandukagarabi.github.io/" target="_blank">Personal website</a>
+          </div>
+          <div class="credit-item">
+            <strong>Supervision</strong>
+            Dr. Valerio Piomponi<br>
+            Dr. Elaheh Saadat<br>
+            <em>Laboratory of Data Engineering (LADE),<br>
+            Area Science Park, Trieste</em>
+          </div>
+          <div class="credit-item">
+            <strong>Source Datasets</strong>
+            DPCfam:
+            <a href="https://doi.org/10.5281/zenodo.6900559" target="_blank">zenodo.org/records/6900559</a><br>
+            DPCstruct:
+            <a href="https://doi.org/10.5281/zenodo.13334296" target="_blank">zenodo.org/records/13334296</a><br>
+            Preprocessed deposit:
+            <a href="https://doi.org/10.5281/zenodo.20159208" target="_blank">zenodo.org/records/20159208</a>
+          </div>
+          <div class="credit-item">
+            <strong>Funding</strong>
+            European Union - NextGenerationEU<br>
+            <a href="https://nffa-di.it/" target="_blank">NFFA-DI</a>
+            (cod. IR0000015)<br>
+            <a href="https://educatingfuturecitizens.com/" target="_blank">EFC</a>
+            (cod. SSU2024-00002)
+          </div>
+        </div>
+
+        <h4 id="references">References</h4>
+        <p class="text-muted small mb-3">
+          If you use DPCexplorer or the associated datasets, please cite:
+        </p>
+
+        <div class="fw-bold mb-2 mt-4 text-dark">DPCexplorer &amp; Preprocessed Datasets</div>
+        <ol class="ref-list" start="1">
+          <li>
+            Nyandu Kagarabi, E. (2026).
+            <em>Web Application for DPCfam and DPCstruct Data Exploration.</em>
+            Master's thesis, MDMC, SISSA. Supervised by Dr. V. Piomponi &amp;
+            Dr. E. Saadat. [Zenodo link pending review]
+          </li>
+          <li class="mb-4">
+            Nyandu Kagarabi, E., Piomponi, V., &amp; Saadat, E. (2026).
+            <em>Preprocessed Datasets for Interactive Exploration of DPCfam
+            and DPCstruct Protein Domain Classifications (1.0.0)</em> [Data set].
+            Zenodo.
+            <a href="https://doi.org/10.5281/zenodo.20159208" target="_blank">
+              DOI: 10.5281/zenodo.20159208</a>
+          </li>
+        </ol>
+
+        <div class="fw-bold mb-2 mt-3 text-dark">DPCfam (Sequence-Based Metaclusters)</div>
+        <ol class="ref-list" start="3">
+          <li>
+            Russo ET, Barone F, Bateman A, Cozzini S, Punta M, Laio A.
+            <em>DPCfam: Unsupervised protein family classification by density
+            peak clustering of large sequence datasets.</em>
+            PLOS Computational Biology, 18(10), e1010610, 2022.
+            <a href="https://doi.org/10.1371/journal.pcbi.1010610" target="_blank">
+              DOI: 10.1371/journal.pcbi.1010610</a>
+          </li>
+          <li class="mb-4">
+            Russo, E. T., &amp; Barone, F. (2022).
+            <em>Metaclusters by DPCfam clustering of UniRef50 v 2017_07</em>
+            [Data set]. Zenodo.
+            <a href="https://doi.org/10.5281/zenodo.6900559" target="_blank">
+              DOI: 10.5281/zenodo.6900559</a>
+          </li>
+        </ol>
+
+        <div class="fw-bold mb-2 mt-3 text-dark">DPCstruct (Structure-Based Metaclusters)</div>
+        <ol class="ref-list" start="5">
+          <li>
+            Barone F, Laio A, Punta M, Cozzini S, Ansuini A, Cazzaniga A.
+            <em>Unsupervised domain classification of AlphaFold2-predicted
+            protein structures.</em>
+            PRX Life, 3(2), 023009, 2025.
+            <a href="https://doi.org/10.1103/PRXLife.3.023009" target="_blank">
+              DOI: 10.1103/PRXLife.3.023009</a>
+          </li>
+          <li class="mb-4">
+            Barone, F., Laio, A., Punta, M., Cozzini, S., Ansuini, A.,
+            &amp; Cazzaniga, A. (2024).
+            <em>DPCstruct classification of AlphaFold2-predicted protein
+            structures</em> [Data set]. Zenodo.
+            <a href="https://doi.org/10.5281/zenodo.13334296" target="_blank">
+              DOI: 10.5281/zenodo.13334296</a>
+          </li>
+        </ol>
+
+        <div class="fw-bold mb-2 mt-3 text-dark">Algorithm</div>
+        <ol class="ref-list" start="7">
+          <li>
+            Rodriguez A, Laio A.
+            <em>Clustering by fast search and find of density peaks.</em>
+            Science, 344(6191), 1492&ndash;1496, 2014.
+            <a href="https://doi.org/10.1126/science.1242072" target="_blank">
+              DOI: 10.1126/science.1242072</a>
+          </li>
+        </ol>
+
+        <p style="margin-top: 1.5rem; font-size: 0.9rem; color: #666;">
+          Source code:
+          <a href="https://github.com/RitAreaSciencePark/dpc_fam_and_struct_webapp"
+             target="_blank">
+            github.com/RitAreaSciencePark/dpc_fam_and_struct_webapp
+          </a>
+          &nbsp;(MIT License).
+        </p>
+      </div>
+
+    </div><!-- end col-lg-9 -->
+  </div><!-- end row -->
+</div><!-- end container -->
 {% endblock %}
