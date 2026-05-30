@@ -55,9 +55,13 @@ an embedded **3D molecular viewer** powered by PDBe-Molstar.
 
 Identify your exact use case below to run or update the local application instance:
 
+---
+
 ### Scenario 1: First-Time Setup (New User)
 
-Follow all steps (**1 to 7**) in order, as outlined in the **Table of Contents** below . This will clone the repository, install dependencies, download the datasets automatically, set up the database, and get the application running.
+Follow all steps (**1 to 7**) in order, as outlined in the **[Table of Contents](#table-of-contents)** below . This will clone the repository, install dependencies, download the datasets automatically, set up the database, and get the application running.
+
+---
 
 ### Scenario 2: Rerunning the App (Daily Use) 
 
@@ -76,6 +80,9 @@ python3 manage.py runserver
 
 Then visit `http://127.0.0.1:8000/` in your browser. You are already familiar with the rest.
 
+> 💬 Should you have feedback for improving DPCexplorer, or a biological insight about an **UNKNOWN** metacluster, we genuinely can't wait to hear from you. Jump to **[Hints for Common Situations](#hints-for-common-situations)** to get in touch.
+
+---
 
 ### Scenario 3: Syncing Changes (Returning User Updates)
 
@@ -92,6 +99,8 @@ cd dpc_fam_and_struct_webapp
 ```bash
 git pull
 ```
+
+> ⚠️ Should you experience any issue after pulling the latest changes, please check out our **[Hints for Common Situations](#hints-for-common-situations)** section before going further.
 
 3. Activate your virtual environment: 
 
@@ -132,6 +141,7 @@ Then visit `http://127.0.0.1:8000/` in your browser.
  ```bash
  sudo service postgresql stop
  ```
+
 
 ---
 
@@ -391,6 +401,8 @@ sudo service postgresql stop
 If you find a bug or have feedback, please open an issue on our GitHub page. We are actively developing DPCexplorer, and many more features are coming soon!
 
 > Thank you for trying out **DPCexplorer**, your feedback is greatly appreciated!
+
+> Should you run into a problem at any point, or have a hypothesis about an **UNKNOWN** metacluster, check out our **[Hints for Common Situations](#hints-for-common-situations)** section, it is the right place to start.
 
 ---
 
