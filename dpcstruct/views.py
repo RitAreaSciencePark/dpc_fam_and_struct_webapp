@@ -11,6 +11,7 @@ from django.db.models import IntegerField
 from .models import DpcStructMcsProperty, DpcStructCath, DpcStructScop
 from .tables import DpcStructMcsPropertyTable, DpcStructCathTable, DpcStructScopTable
 from .filters import DpcStructMcsPropertyFilter, DpcStructCathFilter, DpcStructScopFilter
+import django_tables2 as tables
 
 
 class DpcStructMetaclustersListView(TemplateView):
@@ -51,7 +52,6 @@ class DpcStructMetaclustersListView(TemplateView):
                 queryset = queryset.filter(mc_id__iexact=search_mcid)
             
             # Create table
-            import django_tables2 as tables
             table = DpcStructMcsPropertyTable(queryset)
             table.paginate(page=self.request.GET.get('page', 1), per_page=10)
             context['table'] = table
@@ -67,7 +67,6 @@ class DpcStructMetaclustersListView(TemplateView):
                 queryset = queryset.filter(cath_query__iexact=search_fold)
             
             # Create table
-            import django_tables2 as tables
             table = DpcStructCathTable(queryset)
             table.paginate(page=self.request.GET.get('page', 1), per_page=10)
             context['table'] = table
@@ -83,7 +82,6 @@ class DpcStructMetaclustersListView(TemplateView):
                 queryset = queryset.filter(scop_query__iexact=search_fold)
             
             # Create table
-            import django_tables2 as tables
             table = DpcStructScopTable(queryset)
             table.paginate(page=self.request.GET.get('page', 1), per_page=10)
             context['table'] = table
