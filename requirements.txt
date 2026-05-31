@@ -1,8 +1,21 @@
-asgiref==3.11.0
+# Web framework
 Django==6.0.1
-django-filter==25.2
-django-tables2==2.8.0
+
+# PostgreSQL adapter for Python
 psycopg2-binary==2.9.11
-python-decouple==3.8 # for managing environment variables
-sqlparse==0.5.5
+
+# Search/filter forms for querysets
+django-filter==25.2
+
+# Paginated, sortable HTML tables from querysets
+django-tables2==2.8.0
+
+# Serves static files directly from Django
 whitenoise==6.11.0
+
+# Reads secrets from .env file
+python-decouple==3.8
+
+# Internal Django and DB utilities
+asgiref==3.11.0
+sqlparse==0.5.3
