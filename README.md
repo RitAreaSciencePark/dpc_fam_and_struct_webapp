@@ -8,9 +8,11 @@
 
 # DPCexplorer: A Django Web Application for Interactive Exploration of DPCfam and DPCstruct Protein Domain Classifications
 
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/emmanuelnyandukagarabi/dpc_fam_and_struct_webapp)
 ![Status](https://img.shields.io/badge/Status-Under%20Development-yellow?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/emmanuelnyandukagarabi/dpc_fam_and_struct_webapp)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20159208.svg)](https://doi.org/10.5281/zenodo.20159208)
+[![CFF](https://img.shields.io/badge/Citation-CITATION.cff-blue?style=flat-square)](CITATION.cff)
 
 Proteins carry out almost every function inside a living cell, but
 scientists can only experimentally characterize a tiny fraction of
@@ -502,8 +504,19 @@ If you use this project, the web application, or the associated datasets, please
 
 #### 1. Project & Preprocessed Datasets
 
-* **Web Application & Master Thesis:** Nyandu Kagarabi, E. (2026). *Web Application for DPCfam and DPCstruct Data Exploration*. Master's thesis, Master in Data Management and Curation, SISSA. Supervised by Dr. Valerio Piomponi & Dr. Elaheh Saadat. [Zenodo Link Pending Review]
-* **Preprocessed Datasets:** Nyandu Kagarabi, E., Piomponi, V., & Saadat, E. (2026). Preprocessed Datasets for Interactive Exploration of DPCfam and DPCstruct Protein Domain Classifications (1.0.0) [Data set]. Zenodo. [https://doi.org/10.5281/zenodo.20159208](https://doi.org/10.5281/zenodo.20159208)
+* **Web Application & Master Thesis:**
+  Nyandu Kagarabi, E. (ORCID: [0009-0000-4837-4712](https://orcid.org/0009-0000-4837-4712)) (2026).
+  *Web Application for DPCfam and DPCstruct Data Exploration.*
+  Master's thesis, MDMC, SISSA. Supervised by
+  Dr. V. Piomponi (ORCID: [0000-0003-0433-8319](https://orcid.org/0000-0003-0433-8319)) &
+  Dr. E. Saadat (ORCID: [0009-0004-3234-3072](https://orcid.org/0009-0004-3234-3072)).
+  [Zenodo Link Pending Review]
+
+* **Preprocessed Datasets:**
+  Nyandu Kagarabi, E., Piomponi, V., & Saadat, E. (2026).
+  *Preprocessed Datasets for Interactive Exploration of DPCfam
+  and DPCstruct Protein Domain Classifications (1.0.0)* [Data set]. Zenodo.
+  [https://doi.org/10.5281/zenodo.20159208](https://doi.org/10.5281/zenodo.20159208)
 
 #### 2. DPCfam (Sequence-Based Metaclusters)
 
