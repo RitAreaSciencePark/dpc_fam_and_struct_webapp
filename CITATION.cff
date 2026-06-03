@@ -1,0 +1,195 @@
+cff-version: 1.2.0
+
+message: >-
+  If you use DPCexplorer in your research, please cite both
+  the software (this repository) and the associated thesis
+  using the metadata below.
+
+type: software
+
+title: >-
+  DPCexplorer: A Django Web Application for Interactive Exploration
+  of DPCfam and DPCstruct Protein Domain Classifications
+
+version: "1.0.0"
+
+date-released: "2026-06-03"
+
+abstract: >-
+  DPCexplorer is an open-source Django web application that provides
+  interactive access to two large, unsupervised protein domain family
+  classifications: DPCfam (81,384 sequence-based metaclusters derived
+  from UniRef50 via BLASTp and Density Peak Clustering) and DPCstruct
+  (28,246 structure-based metaclusters derived from the AlphaFold
+  Database via Foldseek and Density Peak Clustering). The platform
+  supports four query types (DPCfam MCID, DPCstruct MCID, Pfam ID,
+  UniProt accession), serves downloadable biological files (FASTA,
+  MSA, HMM, PDB), and embeds an interactive 3D molecular viewer
+  powered by PDBe-Molstar. It is backed by a PostgreSQL database
+  with B-Tree, GIN trigram, and functional indexes for fast lookup
+  across millions of protein assignments.
+
+license: MIT
+
+url: "https://dpcexplorer.areasciencepark.it"
+
+repository-code: "https://github.com/RitAreaSciencePark/dpc_fam_and_struct_webapp"
+
+keywords:
+  - protein domain classification
+  - Density Peak Clustering
+  - DPCfam
+  - DPCstruct
+  - AlphaFold2
+  - Pfam
+  - Django
+  - PostgreSQL
+  - bioinformatics
+  - FAIR data
+  - Mol*
+  - web application
+
+authors:
+  - family-names: "Nyandu Kagarabi"
+    given-names: "Emmanuel"
+    email: "emmanuelnk@aims.ac.za"
+    orcid: "https://orcid.org/0009-0000-4837-4712"
+    affiliation: >-
+      SISSA - Scuola Internazionale Superiore di Studi Avanzati;
+      Laboratory of Data Engineering (LADE), Area Science Park,
+      Trieste, Italy
+
+  - family-names: "Piomponi"
+    given-names: "Valerio"
+    email: "valerio.piomponi@areasciencepark.it"
+    orcid: "https://orcid.org/0000-0003-0433-8319"
+    affiliation: >-
+      Laboratory of Data Engineering (LADE), Area Science Park,
+      Trieste, Italy
+
+  - family-names: "Saadat"
+    given-names: "Elaheh"
+    email: "elaheh.saadat@areasciencepark.it"
+    orcid: "https://orcid.org/0009-0004-3234-3072"
+    affiliation: >-
+      Laboratory of Data Engineering (LADE), Area Science Park,
+      Trieste, Italy
+
+contact:
+  - family-names: "Nyandu Kagarabi"
+    given-names: "Emmanuel"
+    email: "emmanuelnk@aims.ac.za"
+    orcid: "https://orcid.org/0009-0000-4837-4712"
+
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.20159208"
+    description: >-
+      Zenodo deposit of the preprocessed datasets (CSV, FASTA, PDB)
+      used to populate the DPCexplorer PostgreSQL database.
+
+preferred-citation:
+  type: thesis
+  title: >-
+    Web Application for DPCfam and DPCstruct Data Exploration
+  authors:
+    - family-names: "Nyandu Kagarabi"
+      given-names: "Emmanuel"
+      email: "emmanuelnk@aims.ac.za"
+      orcid: "https://orcid.org/0009-0000-4837-4712"
+  institution:
+    name: >-
+      SISSA - Scuola Internazionale Superiore di Studi Avanzati /
+      Area Science Park, Trieste, Italy
+  year: 2026
+  url: "https://github.com/RitAreaSciencePark/dpc_fam_and_struct_webapp"
+  notes: >-
+    Master in Data Management and Curation (MDMC) thesis.
+    Supervised by Dr. Valerio Piomponi and Dr. Elaheh Saadat.
+    Funded by the European Union NextGenerationEU projects
+    NFFA-DI (cod. IR0000015) and EFC (cod. SSU2024-00002).
+
+# ------------------------------------------------------------------
+# references: the upstream datasets and foundational methods that
+# DPCexplorer depends on. 
+# ------------------------------------------------------------------
+references:
+  - type: article
+    title: >-
+      DPCfam: Unsupervised protein family classification by density
+      peak clustering of large sequence datasets
+    authors:
+      - family-names: "Russo"
+        given-names: "Elena Tea"
+      - family-names: "Barone"
+        given-names: "Federico"
+      - family-names: "Bateman"
+        given-names: "Alex"
+      - family-names: "Cozzini"
+        given-names: "Stefano"
+      - family-names: "Punta"
+        given-names: "Marco"
+      - family-names: "Laio"
+        given-names: "Alessandro"
+    journal: "PLOS Computational Biology"
+    volume: "18"
+    issue: "10"
+    year: 2022
+    doi: "10.1371/journal.pcbi.1010610"
+
+  - type: article
+    title: >-
+      Unsupervised domain classification of AlphaFold2-predicted
+      protein structures
+    authors:
+      - family-names: "Barone"
+        given-names: "Federico"
+      - family-names: "Laio"
+        given-names: "Alessandro"
+      - family-names: "Punta"
+        given-names: "Marco"
+      - family-names: "Cozzini"
+        given-names: "Stefano"
+      - family-names: "Ansuini"
+        given-names: "Alessio"
+      - family-names: "Cazzaniga"
+        given-names: "Alberto"
+    journal: "PRX Life"
+    volume: "3"
+    issue: "2"
+    start: 23009
+    year: 2025
+    doi: "10.1103/PRXLife.3.023009"
+
+  - type: article
+    title: "Clustering by fast search and find of density peaks"
+    authors:
+      - family-names: "Rodriguez"
+        given-names: "Alex"
+      - family-names: "Laio"
+        given-names: "Alessandro"
+    journal: "Science"
+    volume: "344"
+    issue: "6191"
+    start: 1492
+    end: 1496
+    year: 2014
+    doi: "10.1126/science.1242072"
+
+  - type: software
+    title: >-
+      Preprocessed Datasets for Interactive Exploration of
+      DPCfam and DPCstruct Protein Domain Classifications
+    authors:
+      - family-names: "Nyandu Kagarabi"
+        given-names: "Emmanuel"
+        orcid: "https://orcid.org/0009-0000-4837-4712"
+      - family-names: "Piomponi"
+        given-names: "Valerio"
+        orcid: "https://orcid.org/0000-0003-0433-8319"
+      - family-names: "Saadat"
+        given-names: "Elaheh"
+        orcid: "https://orcid.org/0009-0004-3234-3072"
+    year: 2026
+    doi: "10.5281/zenodo.20159208"
+    url: "https://zenodo.org/records/20159208"
