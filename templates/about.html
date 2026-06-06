@@ -192,9 +192,9 @@
         <h4 id="domain-classification">Domain Family Classification</h4>
         <p>
           One practical shortcut is <em>protein domain family classification</em>.
-          The idea is simple: proteins in the same family share a common
-          evolutionary origin and, usually, a similar function. If one member
-          is well studied, that knowledge can be carefully extended to the rest.
+          The idea is simple: proteins (or protein domains) that belong to the same family
+          typically share the same evolutionary origin and, usually, a similar function.
+          If one member is well studied, that knowledge can be carefully extended to the rest.
           This is the logic behind
           <a href="https://www.ebi.ac.uk/interpro/" target="_blank">Pfam</a>,
           the most widely used protein family database. Pfam builds families
@@ -204,11 +204,16 @@
         </p>
         <p>
           This approach works well. Expert curation improves annotation quality,
-          and recent deep learning additions push coverage further still. But
-          there is a fundamental limit: <strong>quality does not scale with
-          quantity.</strong> Expert curation is inherently limited by human bandwidth.
-          Deep learning models, however powerful, are probabilistic and always predict
-          based on their training data.
+          and recent deep learning additions push coverage further still.
+          <strong>Pfam-N</strong>, for instance, uses transformer-based models
+          and convolutional neural networks to detect distant homologs that
+          classical methods had missed, successfully increasing UniProtKB
+          coverage by <strong>8.8%</strong>. But there is a fundamental limit:
+          <strong>quality does not scale with quantity.</strong> Expert curation
+          is inherently limited by human bandwidth. Deep learning models,
+          however powerful, are bounded by their training data. A genuinely
+          novel family, one with no known relatives, generally stays invisible
+          to both.
         </p>
 
         <div class="highlight-box">
@@ -254,15 +259,31 @@
         <p>
           Because no annotation database was consulted during clustering,
           the resulting metaclusters are fully independent hypotheses about
-          evolutionary relationships. Validation results are strong:
-          DPCfam recovers <strong>81&thinsp;%</strong> of known Pfam families;
-          DPCstruct recovers <strong>91&thinsp;%</strong> of SCOP folds and
-          <strong>83&thinsp;%</strong> of CATH folds. The average intra-cluster
-          sequence identity in DPCstruct is only 34.5&thinsp;%, well within the
-          twilight zone where standard sequence-based tools become unreliable. 
-          Structure-based clustering reveals evolutionary relationships that 
-          sequence alone cannot detect.
+          evolutionary relationships. To ensure that the outputs of DPCfam and DPCstruct were
+          biologically meaningful,  these outputs were compared against expert-curated databases, 
+          including <strong>Pfam, ECOD, SCOP, and CATH</strong>.
         </p>
+        <p>
+         On one side, DPCfam was found to recover approximately <strong>81%</strong> of medium-to-large Pfam families and
+         <strong>72%</strong> of ECOD families, demonstrating a high degree of correspondence with established sequence classifications. 
+         More importantly, the pipeline identified <strong>14,190</strong> metaclusters in the standard subset 
+         and <strong>18,989</strong> in the DPCfamB subset that completely lack Pfam mappings, representing <em>putative novel protein families</em>.
+        </p>
+        <p>
+         On the other side, DPCstruct was also compared with Pfam at the clan level to evaluate 
+         its consistency with sequence-based annotations; the analysis showed that <strong>70%</strong> of the 
+         <strong>14,423</strong> metaclusters with available Pfam labels achieved a perfect consistency score of 1,
+         meaning all members shared the same Pfam annotation. Additionally, DPCstruct successfully 
+         recovered <strong>91%</strong> of SCOP folds and <strong>83%</strong> of CATH folds, confirming its effectiveness in 
+         identifying well-characterized structural domains. Furthermore, <strong>24%</strong> of DPCstruct metaclusters
+         show no significant similarity to any known protein families or folds, pointing toward a massive 
+         pool of <em>potential novel structural folds</em>.  The average intra-cluster sequence identity is only
+          <strong>34.5&thinsp;%</strong>, placing most metaclusters well within the
+          <em>twilight zone</em> where standard sequence-based tools become unreliable.
+          Structure-based clustering reveals evolutionary relationships that sequence
+          alone cannot detect.
+        </p>
+
 
         <div class="stat-row">
           <div class="stat-card">
@@ -284,8 +305,9 @@
         </div>
 
         <p>
-         A significant portion of metaclusters in both datasets carry 
-         <strong>no known Pfam annotation</strong>: exactly <strong>47,002</strong> metaclusters (<strong>33,179</strong> in DPCfam and <strong>13,823</strong> in DPCstruct). 
+         In conclusion, a significant portion of metaclusters in both datasets carry 
+         <strong>no known Pfam annotation</strong>: specifically, <strong>47,002</strong> metaclusters 
+         (<strong>33,179</strong> in DPCfam and <strong>13,823</strong> in DPCstruct). 
          These are labeled <span class="badge" style="background-color:#dc3545; color:white;">UNKNOWN</span>
           in DPCexplorer. They are not errors or noise; rather, they are structurally
           and sequentially coherent protein families that simply have not been
