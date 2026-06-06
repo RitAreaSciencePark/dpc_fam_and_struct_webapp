@@ -9,7 +9,7 @@
 # DPCexplorer: A Django Web Application for Interactive Exploration of DPCfam and DPCstruct Protein Domain Classifications
 
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/emmanuelnyandukagarabi/dpc_fam_and_struct_webapp)
-![Status](https://img.shields.io/badge/Status-Under%20Development-yellow?style=flat-square)
+![Status](https://img.shields.io/badge/Status-Stable%20v1.0.0-brightgreen?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20159208.svg)](https://doi.org/10.5281/zenodo.20159208)
 [![CFF](https://img.shields.io/badge/Citation-CITATION.cff-blue?style=flat-square)](CITATION.cff)
@@ -17,9 +17,19 @@
 Proteins carry out almost every function inside a living cell, but
 scientists can only experimentally characterize a tiny fraction of
 the millions known today. One powerful shortcut is to group proteins
-into **families**: members of the same family usually share the same
-evolutionary origin and, therefore, a similar function. If one member
+into **families**: members of the same family typically share the same
+evolutionary origin and, usually, a similar function. If one member
 is well studied, that knowledge can be carefully transferred to the rest.
+
+**Pfam** remains the most widely used protein family database, building
+families from Multiple Sequence Alignments and profile Hidden Markov Models.
+Recent advances like **Pfam-N**, which uses transformer-based models and
+convolutional neural networks, have pushed coverage further by detecting
+remote homologs that classical methods missed, increasing UniProtKB coverage
+by **8.8%**. Yet a fundamental tension remains: expert curation is limited
+by human bandwidth, and machine learning models are bounded by their training
+data. A genuinely novel family, one with no known relatives, generally stays invisible
+to both.
 
 **DPCexplorer** makes two large, publicly available protein-family
 datasets easy to explore, with no programming required. Both datasets were
@@ -32,14 +42,29 @@ without any manual curation.
 | **DPCfam** | ~23 M sequences (UniRef50) | 81,384 | [zenodo.org/records/6900559](https://doi.org/10.5281/zenodo.6900559) | [zenodo.org/records/20159208](https://doi.org/10.5281/zenodo.20159208) |
 | **DPCstruct** | ~15 M structures (AlphaFoldDB) | 28,246 | [zenodo.org/records/13334296](https://doi.org/10.5281/zenodo.13334296) | [zenodo.org/records/20159208](https://doi.org/10.5281/zenodo.20159208) |
 
-About half of these metaclusters match known families from **Pfam**, the most widely used protein family database. 
-The other half consists of 47,002 metaclusters (33,179 in DPCfam and 13,823 in DPCstruct)
-labeled **UNKNOWN** in DPCexplorer. They are not errors or noise; rather, they are structurally
-and sequentially coherent protein families that simply have not been named yet. Some may represent 
-novel folds, while others may be ancient families overlooked by curation-based approaches. 
-The evidence for their biological relevance is concrete: 63 DPCfam UNKNOWN metaclusters were 
-adopted as official new entries in Pfam release 35.0. These UNKNOWN metaclusters are arguably the most interesting ones. If you have a biological
-hypothesis about any of them, please open an issue; we would genuinely love to hear from you.
+Both datasets have been validated against established databases. DPCfam
+recovers approximately **81%** of medium-to-large Pfam families and **72%**
+of ECOD families. DPCstruct recovers **91%** of SCOP folds and **83%** of
+CATH folds; when compared against Pfam at the clan level, **70%** of the
+14,423 metaclusters with available Pfam labels achieved a perfect consistency
+score of 1, meaning every member shared the same Pfam annotation. Furthermore,
+**24%** of DPCstruct metaclusters show no significant similarity to any known
+database, including Pfam, CATH, or SCOP, pointing toward a pool of potential
+novel structural folds. The average intra-cluster sequence identity in DPCstruct
+is only **34.5%**, placing most families well within the twilight zone where
+standard sequence-based tools become unreliable.
+
+About half of all metaclusters match known families from Pfam. The other half
+consists of specifically **47,002** metaclusters (**33,179** in DPCfam and
+**13,823** in DPCstruct) labeled **UNKNOWN** in DPCexplorer. They are not
+errors or noise; rather, they are structurally and sequentially coherent
+protein families that simply have not been named yet. Some may represent novel
+folds, while others may be ancient families overlooked by curation-based
+approaches. The evidence for their biological relevance is concrete: **63**
+DPCfam UNKNOWN metaclusters were adopted as official new entries in
+**Pfam release 35.0**. These UNKNOWN metaclusters are arguably the most
+interesting ones. If you have a biological hypothesis about any of them,
+please open an issue; we would genuinely love to hear from you.
 
 The platform is built with **Django 6.0.1** and organized into three
 focused applications: `dpc` (shared protein and Pfam registry),
@@ -177,7 +202,7 @@ Our development environment runs smoothly on:
 - [Ubuntu](https://ubuntu.com/) 24.04.3 LTS *(Required: or any modern Linux system)*
 - [Python](https://www.python.org/) 3.12.3 *(Required: check with `python3 --version`)*
 - [Git](https://git-scm.com/) 2.43.0 *(Required: check with `git --version`)*
-- [PostgreSQL](https://www.postgresql.org/) 16.13 *(Required: check with `psql --version`)*
+- [PostgreSQL](https://www.postgresql.org/) 16.11 *(Required: check with `psql --version`)*
 - [Visual Studio Code](https://code.visualstudio.com/) 1.109.3 *(Optional: use any editor you like!)*
 
 > **Note:** If you are missing `Git` or `PostgreSQL` on an Ubuntu system, you can install them with these quick commands:

@@ -13,21 +13,24 @@ title: >-
 
 version: "1.0.0"
 
-date-released: "2026-06-03"
+date-released: "2026-06-06"
 
 abstract: >-
-  DPCexplorer is an open-source Django web application that provides
-  interactive access to two large, unsupervised protein domain family
-  classifications: DPCfam (81,384 sequence-based metaclusters derived
-  from UniRef50 via BLASTp and Density Peak Clustering) and DPCstruct
-  (28,246 structure-based metaclusters derived from the AlphaFold
-  Database via Foldseek and Density Peak Clustering). The platform
-  supports four query types (DPCfam MCID, DPCstruct MCID, Pfam ID,
-  UniProt accession), serves downloadable biological files (FASTA,
-  MSA, HMM, PDB), and embeds an interactive 3D molecular viewer
-  powered by PDBe-Molstar. It is backed by a PostgreSQL database
-  with B-Tree, GIN trigram, and functional indexes for fast lookup
-  across millions of protein assignments.
+  DPCexplorer is an open-source Django 6.0.1 web application that provides
+  interactive browser-based access to two large, unsupervised protein domain
+  family classifications: DPCfam (81,384 sequence-based metaclusters derived
+  from UniRef50 via BLASTp and Density Peak Clustering) and DPCstruct (28,246
+  structure-based metaclusters derived from the AlphaFold Database via Foldseek
+  and Density Peak Clustering). Raw archives were preprocessed on the ORFEO HPC
+  cluster and loaded into a PostgreSQL 16.11 database optimized with B-Tree, GIN
+  trigram, and functional indexes for fast lookup across millions of protein
+  assignments. Built on the Model-View-Template pattern, the platform supports
+  four query types (DPCfam MCID, DPCstruct MCID, Pfam ID, UniProt accession),
+  serves downloadable biological files (FASTA, MSA, HMM, PDB), renders a
+  per-protein domain-architecture diagram, and embeds an interactive 3D molecular
+  viewer powered by PDBe-Molstar for DPCstruct metaclusters. The platform is
+  designed in alignment with FAIR data principles and is fully reproducible from
+  the associated GitHub repository and Zenodo data deposit.
 
 license: MIT
 
@@ -40,6 +43,8 @@ keywords:
   - Density Peak Clustering
   - DPCfam
   - DPCstruct
+  - metacluster
+  - UniRef50
   - AlphaFold2
   - Pfam
   - Django
@@ -108,6 +113,8 @@ preferred-citation:
     Supervised by Dr. Valerio Piomponi and Dr. Elaheh Saadat.
     Funded by the European Union NextGenerationEU projects
     NFFA-DI (cod. IR0000015) and EFC (cod. SSU2024-00002).
+    Zenodo DOI pending review; software available at
+    https://github.com/RitAreaSciencePark/dpc_fam_and_struct_webapp.
 
 # ------------------------------------------------------------------
 # references: the upstream datasets and foundational methods that
@@ -157,7 +164,7 @@ references:
     journal: "PRX Life"
     volume: "3"
     issue: "2"
-    start: 23009
+    article-number: "023009"
     year: 2025
     doi: "10.1103/PRXLife.3.023009"
 
@@ -176,7 +183,7 @@ references:
     year: 2014
     doi: "10.1126/science.1242072"
 
-  - type: software
+  - type: data
     title: >-
       Preprocessed Datasets for Interactive Exploration of
       DPCfam and DPCstruct Protein Domain Classifications

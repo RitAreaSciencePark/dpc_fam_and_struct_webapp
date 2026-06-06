@@ -91,7 +91,7 @@
         <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
           <div class="accordion-body">
             <p><strong>DPCfam</strong> works in sequence space. It clustered roughly 23 million sequences from UniRef50 (v. 2017_07) and produced 81,384 metaclusters: a Standard subset (&ge; 50 domains, 46,828 metaclusters) and a DPCfamB subset (25 - 49 domains, 34,556 metaclusters).</p>
-            <p class="mb-0"><strong>DPCstruct</strong> works in structure space. It clustered roughly 15 million AlphaFold2-predicted structures from the Foldseek Cluster database and produced 28,246 structural metaclusters. Because protein structures are more conserved than sequences, DPCstruct is particularly powerful for detecting remote homologs: proteins that share a common fold even when their sequences have diverged below 30% identity (the twilight zone).</p>
+            <p class="mb-0"><strong>DPCstruct</strong> works in structure space. It clustered roughly 15 million AlphaFold2-predicted structures from the Foldseek Cluster database and produced 28,246 structural metaclusters. Because protein structures are more conserved than sequences, DPCstruct is particularly powerful for detecting remote homologs: proteins that share a common fold even when their sequences have diverged well below 30% identity. The average intra-cluster sequence identity in DPCstruct is only <strong>34.5%</strong>, placing most families squarely within the twilight zone where standard sequence-based tools become unreliable.</p>
           </div>
         </div>
       </div>
@@ -105,7 +105,7 @@
         </h2>
         <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
           <div class="accordion-body">
-            It means that no seed sequence in that metacluster carries a Pfam annotation. These metaclusters are also called "dark matter": protein families that exist in nature but have not yet been characterized. They are among the most scientifically interesting results in DPCexplorer: roughly 40% of DPCfam metaclusters and 49% of DPCstruct metaclusters fall into this category. If you have a hypothesis about what one of them might be, we would love to hear from you.
+            It means that no seed sequence in that metacluster carries a Pfam annotation. These metaclusters are also called "dark matter": protein families that exist in nature but have not yet been characterized. They are among the most scientifically interesting results in DPCexplorer: roughly 40% of DPCfam metaclusters (specifically <strong>33,179</strong>) and roughly 49% of DPCstruct metaclusters (specifically <strong>13,823</strong>) fall into this category, for a total of <strong>47,002</strong> UNKNOWN families. If you have a hypothesis about what one of them might be, we would love to hear from you.
           </div>
         </div>
       </div>
@@ -248,7 +248,7 @@
           <div class="accordion-body">
             <p>Not yet in this version. A REST API built on Django REST Framework is planned for a future release. It will accept one or more metacluster IDs and return properties as JSON or biological files in their native formats, making the platform fully machine-accessible.</p>
             <p class="mb-0">For now, all data are available through the web interface and the Downloads section. The underlying preprocessed CSV files are openly available on
-            <a href="https://zenodo.org/record/20159208" target="_blank">Zenodo (DOI: 10.5281/zenodo.20159208)</a>.</p>
+            <a href="https://zenodo.org/records/20159208" target="_blank">Zenodo (DOI: 10.5281/zenodo.20159208)</a>.</p>
           </div>
         </div>
       </div>
@@ -262,7 +262,7 @@
         </h2>
         <div id="collapseEleven" class="accordion-collapse collapse" aria-labelledby="headingEleven" data-bs-parent="#faqAccordion">
           <div class="accordion-body">
-            Yes. The full pipeline, from raw Zenodo archives to a running web server, is documented step by step in the repository's <code>README.md</code>. All preprocessing notebooks, Python scripts, and SQL schemas are version-controlled on <a href="https://github.com/RitAreaSciencePark/dpc_fam_and_struct_webapp" target="_blank">GitHub</a> under the MIT license. The preprocessed Zenodo deposit also lets you skip the heavy HPC preprocessing and go straight to loading the database.
+            Yes. The full pipeline, from raw Zenodo archives to a running web server, is documented step by step in the repository's <code>README.md</code>. All preprocessing notebooks, Python scripts, and SQL schemas are version-controlled on <a href="https://github.com/RitAreaSciencePark/dpc_fam_and_struct_webapp" target="_blank">GitHub</a> under the MIT license. The preprocessed Zenodo deposit also lets you skip the heavy HPC preprocessing and go straight to loading the database. Additionally, full interactive profiling reports for most of the deposited CSV files are available in the repository under <code>static/profiling_reports/</code> and can be downloaded for interactive exploration in any web browser.
           </div>
         </div>
       </div>

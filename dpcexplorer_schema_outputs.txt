@@ -1,0 +1,385 @@
+Timing is on.
+
+============================================================
+SECTION 1  —  INDEX INVENTORY
+Every index created by dpcexplorer schema must appear here.
+============================================================
+        table_name        |          index_name           | index_type | indexed_columns | is_unique | is_primary 
+--------------------------+-------------------------------+------------+-----------------+-----------+------------
+ dpc_pfam_domains         | dpc_pfam_domains_pkey         | btree      | pfam_id         | t         | t
+ dpc_uniprot_proteins     | dpc_uniprot_proteins_pkey     | btree      | protein_id      | t         | t
+ dpc_uniref50_pfam        | dpc_uniref50_pfam_pkey        | btree      | id              | t         | t
+ dpc_uniref50_pfam        | idx_dpc_pfams_per_protein     | btree      | uniref50_id     | f         | f
+ dpc_uniref50_pfam        | idx_dpc_ranges_per_pfamid     | btree      | pfam_ids        | f         | f
+ dpcfam_alphafold_reps    | dpcfam_alphafold_reps_pkey    | btree      | id              | t         | t
+ dpcfam_alphafold_reps    | idx_dpcfam_reps_per_mcid      | btree      | mcid            | f         | f
+ dpcfam_mcs_properties    | dpcfam_mcs_properties_pkey    | btree      | mcid            | t         | t
+ dpcfam_mcs_properties    | idx_dpcfam_mcs_per_pfam_da    | gin        | pfam_da         | f         | f
+ dpcfam_mcs_properties    | idx_per_mcid_dpcfam           | btree      |                 | f         | f
+ dpcfam_mcs_sequences     | dpcfam_mcs_sequences_pkey     | btree      | id              | t         | t
+ dpcfam_mcs_sequences     | idx_dpcfam_mcs_per_protein    | btree      | protein_id      | f         | f
+ dpcfam_mcs_sequences     | idx_dpcfam_seqs_per_mcid      | btree      | mcid            | f         | f
+ dpcstruct_cath           | dpcstruct_cath_pkey           | btree      | cath_query      | t         | t
+ dpcstruct_cath           | idx_dpcstruct_cath_per_mc     | btree      | dpc_mcid        | f         | f
+ dpcstruct_mcs_properties | dpcstruct_mcs_properties_pkey | btree      | mc_id           | t         | t
+ dpcstruct_mcs_properties | idx_dpcstruct_mcs_per_pfam    | gin        | pfam_da         | f         | f
+ dpcstruct_mcs_properties | idx_per_mcid_dpcstruct        | btree      |                 | f         | f
+ dpcstruct_mcs_sequences  | dpcstruct_mcs_sequences_pkey  | btree      | id              | t         | t
+ dpcstruct_mcs_sequences  | idx_dpcstruct_mcs_per_prot    | btree      | protein_id      | f         | f
+ dpcstruct_mcs_sequences  | idx_dpcstruct_seqs_per_mc     | btree      | mc_id           | f         | f
+ dpcstruct_scop           | dpcstruct_scop_pkey           | btree      | scop_query      | t         | t
+ dpcstruct_scop           | idx_dpcstruct_scop_per_mc     | btree      | dpc_mcid        | f         | f
+
+Time: 12.179 ms
+
+============================================================
+SECTION 2  —  INDEX SIZE & POPULATION
+Confirms each index is built over real data (non-zero size).
+============================================================
+        table_name        |          index_name           | index_size | table_total_size 
+--------------------------+-------------------------------+------------+------------------
+ dpc_pfam_domains         | dpc_pfam_domains_pkey         | 584 kB     | 1456 kB
+ dpc_uniprot_proteins     | dpc_uniprot_proteins_pkey     | 512 MB     | 1122 MB
+ dpc_uniref50_pfam        | dpc_uniref50_pfam_pkey        | 312 MB     | 1623 MB
+ dpc_uniref50_pfam        | idx_dpc_pfams_per_protein     | 310 MB     | 1623 MB
+ dpc_uniref50_pfam        | idx_dpc_ranges_per_pfamid     | 98 MB      | 1623 MB
+ dpcfam_alphafold_reps    | idx_dpcfam_reps_per_mcid      | 1112 kB    | 5280 kB
+ dpcfam_alphafold_reps    | dpcfam_alphafold_reps_pkey    | 864 kB     | 5280 kB
+ dpcfam_mcs_properties    | dpcfam_mcs_properties_pkey    | 3784 kB    | 17 MB
+ dpcfam_mcs_properties    | idx_per_mcid_dpcfam           | 1800 kB    | 17 MB
+ dpcfam_mcs_properties    | idx_dpcfam_mcs_per_pfam_da    | 1568 kB    | 17 MB
+ dpcfam_mcs_sequences     | idx_dpcfam_mcs_per_protein    | 362 MB     | 4898 MB
+ dpcfam_mcs_sequences     | dpcfam_mcs_sequences_pkey     | 356 MB     | 4898 MB
+ dpcfam_mcs_sequences     | idx_dpcfam_seqs_per_mcid      | 114 MB     | 4898 MB
+ dpcstruct_cath           | dpcstruct_cath_pkey           | 72 kB      | 344 kB
+ dpcstruct_cath           | idx_dpcstruct_cath_per_mc     | 48 kB      | 344 kB
+ dpcstruct_mcs_properties | dpcstruct_mcs_properties_pkey | 1008 kB    | 6008 kB
+ dpcstruct_mcs_properties | idx_dpcstruct_mcs_per_pfam    | 736 kB     | 6008 kB
+ dpcstruct_mcs_properties | idx_per_mcid_dpcstruct        | 640 kB     | 6008 kB
+ dpcstruct_mcs_sequences  | idx_dpcstruct_mcs_per_prot    | 42 MB      | 202 MB
+ dpcstruct_mcs_sequences  | dpcstruct_mcs_sequences_pkey  | 35 MB      | 202 MB
+ dpcstruct_mcs_sequences  | idx_dpcstruct_seqs_per_mc     | 11 MB      | 202 MB
+ dpcstruct_scop           | dpcstruct_scop_pkey           | 80 kB      | 376 kB
+ dpcstruct_scop           | idx_dpcstruct_scop_per_mc     | 48 kB      | 376 kB
+
+Time: 5.428 ms
+
+============================================================
+SECTION 3a  —  GIN TRIGRAM PROOF  (dpcfam_mcs_properties)
+Emmanuel checkpoint: plan must contain
+  "Bitmap Index Scan on idx_dpcfam_mcs_per_pfam_da"
+============================================================
+                                                             QUERY PLAN                                                             
+------------------------------------------------------------------------------------------------------------------------------------
+ Bitmap Heap Scan on dpcfam_mcs_properties  (cost=47.56..62.94 rows=4 width=16) (actual time=0.379..0.407 rows=3 loops=1)
+   Recheck Cond: (pfam_da ~~* '%PF02990%'::text)
+   Heap Blocks: exact=3
+   Buffers: shared hit=25
+   ->  Bitmap Index Scan on idx_dpcfam_mcs_per_pfam_da  (cost=0.00..47.56 rows=4 width=0) (actual time=0.352..0.353 rows=3 loops=1)
+         Index Cond: (pfam_da ~~* '%PF02990%'::text)
+         Buffers: shared hit=22
+ Planning:
+   Buffers: shared hit=28
+ Planning Time: 1.754 ms
+ Execution Time: 0.510 ms
+
+Time: 5.378 ms
+
+============================================================
+SECTION 3b  —  GIN TRIGRAM PROOF  (dpcstruct_mcs_properties)
+Emmanuel checkpoint: plan must contain
+  "Bitmap Index Scan on idx_dpcstruct_mcs_per_pfam"
+============================================================
+                                                             QUERY PLAN                                                             
+------------------------------------------------------------------------------------------------------------------------------------
+ Bitmap Heap Scan on dpcstruct_mcs_properties  (cost=47.54..51.56 rows=1 width=16) (actual time=0.126..0.188 rows=6 loops=1)
+   Recheck Cond: (pfam_da ~~* '%PF02990%'::text)
+   Heap Blocks: exact=6
+   Buffers: shared hit=18
+   ->  Bitmap Index Scan on idx_dpcstruct_mcs_per_pfam  (cost=0.00..47.54 rows=1 width=0) (actual time=0.106..0.107 rows=6 loops=1)
+         Index Cond: (pfam_da ~~* '%PF02990%'::text)
+         Buffers: shared hit=12
+ Planning:
+   Buffers: shared hit=11
+ Planning Time: 0.316 ms
+ Execution Time: 0.210 ms
+
+Time: 0.867 ms
+
+============================================================
+SECTION 3c  —  GIN TRIGRAM PROOF WITH REGEX
+The application uses a regex for exact token matching.
+The GIN index still assists as a trigram pre-filter.
+Emmanuel checkpoint: plan must NOT show a pure Seq Scan.
+============================================================
+                                                             QUERY PLAN                                                             
+------------------------------------------------------------------------------------------------------------------------------------
+ Bitmap Heap Scan on dpcfam_mcs_properties  (cost=56.24..71.62 rows=4 width=16) (actual time=0.578..0.585 rows=3 loops=1)
+   Recheck Cond: (pfam_da ~ '(^|-)PF02990(-|$)'::text)
+   Heap Blocks: exact=3
+   Buffers: shared hit=41
+   ->  Bitmap Index Scan on idx_dpcfam_mcs_per_pfam_da  (cost=0.00..56.24 rows=4 width=0) (actual time=0.569..0.569 rows=3 loops=1)
+         Index Cond: (pfam_da ~ '(^|-)PF02990(-|$)'::text)
+         Buffers: shared hit=38
+ Planning:
+   Buffers: shared hit=4
+ Planning Time: 0.391 ms
+ Execution Time: 0.598 ms
+
+Time: 1.269 ms
+
+============================================================
+SECTION 4a  —  FUNCTIONAL SORT INDEX PROOF  (DPCfam)
+Emmanuel checkpoint: plan must use idx_per_mcid_dpcfam
+  — not a Sort node over a Seq Scan.
+============================================================
+                                                                        QUERY PLAN                                                                        
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.29..1.28 rows=20 width=12) (actual time=0.043..0.062 rows=20 loops=1)
+   Buffers: shared hit=3
+   ->  Index Scan using idx_per_mcid_dpcfam on dpcfam_mcs_properties  (cost=0.29..4014.44 rows=81384 width=12) (actual time=0.042..0.059 rows=20 loops=1)
+         Buffers: shared hit=3
+ Planning:
+   Buffers: shared hit=30
+ Planning Time: 0.104 ms
+ Execution Time: 0.079 ms
+
+Time: 0.605 ms
+
+============================================================
+SECTION 4b  —  FUNCTIONAL SORT INDEX PROOF  (DPCstruct)
+Emmanuel checkpoint: plan must use idx_per_mcid_dpcstruct.
+============================================================
+                                                                           QUERY PLAN                                                                           
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.29..1.28 rows=20 width=11) (actual time=0.031..0.048 rows=20 loops=1)
+   Buffers: shared hit=3
+   ->  Index Scan using idx_per_mcid_dpcstruct on dpcstruct_mcs_properties  (cost=0.29..1406.82 rows=28246 width=11) (actual time=0.030..0.046 rows=20 loops=1)
+         Buffers: shared hit=3
+ Planning:
+   Buffers: shared hit=3
+ Planning Time: 0.069 ms
+ Execution Time: 0.058 ms
+
+Time: 0.309 ms
+
+============================================================
+SECTION 5a  —  B-TREE FK PROOF
+protein_detail: DPCfam metaclusters for one protein
+Expected index: idx_dpcfam_mcs_per_protein
+============================================================
+                                                                          QUERY PLAN                                                                          
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=0.85..41.79 rows=3 width=33) (actual time=1.175..1.176 rows=1 loops=1)
+   Buffers: shared hit=4 read=4
+   ->  Index Scan using idx_dpcfam_mcs_per_protein on dpcfam_mcs_sequences seq  (cost=0.43..16.49 rows=3 width=25) (actual time=1.139..1.139 rows=1 loops=1)
+         Index Cond: ((protein_id)::text = 'A0A182N2I3'::text)
+         Buffers: shared hit=1 read=3
+   ->  Index Scan using dpcfam_mcs_properties_pkey on dpcfam_mcs_properties prop  (cost=0.42..8.44 rows=1 width=16) (actual time=0.033..0.033 rows=1 loops=1)
+         Index Cond: ((mcid)::text = (seq.mcid)::text)
+         Buffers: shared hit=3 read=1
+ Planning:
+   Buffers: shared hit=125 read=3
+ Planning Time: 1.760 ms
+ Execution Time: 1.192 ms
+
+Time: 3.551 ms
+
+============================================================
+SECTION 5b  —  B-TREE FK PROOF
+protein_detail: DPCstruct metaclusters for one protein
+Expected index: idx_dpcstruct_mcs_per_prot
+============================================================
+                                                                             QUERY PLAN                                                                             
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=0.71..29.07 rows=2 width=33) (actual time=3.094..3.119 rows=2 loops=1)
+   Buffers: shared hit=7 read=4
+   ->  Index Scan using idx_dpcstruct_mcs_per_prot on dpcstruct_mcs_sequences seq  (cost=0.43..12.46 rows=2 width=24) (actual time=1.502..1.514 rows=2 loops=1)
+         Index Cond: ((protein_id)::text = 'A0A182N2I3'::text)
+         Buffers: shared hit=2 read=3
+   ->  Index Scan using dpcstruct_mcs_properties_pkey on dpcstruct_mcs_properties prop  (cost=0.29..8.30 rows=1 width=16) (actual time=0.799..0.799 rows=1 loops=2)
+         Index Cond: ((mc_id)::text = (seq.mc_id)::text)
+         Buffers: shared hit=5 read=1
+ Planning:
+   Buffers: shared hit=32 read=2
+ Planning Time: 1.344 ms
+ Execution Time: 3.132 ms
+
+Time: 4.719 ms
+
+============================================================
+SECTION 5c  —  B-TREE FK PROOF
+protein_detail: Pfam domains for one protein
+Expected index: idx_dpc_pfams_per_protein
+============================================================
+                                                                    QUERY PLAN                                                                    
+--------------------------------------------------------------------------------------------------------------------------------------------------
+ Index Scan using idx_dpc_pfams_per_protein on dpc_uniref50_pfam u  (cost=0.43..44.59 rows=10 width=24) (actual time=1.184..1.185 rows=1 loops=1)
+   Index Cond: ((uniref50_id)::text = 'A0A182N2I3'::text)
+   Buffers: shared hit=1 read=3
+ Planning:
+   Buffers: shared hit=14
+ Planning Time: 0.112 ms
+ Execution Time: 1.194 ms
+
+Time: 1.516 ms
+
+============================================================
+SECTION 5d  —  B-TREE FK PROOF
+DPCfam detail: paginate sequences for one metacluster
+Expected index: idx_dpcfam_seqs_per_mcid
+============================================================
+                                                                           QUERY PLAN                                                                            
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.43..1088.16 rows=20 width=29) (actual time=0.040..0.047 rows=20 loops=1)
+   Buffers: shared hit=4
+   ->  Index Scan using dpcfam_mcs_sequences_pkey on dpcfam_mcs_sequences  (cost=0.43..993257.45 rows=18263 width=29) (actual time=0.039..0.045 rows=20 loops=1)
+         Filter: ((mcid)::text = 'MC1'::text)
+         Buffers: shared hit=4
+ Planning:
+   Buffers: shared hit=6
+ Planning Time: 0.083 ms
+ Execution Time: 0.056 ms
+
+Time: 0.318 ms
+
+============================================================
+SECTION 5e  —  B-TREE FK PROOF
+DPCstruct detail: paginate sequences for one metacluster
+Expected index: idx_dpcstruct_seqs_per_mc
+============================================================
+                                                                            QUERY PLAN                                                                             
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=12.66..12.71 rows=20 width=25) (actual time=0.024..0.027 rows=19 loops=1)
+   Buffers: shared hit=4
+   ->  Sort  (cost=12.66..12.90 rows=96 width=25) (actual time=0.023..0.025 rows=19 loops=1)
+         Sort Key: id
+         Sort Method: quicksort  Memory: 26kB
+         Buffers: shared hit=4
+         ->  Index Scan using idx_dpcstruct_seqs_per_mc on dpcstruct_mcs_sequences  (cost=0.43..10.11 rows=96 width=25) (actual time=0.011..0.016 rows=19 loops=1)
+               Index Cond: ((mc_id)::text = 'MC1'::text)
+               Buffers: shared hit=4
+ Planning:
+   Buffers: shared hit=3
+ Planning Time: 0.068 ms
+ Execution Time: 0.036 ms
+
+Time: 0.292 ms
+
+============================================================
+SECTION 5f  —  B-TREE FK PROOF
+DPCstruct detail: CATH annotations for one metacluster
+Expected index: idx_dpcstruct_cath_per_mc
+============================================================
+                                                                QUERY PLAN                                                                 
+-------------------------------------------------------------------------------------------------------------------------------------------
+ Index Scan using idx_dpcstruct_cath_per_mc on dpcstruct_cath  (cost=0.28..8.29 rows=1 width=40) (actual time=0.013..0.013 rows=0 loops=1)
+   Index Cond: ((dpc_mcid)::text = 'MC1'::text)
+   Buffers: shared hit=2
+ Planning:
+   Buffers: shared hit=21
+ Planning Time: 0.128 ms
+ Execution Time: 0.020 ms
+
+Time: 0.321 ms
+
+============================================================
+SECTION 5g  —  B-TREE FK PROOF
+DPCstruct detail: SCOP annotations for one metacluster
+Expected index: idx_dpcstruct_scop_per_mc
+============================================================
+                                                                QUERY PLAN                                                                 
+-------------------------------------------------------------------------------------------------------------------------------------------
+ Index Scan using idx_dpcstruct_scop_per_mc on dpcstruct_scop  (cost=0.28..8.29 rows=1 width=46) (actual time=0.009..0.009 rows=0 loops=1)
+   Index Cond: ((dpc_mcid)::text = 'MC1'::text)
+   Buffers: shared hit=2
+ Planning:
+   Buffers: shared hit=21
+ Planning Time: 0.136 ms
+ Execution Time: 0.016 ms
+
+Time: 0.319 ms
+
+============================================================
+SECTION 5h  —  B-TREE FK PROOF
+DPCfam detail: AlphaFold reps for one metacluster
+Expected index: idx_dpcfam_reps_per_mcid
+============================================================
+                                                                   QUERY PLAN                                                                    
+-------------------------------------------------------------------------------------------------------------------------------------------------
+ Index Scan using idx_dpcfam_reps_per_mcid on dpcfam_alphafold_reps  (cost=0.29..8.31 rows=1 width=36) (actual time=0.017..0.018 rows=1 loops=1)
+   Index Cond: ((mcid)::text = 'MC1'::text)
+   Buffers: shared hit=3
+ Planning:
+   Buffers: shared hit=19
+ Planning Time: 0.122 ms
+ Execution Time: 0.043 ms
+
+Time: 0.338 ms
+
+============================================================
+SECTION 6  —  LIVE USAGE COUNTERS
+(idx_scan counts every index hit since last stats reset.
+ Run the app, then re-run this section to see growth.)
+============================================================
+        table_name        |          index_name           | times_used_by_planner | index_entries_read | heap_rows_fetched 
+--------------------------+-------------------------------+-----------------------+--------------------+-------------------
+ dpc_uniprot_proteins     | dpc_uniprot_proteins_pkey     |              32800431 |           32800420 |          32800295
+ dpcfam_mcs_properties    | dpcfam_mcs_properties_pkey    |              16641566 |           16641556 |          16641540
+ dpc_pfam_domains         | dpc_pfam_domains_pkey         |              14554419 |           14554417 |          14554364
+ dpcstruct_mcs_properties | dpcstruct_mcs_properties_pkey |               1644936 |            1644935 |           1644880
+ dpcfam_mcs_properties    | idx_per_mcid_dpcfam           |                   148 |             164788 |            164788
+ dpcfam_mcs_properties    | idx_dpcfam_mcs_per_pfam_da    |                   127 |              33599 |                 0
+ dpcfam_mcs_sequences     | idx_dpcfam_mcs_per_protein    |                    78 |                123 |                65
+ dpcstruct_mcs_sequences  | idx_dpcstruct_mcs_per_prot    |                    72 |                 64 |                12
+ dpcstruct_cath           | idx_dpcstruct_cath_per_mc     |                    64 |                140 |               116
+ dpcstruct_mcs_sequences  | idx_dpcstruct_seqs_per_mc     |                    56 |               1730 |               881
+ dpcstruct_scop           | idx_dpcstruct_scop_per_mc     |                    55 |                 96 |                78
+ dpcfam_mcs_sequences     | idx_dpcfam_seqs_per_mcid      |                    45 |             355967 |                 0
+ dpcstruct_mcs_properties | idx_dpcstruct_mcs_per_pfam    |                    38 |              14604 |                 0
+ dpcfam_alphafold_reps    | idx_dpcfam_reps_per_mcid      |                    31 |                 22 |                22
+ dpcstruct_mcs_properties | idx_per_mcid_dpcstruct        |                    28 |                284 |               284
+ dpc_uniref50_pfam        | idx_dpc_pfams_per_protein     |                    20 |                 65 |                65
+ dpcfam_mcs_sequences     | dpcfam_mcs_sequences_pkey     |                    19 |                210 |               210
+ dpcstruct_mcs_sequences  | dpcstruct_mcs_sequences_pkey  |                     2 |             669496 |            669496
+ dpc_uniref50_pfam        | dpc_uniref50_pfam_pkey        |                     0 |                  0 |                 0
+ dpc_uniref50_pfam        | idx_dpc_ranges_per_pfamid     |                     0 |                  0 |                 0
+ dpcfam_alphafold_reps    | dpcfam_alphafold_reps_pkey    |                     0 |                  0 |                 0
+ dpcstruct_cath           | dpcstruct_cath_pkey           |                     0 |                  0 |                 0
+ dpcstruct_scop           | dpcstruct_scop_pkey           |                     0 |                  0 |                 0
+
+Time: 8.465 ms
+
+============================================================
+SECTION 7  —  SEQUENTIAL SCAN AUDIT
+For large tables, seq_scan should be much lower than idx_scan.
+A high seq_scan count on a large table signals a missing index.
+============================================================
+        table_name        | live_rows | sequential_scans | index_scans | index_usage_rate | dead_rows_pending_vacuum 
+--------------------------+-----------+------------------+-------------+------------------+--------------------------
+ dpcfam_mcs_sequences     |  16602634 |                5 |         142 | 96.6% indexed    |                        0
+ dpc_uniref50_pfam        |  14554934 |                5 |          20 | 80.0% indexed    |                        0
+ dpc_uniprot_proteins     |  14121433 |                1 |    32800431 | 100.0% indexed   |                        0
+ dpcstruct_mcs_sequences  |   1642061 |                5 |         130 | 96.3% indexed    |                        0
+ dpcfam_mcs_properties    |     81384 |              150 |    16641841 | 100.0% indexed   |                        0
+ dpcfam_alphafold_reps    |     38668 |                2 |          31 | 93.9% indexed    |                        0
+ dpcstruct_mcs_properties |     28246 |               35 |     1645002 | 100.0% indexed   |                        0
+ dpc_pfam_domains         |     19352 |                1 |    14554419 | 100.0% indexed   |                        0
+ dpcstruct_scop           |      1359 |               11 |          55 | 83.3% indexed    |                        0
+ dpcstruct_cath           |      1274 |               14 |          64 | 82.1% indexed    |                        0
+
+Time: 5.839 ms
+
+============================================================
+VERIFICATION COMPLETE
+
+Quick review checklist:
+  Section 1  — all 20+ index names must appear
+  Section 2  — all index sizes must be > 0
+  Section 3  — plan must show Bitmap Index Scan (not Seq Scan)
+  Section 4  — plan must use functional index (not Sort+Seq Scan)
+  Section 5  — all 8 plans must show Index Scan (not Seq Scan)
+  Section 6  — idx_scan counters grow with application usage
+  Section 7  — index_usage_rate should be near 100% on large tables
+============================================================
+Timing is off.
