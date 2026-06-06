@@ -86,7 +86,7 @@ def pfam_detail(request, pfam_id):
     ).order_by('mc_num')
 
     if not dpcfam_metaclusters.exists() and not dpcstruct_metaclusters.exists():
-        messages.error(request, f'Pfam ID "{pfam_id}" not found')
+        messages.error(request, f'Pfam ID "{pfam_id}" exists in our reference database but is not covered by any DPCfam or DPCstruct metacluster.')
         return redirect('home')
 
     # Build pfam_score_percent and pfam_links for DPCstruct rows
