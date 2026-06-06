@@ -1,6 +1,8 @@
 # dpcfam/views.py
 import os
 from django.conf import settings
+from django.shortcuts import render, redirect 
+from django.contrib import messages   
 from django.views.generic import DetailView
 from django_tables2.views import SingleTableMixin
 from django_filters.views import FilterView
@@ -59,6 +61,21 @@ class DpcfamMcsDetailView(DetailView):
     context_object_name = 'mc'  # template uses {{ mc.mcid }}, {{ mc.pfam_da }}, etc.
     pk_url_kwarg = 'mcid'       # URL captures <str:mcid>
 
+    def get_object(self, queryset=None):        
+        mcid = self.kwargs.get(self.pk_url_kwarg)
+        try:
+            return DpcfamMcsProperty.objects.get(mcid=mcid)
+        except DpcfamMcsProperty.DoesNotExist:
+            messages.error(self.request, f'DPCfam metacluster "{mcid}" not found.')
+            return None
+
+    def get(self, request, *args, **kwargs):    
+        self.object = self.get_object()
+        if self.object is None:
+            return redirect('home')
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         mcid = self.object.mcid

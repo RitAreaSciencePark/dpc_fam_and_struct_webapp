@@ -1,7 +1,8 @@
 import os
 from django.conf import settings
+from django.shortcuts import render, redirect 
+from django.contrib import messages 
 from django.views.generic import DetailView, TemplateView
-from django.shortcuts import render
 from django_tables2.views import SingleTableMixin
 from django_filters.views import FilterView
 from django.core.paginator import Paginator
@@ -102,6 +103,20 @@ class DpcStructDetailView(DetailView):
     context_object_name = 'mc'      # template uses {{ mc.mc_id }}, {{ mc.plddt }}, etc.
     pk_url_kwarg = 'mc_id'          # URL captures <str:mc_id>
 
+    def get_object(self, queryset=None):
+        mc_id = self.kwargs.get(self.pk_url_kwarg)
+        try:
+            return DpcStructMcsProperty.objects.get(mc_id=mc_id)
+        except DpcStructMcsProperty.DoesNotExist:
+            messages.error(self.request, f'DPCstruct metacluster "{mc_id}" not found.')
+            return None
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if self.object is None:
+            return redirect('home')
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
