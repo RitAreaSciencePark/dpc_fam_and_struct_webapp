@@ -124,7 +124,13 @@ def protein_detail(request, protein_id):
     Display domain architecture for a specific UniProt protein.
     Shows DPCfam metaclusters, DPCstruct metaclusters, and Pfam domains all plotted on a single graphical scale.
     """
-    protein = get_object_or_404(DpcUniprotProtein, protein_id=protein_id)
+    protein_id = protein_id.strip().upper()
+    
+    if not DpcUniprotProtein.objects.filter(protein_id=protein_id).exists():
+        messages.error(request, f'UniProt ID "{protein_id}" not found in our database.')
+        return redirect('home')
+    
+    protein = DpcUniprotProtein.objects.get(protein_id=protein_id)
 
     # Get DPCfam sequences for this protein
     dpcfam_qs = DpcfamMcsSequence.objects.filter(protein=protein)
