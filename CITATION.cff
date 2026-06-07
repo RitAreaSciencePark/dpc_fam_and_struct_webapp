@@ -11,9 +11,9 @@ title: >-
   DPCexplorer: A Django Web Application for Interactive Exploration
   of DPCfam and DPCstruct Protein Domain Classifications
 
-version: "1.0.0"
+version: "v1.0.1"
 
-date-released: "2026-06-06"
+date-released: "2026-06-07"
 
 abstract: >-
   DPCexplorer is an open-source Django 6.0.1 web application that provides
@@ -88,9 +88,14 @@ contact:
 
 identifiers:
   - type: doi
+    value: "10.5281/zenodo.20575269"
+    description: >-
+      Zenodo software deposit (v1.0.1) - the citable release of the
+      DPCexplorer source code and application.
+  - type: doi
     value: "10.5281/zenodo.20159208"
     description: >-
-      Zenodo deposit of the preprocessed datasets (CSV, FASTA, PDB)
+      Zenodo data deposit - preprocessed CSV, FASTA, and PDB files
       used to populate the DPCexplorer PostgreSQL database.
 
 preferred-citation:

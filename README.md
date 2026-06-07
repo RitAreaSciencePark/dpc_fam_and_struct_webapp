@@ -9,9 +9,10 @@
 # DPCexplorer: A Django Web Application for Interactive Exploration of DPCfam and DPCstruct Protein Domain Classifications
 
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/emmanuelnyandukagarabi/dpc_fam_and_struct_webapp)
-![Status](https://img.shields.io/badge/Status-Stable%20v1.0.0-brightgreen?style=flat-square)
+![Status](https://img.shields.io/badge/Status-Stable%20v1.0.1-brightgreen?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20159208.svg)](https://doi.org/10.5281/zenodo.20159208)
+[![DOI Software](https://zenodo.org/badge/DOI/10.5281/zenodo.20575269.svg)](https://doi.org/10.5281/zenodo.20575269)
+[![DOI Data](https://zenodo.org/badge/DOI/10.5281/zenodo.20159208.svg)](https://doi.org/10.5281/zenodo.20159208)
 [![CFF](https://img.shields.io/badge/Citation-CITATION.cff-blue?style=flat-square)](CITATION.cff)
 
 Proteins carry out almost every function inside a living cell, but
