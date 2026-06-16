@@ -8,10 +8,10 @@
 
 # DPCexplorer: A Django Web Application for Interactive Exploration of DPCfam and DPCstruct Protein Domain Classifications
 
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/emmanuelnyandukagarabi/dpc_fam_and_struct_webapp)
-![Status](https://img.shields.io/badge/Status-Stable%20v1.0.1-brightgreen?style=flat-square)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/RitAreaSciencePark/dpc_fam_and_struct_webapp)
+![Status](https://img.shields.io/badge/Status-Stable%20v1.0.2-brightgreen?style=flatsquare)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
-[![DOI Software](https://zenodo.org/badge/DOI/10.5281/zenodo.20575269.svg)](https://doi.org/10.5281/zenodo.20575269)
+[![DOI Software](https://zenodo.org/badge/DOI/10.5281/zenodo.20575268.svg)](https://doi.org/10.5281/zenodo.20575268)
 [![DOI Data](https://zenodo.org/badge/DOI/10.5281/zenodo.20159208.svg)](https://doi.org/10.5281/zenodo.20159208)
 [![CFF](https://img.shields.io/badge/Citation-CITATION.cff-blue?style=flat-square)](CITATION.cff)
 
@@ -247,7 +247,7 @@ static/
 ### 2. Clone the Repository
 
 ```bash
-git clone https://github.com/emmanuelnyandukagarabi/dpc_fam_and_struct_webapp
+git clone https://github.com/RitAreaSciencePark/dpc_fam_and_struct_webapp
 cd dpc_fam_and_struct_webapp
 ```
 
@@ -496,7 +496,7 @@ cd ..
 rm -rf dpc_fam_and_struct_webapp
 
 # 3. Clone again and restart from Step 1
-git clone https://github.com/emmanuelnyandukagarabi/dpc_fam_and_struct_webapp
+git clone https://github.com/RitAreaSciencePark/dpc_fam_and_struct_webapp
 cd dpc_fam_and_struct_webapp
 ```
 
@@ -526,37 +526,23 @@ exactly why this project exists.
 
 ## References
 
-If you use this project, the web application, or the associated datasets, please cite:
+## How to Cite This Work
 
-#### 1. Project & Preprocessed Datasets
+If you use DPCexplorer in your work, please cite the software:
 
-* **Web Application & Master Thesis:**
-  Nyandu Kagarabi, E. (ORCID: [0009-0000-4837-4712](https://orcid.org/0009-0000-4837-4712)) (2026).
-  *Web Application for DPCfam and DPCstruct Data Exploration.*
-  Master's thesis, MDMC, SISSA. Supervised by
-  Dr. V. Piomponi (ORCID: [0000-0003-0433-8319](https://orcid.org/0000-0003-0433-8319)) &
-  Dr. E. Saadat (ORCID: [0009-0004-3234-3072](https://orcid.org/0009-0004-3234-3072)).
-  [Zenodo Link Pending Review]
+> Nyandu Kagarabi, E., Saadat, E., & Piomponi, V. (2026). *DPCexplorer: A Django Web Application for Interactive Exploration of DPCfam and DPCstruct Protein Domain Classifications* [Software]. Zenodo. https://doi.org/10.5281/zenodo.20575268
 
-* **Preprocessed Datasets:**
-  Nyandu Kagarabi, E., Piomponi, V., & Saadat, E. (2026).
-  *Preprocessed Datasets for Interactive Exploration of DPCfam
-  and DPCstruct Protein Domain Classifications (1.0.0)* [Data set]. Zenodo.
-  [https://doi.org/10.5281/zenodo.20159208](https://doi.org/10.5281/zenodo.20159208)
+This concept DOI always resolves to the latest release. The related works (the preprocessed dataset, the eScience 2026 paper, and the Master's thesis) are linked from the Zenodo record.
 
-#### 2. DPCfam (Sequence-Based Metaclusters)
+## Underlying Methods and Datasets
 
-* **Method Paper:** Russo, E. T., Barone, F., Bateman, A., Cozzini, S., Punta, M., & Laio, A. (2022). DPCfam: Unsupervised protein family classification by density peak clustering of large sequence datasets. *PLOS Computational Biology*, *18*(10), e1010610. [https://doi.org/10.1371/journal.pcbi.1010610](https://doi.org/10.1371/journal.pcbi.1010610)
-* **Source Dataset:** Russo, E. T., & Barone, F. (2022). Metaclusters by DPCfam clustering of UniRef50 v 2017_07 [Data set]. Zenodo. [https://doi.org/10.5281/zenodo.6900559](https://doi.org/10.5281/zenodo.6900559)
+DPCexplorer builds on the following works; please cite them where relevant.
 
-#### 3. DPCstruct (Structure-Based Metaclusters)
-
-* **Method Paper:** Barone, F., Laio, A., Punta, M., Cozzini, S., Ansuini, A., & Cazzaniga, A. (2025). Unsupervised domain classification of AlphaFold2-predicted protein structures. *PRX Life*, *3*(2), 023009. [https://doi.org/10.1103/PRXLife.3.023009](https://doi.org/10.1103/PRXLife.3.023009)
-* **Source Dataset:** Barone, F., Laio, A., Punta, M., Cozzini, S., Ansuini, A., & Cazzaniga, A. (2024). DPCstruct classification of AlphaFold2-predicted protein structures [Data set]. Zenodo. [https://doi.org/10.5281/zenodo.13334296](https://doi.org/10.5281/zenodo.13334296)
-
-#### 4. Clustering Algorithm Foundations
-
-* Rodriguez, A., & Laio, A. (2014). Clustering by fast search and find of density peaks. *Science*, *344*(6191), 1492–1496. [https://doi.org/10.1126/science.1242072](https://doi.org/10.1126/science.1242072)
+* **DPCfam (method):** Russo, E. T., Barone, F., Bateman, A., Cozzini, S., Punta, M., & Laio, A. (2022). DPCfam: Unsupervised protein family classification by density peak clustering of large sequence datasets. *PLOS Computational Biology*, *18*(10), e1010610. https://doi.org/10.1371/journal.pcbi.1010610
+* **DPCfam (source dataset):** Russo, E. T., & Barone, F. (2022). *Metaclusters by DPCfam clustering of UniRef50 v 2017_07* [Data set]. Zenodo. https://doi.org/10.5281/zenodo.6900559
+* **DPCstruct (method):** Barone, F., Laio, A., Punta, M., Cozzini, S., Ansuini, A., & Cazzaniga, A. (2025). Unsupervised domain classification of AlphaFold2-predicted protein structures. *PRX Life*, *3*(2), 023009. https://doi.org/10.1103/PRXLife.3.023009
+* **DPCstruct (source dataset):** Barone, F., Laio, A., Punta, M., Cozzini, S., Ansuini, A., & Cazzaniga, A. (2024). *DPCstruct classification of AlphaFold2-predicted protein structures* [Data set]. Zenodo. https://doi.org/10.5281/zenodo.13334296
+* **Clustering algorithm:** Rodriguez, A., & Laio, A. (2014). Clustering by fast search and find of density peaks. *Science*, *344*(6191), 1492–1496. https://doi.org/10.1126/science.1242072
 
 ---
 

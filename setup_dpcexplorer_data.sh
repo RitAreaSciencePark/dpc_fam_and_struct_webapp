@@ -12,7 +12,7 @@
 # Note              : Run this from the root of our cloned GitHub repository (where manage.py is).
 #                     If the script is interrupted, just run it again; it resumes.
 #
-# GitHub Repository : https://github.com/emmanuelnyandukagarabi/dpc_fam_and_struct_webapp
+# GitHub Repository : https://github.com/RitAreaSciencePark/dpc_fam_and_struct_webapp
 # ===================================================================================================
 
 # Stop immediately if any command fails.
