@@ -238,9 +238,12 @@
         <p>
           For sequences, this means
           <a href="https://blast.ncbi.nlm.nih.gov/Blast.cgi" target="_blank">BLASTp</a>
-          all-versus-all comparisons across 23&nbsp;million UniRef50 sequences,
+          all-versus-all comparisons across 23&nbsp;million UniRef50 sequences
+          (<strong>UniRef50 v. 2017_07</strong>),
           producing roughly 55&nbsp;billion alignments. For structures, the same
           idea is applied to 15&nbsp;million AlphaFold2-predicted structures
+          (the <strong>Foldseek Clusters</strong> representative set of the
+          <strong>AlphaFold Database, AlphaFoldDB v4.0</strong>)
           using
           <a href="https://github.com/steineggerlab/foldseek" target="_blank">Foldseek</a>
           and MMseqs2, which translate 3D shapes into a structural alphabet for
@@ -251,7 +254,7 @@
           Clustering (DPC)</strong> algorithm (Rodriguez &amp; Laio, 2014).
           DPC identifies cluster centres as points with high local density
           and high isolation from other dense regions, <em> no prior assumption
-          about the number or shape of clusters needed </em>. A two-scale design
+          about the number or shape of clusters needed</em>. A two-scale design
           first segments individual proteins into domain-like units (primary
           clusters), then groups those units globally into evolutionary
           families called <strong>metaclusters</strong>.
@@ -315,7 +318,7 @@
           families overlooked by curation-based approaches. The evidence for
           their biological relevance is concrete: 63 DPCfam UNKNOWN
           metaclusters were adopted as official new entries in
-          <strong>Pfam release 35.0</strong>.
+          <strong>Pfam release 35.0</strong> (e.g., <code>MC202620</code> → <code>PF20147</code>, <code>MC15137</code> → <code>PF20146</code>).
         </p>
       </div>
 
@@ -350,7 +353,7 @@
             (e.g., <code>MC5</code>): opens a structure-based metacluster page.<br>
           &bull;&ensp;<strong>Pfam ID</strong>
             (e.g., <code>PF02990</code> or <code>CL0192</code>): displays every
-            metacluster in both datasets that overlaps with that Pfam family or clan.<br>
+            metacluster in both datasets that overlaps with that Pfam ID.<br>
           &bull;&ensp;<strong>UniProt accession</strong>
             (e.g., <code>A0A182N2I3</code>): visualises all DPCfam, DPCstruct,
             and Pfam domains mapped onto the full protein sequence as a
@@ -431,14 +434,17 @@
             <a href="https://nffa-di.it/" target="_blank">NFFA-DI</a>
             (cod. IR0000015)<br>
             <a href="https://educatingfuturecitizens.com/" target="_blank">EFC</a>
-            (cod. SSU2024-00002)
+            (cod. SSU2024-00002)<br>
+            <a href="https://prp-ri.eu/" target="_blank">PRP@CERIC</a>
+            (cod. IR0000028)
           </div>
         </div>
 
         <h4 id="references">References</h4>
         <p class="text-muted small mb-3">
-          If you use DPCexplorer in your work, please cite the software. The related
-          works (dataset, eScience 2026 paper, thesis) are linked from the Zenodo record.
+          If you use DPCexplorer, please cite the software (below). Should you want
+          to learn how it was built, see the thesis; for a concise summary, see the
+          eScience 2026 paper. Both appear under "Project documentation".
         </p>
 
         <div class="fw-bold mb-2 mt-4 text-dark">How to cite DPCexplorer</div>
@@ -451,6 +457,15 @@
             (concept DOI, always the latest release).
           </li>
         </ol>
+
+        <div class="fw-bold mb-2 mt-3 text-dark">Project documentation</div>
+        <p class="text-muted small mb-3">
+          You do not need to cite these; they are here if you want to dig deeper.
+          To learn how DPCexplorer was built, see the
+          <a href="https://doi.org/10.5281/zenodo.20847161" target="_blank">MDMC thesis</a>
+          (full documentation). For a concise summary, see the
+          <a href="https://doi.org/10.5281/zenodo.20766432" target="_blank">eScience 2026 paper</a>.
+        </p>
 
         <div class="fw-bold mb-2 mt-3 text-dark">DPCfam (Sequence-Based Metaclusters)</div>
         <ol class="ref-list" start="2">
