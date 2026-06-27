@@ -14,10 +14,22 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
 from . import views
+
+# DPCexplorer admin branding (replaces the default "Django administration").
+# The subtitle also states the active mode, so the read-only / read-write
+# posture is visible at a glance on the admin landing page.
+admin.site.site_header = "DPCexplorer Administration"
+admin.site.site_title = "DPCexplorer Admin"
+admin.site.index_title = (
+    "Read/write data console"
+    if getattr(settings, "DPCEXPLORER_ADMIN_WRITABLE", False)
+    else "Read-only data console"
+)
 
 urlpatterns = [
     path('', TemplateView.as_view(template_name='index.html'), name='home'),

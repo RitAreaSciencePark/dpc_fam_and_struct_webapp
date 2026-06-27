@@ -63,8 +63,8 @@ class DpcStructMcsProperty(models.Model):
     class Meta:
         db_table = 'dpcstruct_mcs_properties'
         managed = False
-        verbose_name = 'DPCstruct MC Property'
-        verbose_name_plural = 'DPCstruct MC Properties'
+        verbose_name = 'DPCstruct MC Properties and Pfam Annotations'
+        verbose_name_plural = 'DPCstruct MC Properties and Pfam Annotations'
         # Declared for documentation — indexes already exist in the database.
         indexes = [
             GinIndex(
@@ -117,6 +117,8 @@ class DpcStructMcsSequence(models.Model):
     class Meta:
         db_table = 'dpcstruct_mcs_sequences'
         managed = False
+        verbose_name = 'DPCstruct MC Seed Sequence'
+        verbose_name_plural = 'DPCstruct MC Seed Sequences'
         indexes = [
             models.Index(fields=['mc'], name='idx_dpcstruct_seqs_per_mc'),
             models.Index(fields=['protein'], name='idx_dpcstruct_mcs_per_prot'),
@@ -180,6 +182,8 @@ class DpcStructCath(models.Model):
     class Meta:
         db_table = 'dpcstruct_cath'
         managed = False
+        verbose_name = 'DPCstruct CATH Annotation'
+        verbose_name_plural = 'DPCstruct CATH Annotations'
         indexes = [
             models.Index(fields=['mc'], name='idx_dpcstruct_cath_per_mc'),
         ]
@@ -241,6 +245,8 @@ class DpcStructScop(models.Model):
     class Meta:
         db_table = 'dpcstruct_scop'
         managed = False
+        verbose_name = 'DPCstruct SCOP Annotation'
+        verbose_name_plural = 'DPCstruct SCOP Annotations'
         indexes = [
             models.Index(fields=['mc'], name='idx_dpcstruct_scop_per_mc'),
         ]

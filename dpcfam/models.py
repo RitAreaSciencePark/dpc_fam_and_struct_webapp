@@ -63,8 +63,8 @@ class DpcfamMcsProperty(models.Model):
     class Meta:
         db_table = 'dpcfam_mcs_properties'
         managed = False
-        verbose_name = 'DPCfam MC Property'
-        verbose_name_plural = 'DPCfam MC Properties'
+        verbose_name = 'DPCfam MC Properties and Pfam Annotations'
+        verbose_name_plural = 'DPCfam MC Properties and Pfam Annotations'
         # Declared for documentation — indexes already exist in the database.
         # The GinIndex declaration also serves as an accurate in-code reminder of
         # the operator class (gin_trgm_ops) required by the pg_trgm extension.
@@ -121,6 +121,8 @@ class DpcfamMcsSequence(models.Model):
     class Meta:
         db_table = 'dpcfam_mcs_sequences'
         managed = False
+        verbose_name = 'DPCfam MC Seed Sequence'
+        verbose_name_plural = 'DPCfam MC Seed Sequences'
         indexes = [
             models.Index(fields=['mc'],      name='idx_dpcfam_seqs_per_mcid'),
             models.Index(fields=['protein'], name='idx_dpcfam_mcs_per_protein'),

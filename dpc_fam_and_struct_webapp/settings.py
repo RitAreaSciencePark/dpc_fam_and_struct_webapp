@@ -28,6 +28,16 @@ ALLOWED_HOSTS = config(
     cast=lambda v: [s.strip() for s in v.split(',')]
 )
 
+# Admin write mode.
+# Read-only by default (the v1.0.3 posture): the admin can never write to the
+# managed=False scientific tables. Set DPCEXPLORER_ADMIN_WRITABLE=True only to
+# grant the admin full CRUD.
+# This is a deliberate, per-deployment opt-in; the data is never writable by
+# accident. See ADMIN_PANEL.md.
+DPCEXPLORER_ADMIN_WRITABLE = config(
+    'DPCEXPLORER_ADMIN_WRITABLE', default=False, cast=bool
+)
+
 # Application definition
 
 INSTALLED_APPS = [

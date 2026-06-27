@@ -104,6 +104,8 @@ class DpcUniref50Pfam(models.Model):
     class Meta:
         db_table = 'dpc_uniref50_pfam'
         managed = False
+        verbose_name = 'DPC UniRef50 Pfam Mapping'
+        verbose_name_plural = 'DPC UniRef50 Pfam Mappings'
         # Declared for documentation — indexes already exist in the database.
         indexes = [
             models.Index(fields=['uniref50'], name='idx_dpc_pfams_per_protein'),
