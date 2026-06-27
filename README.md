@@ -1,5 +1,3 @@
----
-
 <p align="center">
   <img src="https://raw.githubusercontent.com/RitAreaSciencePark/dpc_fam_and_struct_webapp/main/static/images/logo_dpcexplorer_web.png" alt="DPCexplorer Logo" height="100" />
 </p>
@@ -9,7 +7,7 @@
 # DPCexplorer: A Django Web Application for Interactive Exploration of DPCfam and DPCstruct Protein Domain Classifications
 
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/RitAreaSciencePark/dpc_fam_and_struct_webapp)
-![Status](https://img.shields.io/badge/Status-Stable%20v1.0.2-brightgreen?style=flatsquare)
+![Status](https://img.shields.io/badge/Status-Stable%20v1.0.3-brightgreen?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 [![DOI Software](https://zenodo.org/badge/DOI/10.5281/zenodo.20575268.svg)](https://doi.org/10.5281/zenodo.20575268)
 [![DOI Data](https://zenodo.org/badge/DOI/10.5281/zenodo.20159208.svg)](https://doi.org/10.5281/zenodo.20159208)
@@ -40,8 +38,8 @@ without any manual curation.
 
 | Dataset | Input data | Metaclusters | Original source | Preprocessed files |
 |---------|-----------|:------------:|-----------------|-------------------|
-| **DPCfam** | ~23 M sequences (UniRef50) | 81,384 | [zenodo.org/records/6900559](https://doi.org/10.5281/zenodo.6900559) | [zenodo.org/records/20159208](https://doi.org/10.5281/zenodo.20159208) |
-| **DPCstruct** | ~15 M structures (AlphaFoldDB) | 28,246 | [zenodo.org/records/13334296](https://doi.org/10.5281/zenodo.13334296) | [zenodo.org/records/20159208](https://doi.org/10.5281/zenodo.20159208) |
+| **DPCfam** | ~23 M sequences (UniRef50 v. 2017_07) | 81,384 | [zenodo.org/records/6900559](https://doi.org/10.5281/zenodo.6900559) | [zenodo.org/records/20159208](https://doi.org/10.5281/zenodo.20159208) |
+| **DPCstruct** | ~15 M structures (AlphaFoldDB v4.0) | 28,246 | [zenodo.org/records/13334296](https://doi.org/10.5281/zenodo.13334296) | [zenodo.org/records/20159208](https://doi.org/10.5281/zenodo.20159208) |
 
 Both datasets have been validated against established databases. DPCfam
 recovers approximately **81%** of medium-to-large Pfam families and **72%**
@@ -63,7 +61,7 @@ protein families that simply have not been named yet. Some may represent novel
 folds, while others may be ancient families overlooked by curation-based
 approaches. The evidence for their biological relevance is concrete: **63**
 DPCfam UNKNOWN metaclusters were adopted as official new entries in
-**Pfam release 35.0**. These UNKNOWN metaclusters are arguably the most
+**Pfam release 35.0** (e.g., MC202620 → PF20147, MC15137 → PF20146). These UNKNOWN metaclusters are arguably the most
 interesting ones. If you have a biological hypothesis about any of them,
 please open an issue; we would genuinely love to hear from you.
 
@@ -74,6 +72,10 @@ focused applications: `dpc` (shared protein and Pfam registry),
 metacluster ID, by Pfam ID (family or clan), or by UniProt accession, and explore
 results through interactive tables, a domain-architecture diagram, and
 an embedded **3D molecular viewer** powered by PDBe-Molstar.
+
+> 📚 **Further documentation.** Two companion guides live next to this README:
+> [**`ARCHITECTURE.md`**](ARCHITECTURE.md) maps the repository, the source apps, the preprocessing notebooks and scripts, and the static assets, so you can find your way around; and
+> [**`ADMIN_PANEL.md`**](ADMIN_PANEL.md) documents the admin panel, its read-only default, and how to enable full CRUD.
 
 ---
 
@@ -280,15 +282,16 @@ cd dpc_fam_and_struct_webapp
    print(f'''DJANGO_SECRET_KEY={get_random_secret_key()}
    DEBUG=True
    ALLOWED_HOSTS=127.0.0.1,localhost
-   DB_NAME=dpc_db
-   DB_USER=dpc_admin
+   DB_NAME=dpcexplorer_db
+   DB_USER=dpcexplorer_admin
    DB_PASSWORD={secrets.token_urlsafe(16)}
    DB_HOST=localhost
-   DB_PORT=5432''')
+   DB_PORT=5432
+   DPCEXPLORER_ADMIN_WRITABLE=False''')
    " > .env
    ```
 
-   > **Note:** This creates a `.env` file with a `random Django secret key` and a `random database password`. You do not need to edit it manually. If you prefer your own values, simply open `.env` and change them.
+   > **Note:** This creates a `.env` file with a `random Django secret key` and a `random database password`. You do not need to edit it manually. If you prefer your own values, simply open `.env` and change them. The `DPCEXPLORER_ADMIN_WRITABLE` flag controls the admin panel: it is `False` (read-only) by default; set it to `True` only to enable full CRUD. See [ADMIN_PANEL.md](ADMIN_PANEL.md).
 
 4. **Download and prepare the datasets:**
 
@@ -389,6 +392,14 @@ All Django migrations are already included in the repository. Just run:
 python3 manage.py migrate
 ```
 
+After migrating, you can create an admin account to reach the admin panel at `/admin/`:
+
+```bash
+python3 manage.py createsuperuser
+```
+
+> **Note:** The admin panel is read-only by default; it inspects the data, never edits it. To enable full CRUD, set `DPCEXPLORER_ADMIN_WRITABLE=True` in your `.env`. See [ADMIN_PANEL.md](ADMIN_PANEL.md).
+
 ---
 
 ### 6. Run the Server
@@ -448,9 +459,9 @@ the database or user do not exist yet:
 
 ```bash
 sudo -u postgres psql -d postgres \
-  -c "DROP DATABASE IF EXISTS dpc_db;"
+  -c "DROP DATABASE IF EXISTS dpcexplorer_db;"
 sudo -u postgres psql -d postgres \
-  -c "DROP ROLE IF EXISTS dpc_admin;"
+  -c "DROP ROLE IF EXISTS dpcexplorer_admin;"
 ```
 
 Then go back to **Step 4** of the first-time setup to recreate them.
@@ -488,8 +499,8 @@ remove the clone:
 
 ```bash
 # 1. Drop the database and user (see section above)
-sudo -u postgres psql -d postgres -c "DROP DATABASE IF EXISTS dpc_db;"
-sudo -u postgres psql -d postgres -c "DROP ROLE IF EXISTS dpc_admin;"
+sudo -u postgres psql -d postgres -c "DROP DATABASE IF EXISTS dpcexplorer_db;"
+sudo -u postgres psql -d postgres -c "DROP ROLE IF EXISTS dpcexplorer_admin;"
 
 # 2. Remove the local clone (⚠ this deletes everything in the folder)
 cd ..
@@ -551,7 +562,8 @@ DPCexplorer builds on the following works; please cite them where relevant.
 This work was carried out during a Research Internship at the **Laboratory of Data Engineering (LADE)**, Area Science Park, Trieste, Italy, as part of the MDMC Master's programme at SISSA. 
 
 This project was funded by the European Union - NextGenerationEU via:
-* **NFFA-DI** (cod. IR0000015)
-* **EFC** (cod. SSU2024-00002)
+* **[NFFA-DI](https://nffa-di.it/)** (cod. IR0000015)
+* **[EFC](https://educatingfuturecitizens.com/)** (cod. SSU2024-00002)
+* **PRP@CERIC** (cod. IR0000028); PNRR Mission 4, Component 2, Investment 3.1, Action 3.1.1 ([prp-ri.eu](https://prp-ri.eu/))
   
 ---

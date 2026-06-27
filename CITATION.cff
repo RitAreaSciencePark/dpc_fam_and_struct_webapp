@@ -1,9 +1,12 @@
 cff-version: 1.2.0
 
 message: >-
-  To cite DPCexplorer, cite the SOFTWARE by default, using the Zenodo
-  concept DOI below (10.5281/zenodo.20575268), which always resolves to
-  the latest release.
+  If you use DPCexplorer, please cite the SOFTWARE by default, using the
+  Zenodo concept DOI below (10.5281/zenodo.20575268), which always resolves
+  to the latest release. For the methodology and full documentation, see the
+  MDMC thesis (10.5281/zenodo.20847161); for a concise overview, see the
+  eScience 2026 preprint (10.5281/zenodo.20766432). All related works are listed
+  under "references".
 
 type: software
 
@@ -11,9 +14,9 @@ title: >-
   DPCexplorer: A Django Web Application for Interactive Exploration
   of DPCfam and DPCstruct Protein Domain Classifications
 
-version: "v1.0.2"
+version: "v1.0.3"
 
-date-released: "2026-06-16"
+date-released: "2026-06-27"
 
 doi: "10.5281/zenodo.20575268"
 
@@ -102,7 +105,7 @@ identifiers:
     value: "10.5281/zenodo.20575268"
     description: >-
       Zenodo concept DOI for the DPCexplorer software; always resolves
-      to the latest archived release (currently v1.0.2).
+      to the latest archived release (currently v1.0.3).
   - type: doi
     value: "10.5281/zenodo.20159208"
     description: >-
@@ -127,8 +130,12 @@ references:
         orcid: "https://orcid.org/0000-0003-0433-8319"
     collection-title: "IEEE eScience 2026"
     year: 2026
+    doi: "10.5281/zenodo.20766432"
+    url: "https://doi.org/10.5281/zenodo.20766432"
     notes: >-
-      Under review at the IEEE eScience 2026 conference. 
+      A 8-page summary paper; preprint archived on Zenodo, under review at
+      the IEEE eScience 2026 conference.
+
 
   # --- the Master's thesis (different title) ---
   - type: thesis
@@ -143,11 +150,15 @@ references:
         SISSA - Scuola Internazionale Superiore di Studi Avanzati /
         Area Science Park, Trieste, Italy
     year: 2026
+    doi: "10.5281/zenodo.20847161"
+    url: "https://doi.org/10.5281/zenodo.20847161"
     notes: >-
-      Master in Data Management and Curation (MDMC) thesis. Supervised by
-      Dr. Valerio Piomponi and Dr. Elaheh Saadat. Funded by the European
-      Union NextGenerationEU projects NFFA-DI (cod. IR0000015) and EFC
-      (cod. SSU2024-00002). A Zenodo DOI will be added after the defense.
+      Master in Data Management and Curation (MDMC) thesis,
+      the full documentation of the project. Supervised by Dr. Valerio
+      Piomponi and Dr. Elaheh Saadat. Funded by the European Union
+      NextGenerationEU projects NFFA-DI (cod. IR0000015), EFC
+      (cod. SSU2024-00002), and PRP@CERIC (cod. IR0000028).
+
 
   # --- the preprocessed dataset deposit ---
   - type: data
