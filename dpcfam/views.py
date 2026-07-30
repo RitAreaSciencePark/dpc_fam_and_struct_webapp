@@ -1,5 +1,4 @@
 # dpcfam/views.py
-import os
 from django.conf import settings
 from django.shortcuts import render, redirect 
 from django.contrib import messages   
@@ -7,7 +6,7 @@ from django.views.generic import DetailView
 from django_tables2.views import SingleTableMixin
 from django_filters.views import FilterView
 from django.core.paginator import Paginator
-from django.templatetags.static import static
+from django.urls import reverse
 from django.db.models.expressions import RawSQL
 from django.db.models import IntegerField
 from .models import DpcfamMcsProperty
@@ -92,15 +91,47 @@ class DpcfamMcsDetailView(DetailView):
         context['alphafolds'] = alphafolds
         
         # Paths based on the static structure: static/production_files/dpcfam/...
-        context['fasta_file'] = static(f"production_files/dpcfam/metaclusters_fasta/{mcid}.fasta")
-        context['msa_file'] = static(f"production_files/dpcfam/metaclusters_cdhit_msas/{mcid}_msa.fasta")
-        # We are missing 26 HMM files in Standard DPCfam (e.g., MC25450), so check if it exists before adding to context
-        hmm_path = os.path.join(settings.BASE_DIR, "static", "production_files", "dpcfam", "metaclusters_hmms", f"{mcid}.hmm")
-        if os.path.exists(hmm_path):
-            context['hmm_file'] = static(f"production_files/dpcfam/metaclusters_hmms/{mcid}.hmm")
+        context["fasta_file"] = reverse(
+            "data_file",
+            kwargs={
+                "path": (
+                    f"production_files/dpcfam/"
+                    f"metaclusters_fasta/{mcid}.fasta"
+                )
+            },
+        )
+
+        context["msa_file"] = reverse(
+            "data_file",
+            kwargs={
+                "path": (
+                    f"production_files/dpcfam/"
+                    f"metaclusters_cdhit_msas/{mcid}_msa.fasta"
+                )
+            },
+        )
+
+        hmm_path = (
+            settings.DPC_DATA_ROOT
+            / "production_files"
+            / "dpcfam"
+            / "metaclusters_hmms"
+            / f"{mcid}.hmm"
+        )
+
+        if hmm_path.exists():
+            context["hmm_file"] = reverse(
+                "data_file",
+                kwargs={
+                    "path": (
+                        f"production_files/dpcfam/"
+                        f"metaclusters_hmms/{mcid}.hmm"
+                    )
+                },
+            )
         else:
-            context['hmm_file'] = None
-        
+            context["hmm_file"] = None
+
         # Split Pfam labels if valid (standardized with -)
         if self.object.pfam_da and self.object.pfam_da != 'UNKNOWN':
             context['pfam_architectures'] = self.object.pfam_da.split('-')

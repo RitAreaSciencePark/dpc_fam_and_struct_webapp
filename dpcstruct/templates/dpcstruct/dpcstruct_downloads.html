@@ -32,7 +32,7 @@
                     <td>DPCstruct Representative PDBs</td>
                     <td>One zipped PDB folder per metacluster, bundled into a single compressed archive.</td>
                     <td class="text-center">
-                    <a href="{% static 'downloads/dpcstruct/dpcstruct_mcid_pdbs.tar.gz' %}"
+                    <a href="{% url 'data_file' path='downloads/dpcstruct/dpcstruct_mcid_pdbs.tar.gz' %}"
                         class="btn btn-sm btn-primary"
                         download
                         aria-label="Download DPCStruct PDB files (tar.gz)">
@@ -44,7 +44,7 @@
                     <td>DPCstruct Representative Seed Sequences</td>
                     <td>One FASTA file per metacluster, bundled into a single compressed archive.</td>
                     <td class="text-center">
-                    <a href="{% static 'downloads/dpcstruct/dpcstruct_mcid_seeds.tar.gz' %}"
+                    <a href="{% url 'data_file' path='downloads/dpcstruct/dpcstruct_mcid_seeds.tar.gz' %}"
                         class="btn btn-sm btn-primary"
                         download
                         aria-label="Download DPCStruct seed sequences (tar.gz)">

@@ -6,7 +6,7 @@ from django.views.generic import DetailView, TemplateView
 from django_tables2.views import SingleTableMixin
 from django_filters.views import FilterView
 from django.core.paginator import Paginator
-from django.templatetags.static import static
+from django.urls import reverse
 from django.db.models.expressions import RawSQL
 from django.db.models import IntegerField
 from .models import DpcStructMcsProperty, DpcStructCath, DpcStructScop
@@ -140,25 +140,50 @@ class DpcStructDetailView(DetailView):
         context['scop_sample'] = scop_annotations[:5]  # Show first 5
 
         # Per-MC downloadable files
-        context['seqs_file'] = static(f"production_files/dpcstruct/dpcstruct_reps_seqs/{mc_id}.fasta")
-        context['pdbs_dir'] = static(f"production_files/dpcstruct/dpcstruct_reps_pdbs_zipped/{mc_id}_pdb.zip")
+        context["seqs_file"] = reverse(
+            "data_file",
+            kwargs={
+                "path": (
+                    f"production_files/dpcstruct/"
+                    f"dpcstruct_reps_seqs/{mc_id}.fasta"
+                )
+            },
+        )
+
+        context["pdbs_dir"] = reverse(
+            "data_file",
+            kwargs={
+                "path": (
+                    f"production_files/dpcstruct/"
+                    f"dpcstruct_reps_pdbs_zipped/{mc_id}_pdb.zip"
+                )
+            },
+        )
 
         # 3D Viewer: list PDB files in this MC's folder
-        pdb_folder = os.path.join(
-            settings.BASE_DIR, 'static',
-            'production_files', 'dpcstruct', 'dpcstruct_reps_pdbs',
-            f'{mc_id}_pdb'
+        pdb_folder = (
+            settings.DPC_DATA_ROOT
+            / "production_files"
+            / "dpcstruct"
+            / "dpcstruct_reps_pdbs"
+            / f"{mc_id}_pdb"
         )
+
         pdb_files = []
         if os.path.isdir(pdb_folder):
             for fname in sorted(os.listdir(pdb_folder)):
                 if fname.endswith('.pdb'):
                     pdb_files.append({
                         'name': fname,
-                        'url': static(
-                            f"production_files/dpcstruct/dpcstruct_reps_pdbs/"
-                            f"{mc_id}_pdb/{fname}"
-                        ),
+                        "url": reverse(
+                            "data_file",
+                            kwargs={
+                                "path": (
+                                    f"production_files/dpcstruct/"
+                                    f"dpcstruct_reps_pdbs/{mc_id}_pdb/{fname}"
+                                )
+                            },
+                            ),
                     })
         context['pdb_files'] = pdb_files
 

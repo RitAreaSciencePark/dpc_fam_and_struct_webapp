@@ -5,6 +5,7 @@ __pycache__/
 
 # Virtual environment
 .mdmc_venv/
+.venv/
 
 # Secrets -- NEVER commit 
 .env
@@ -23,6 +24,9 @@ dist/
 # Django local settings
 *.sqlite3
 
+# Generated Django static output
+staticfiles/
+
 # Static files : Only notebooks/, scripts/ and profiling_reports/ are tracked
 # Ignore everything inside static
 static/*
@@ -30,12 +34,12 @@ static/*
 !static/notebooks/
 !static/scripts/
 !static/profiling_reports/
-!images/
+!static/images/
 # And keep their contents
 !static/notebooks/**
 !static/scripts/**
 !static/profiling_reports/**
-!images/**
+!static/images/**
 
 # Jupyter
 .ipynb_checkpoints
