@@ -1,0 +1,267 @@
+{
+  "title": "DPCexplorer Docker, Kubernetes, and GitHub CI/CD Deployment Plan",
+  "repository": "RitAreaSciencePark/dpc_fam_and_struct_webapp",
+  "status": "Planning document only",
+  "architecture": {
+    "flow": [
+      "GitHub repository",
+      "GitHub Actions",
+      "GitHub Container Registry (GHCR)",
+      "Kubernetes Deployment",
+      "Existing PostgreSQL Service",
+      "Shared biological-data storage"
+    ],
+    "containers": {
+      "permanent_recommended": {
+        "count": 2,
+        "description": "Two identical Django/Gunicorn containers in separate Kubernetes pods."
+      },
+      "permanent_minimum": {
+        "count": 1,
+        "description": "One Django/Gunicorn container, suitable for initial testing but without high availability."
+      },
+      "postgresql": {
+        "count": 0,
+        "description": "The application uses the PostgreSQL Service already available in the Kubernetes cluster."
+      },
+      "temporary_per_release": [
+        {
+          "count": 1,
+          "description": "A migration container runs as a Kubernetes Job and exits when migrations finish."
+        }
+      ],
+      "temporary_first_installation": [
+        {
+          "count": 1,
+          "description": "A data-loader container populates the shared biological-data volume and then exits."
+        }
+      ]
+    }
+  },
+  "common_smoke_tests": [
+    "The homepage loads.",
+    "A known protein ID search works.",
+    "A known Pfam ID search works.",
+    "A known DPCfam metacluster page works.",
+    "DPCfam FASTA, MSA, and HMM files are downloadable.",
+    "A known DPCstruct metacluster page works.",
+    "The 3D structure viewer loads a PDB file.",
+    "The large archive download links work.",
+    "The admin login works.",
+    "Scientific tables remain read-only unless explicitly configured otherwise.",
+    "The liveness endpoint reports that Django is running.",
+    "The readiness endpoint confirms that PostgreSQL and biological-data storage are available."
+  ],
+  "milestones": [
+    {
+      "number": 0,
+      "name": "Establish a working baseline",
+      "goal": "Prove that the current application, database, and biological files work before changing deployment technology.",
+      "tasks": [
+        "Run the current application normally.",
+        "Confirm that PostgreSQL contains the DPC scientific tables and Django auth, admin, and session tables.",
+        "Select one known protein ID, Pfam ID, DPCfam metacluster ID, and DPCstruct metacluster ID for repeatable testing.",
+        "Record the common smoke-test results."
+      ],
+      "completion_check": [
+        "Run every common smoke test against the existing non-containerized application."
+      ],
+      "end_state": "The existing application continues to work exactly as before.",
+      "rollback": "No rollback is needed because this milestone does not change the application."
+    },
+    {
+      "number": 1,
+      "name": "Make Django production-ready without Docker",
+      "goal": "Prepare Django for production while it still runs directly from the Python virtual environment.",
+      "tasks": [
+        "Add Gunicorn to requirements.txt.",
+        "Run the WSGI application with Gunicorn on port 8000.",
+        "Add /health/live for process health.",
+        "Add /health/ready to check PostgreSQL and a biological-data sentinel file.",
+        "Change logging from a local file to stdout.",
+        "Set DEBUG=False and configure ALLOWED_HOSTS.",
+        "Configure CSRF_TRUSTED_ORIGINS for the production HTTPS URL.",
+        "Configure SECURE_PROXY_SSL_HEADER for the Kubernetes Ingress.",
+        "Replace STATICFILES_STORAGE with Django's current STORAGES configuration.",
+        "Separate normal static assets from biological data by introducing DPC_DATA_ROOT and DPC_DATA_URL.",
+        "Run python manage.py check --deploy."
+      ],
+      "suggested_configuration": {
+        "DEBUG": "False",
+        "ALLOWED_HOSTS": "dpcexplorer.areasciencepark.it",
+        "CSRF_TRUSTED_ORIGINS": "https://dpcexplorer.areasciencepark.it",
+        "DPC_DATA_ROOT": "/data",
+        "DPC_DATA_URL": "/data/"
+      },
+      "completion_check": [
+        "Start the application with Gunicorn from the virtual environment.",
+        "Run every common smoke test.",
+        "Confirm that logs appear on stdout.",
+        "Confirm that readiness fails when PostgreSQL is unavailable.",
+        "Confirm that readiness fails when the biological-data directory is unavailable."
+      ],
+      "end_state": "The complete application works in production mode without Docker.",
+      "rollback": "Run the previous application revision using the original virtual-environment startup method."
+    },
+    {
+      "number": 2,
+      "name": "Dockerize the application",
+      "goal": "Run the complete application as one Docker container while using an external PostgreSQL database and mounted biological data.",
+      "tasks": [
+        "Create a Dockerfile based on python:3.12-slim.",
+        "Install dependencies from requirements.txt.",
+        "Copy only application code and normal static assets.",
+        "Run collectstatic during the image build.",
+        "Create and use a non-root runtime user.",
+        "Start Gunicorn on 0.0.0.0:8000.",
+        "Create a .dockerignore file.",
+        "Exclude .venv, .git, logs, dataframes, downloads, production_files, notebooks, and profiling reports from the image.",
+        "Pass Django and PostgreSQL configuration through environment variables.",
+        "Mount the biological-data directory read-only at /data.",
+        "Do not include PostgreSQL in the application container.",
+        "Do not run setup_dpcexplorer_data.sh during every image build or container startup."
+      ],
+      "completion_check": [
+        "Start one Docker container against the existing populated PostgreSQL database.",
+        "Run every common smoke test.",
+        "Restart the container and confirm that no application data is lost.",
+        "Confirm that stopping the container does not affect PostgreSQL.",
+        "Confirm that the image does not contain the approximately 40 GB generated data directory."
+      ],
+      "end_state": "The complete application works from one portable Docker image.",
+      "container_count": {
+        "running_application_containers": 1,
+        "database_containers": 0
+      },
+      "rollback": "Stop the container and start the working non-containerized Gunicorn deployment from milestone 1."
+    },
+    {
+      "number": 3,
+      "name": "Deploy manually to Kubernetes",
+      "goal": "Run the tested image in Kubernetes before giving GitHub permission to deploy.",
+      "tasks": [
+        "Create or select a Kubernetes namespace for DPCexplorer.",
+        "Ask the database administrator to create a database and a dedicated least-privilege application user.",
+        "Transfer the working database with pg_dump and pg_restore, or load the project schema and datasets using the supplied scripts.",
+        "Use the Kubernetes PostgreSQL Service DNS name as DB_HOST.",
+        "Create an RWX PersistentVolumeClaim with approximately 60 to 70 GB capacity.",
+        "Populate the volume using a one-time, idempotent data-loader Job.",
+        "Create a /data/.dpcexplorer-data-ready sentinel after successful loading.",
+        "Mount the biological-data volume read-only at /data in every web pod.",
+        "Create a ConfigMap for non-secret settings.",
+        "Create a Secret for DJANGO_SECRET_KEY and DB_PASSWORD.",
+        "Create a migration Job using the application image.",
+        "Create a Deployment, ClusterIP Service, and HTTPS Ingress.",
+        "Start with one replica and increase to two after verification.",
+        "Configure liveness and readiness probes.",
+        "Keep real secret values out of Git."
+      ],
+      "database_configuration_example": {
+        "DB_HOST": "postgres-service.database-namespace.svc.cluster.local",
+        "DB_PORT": "5432",
+        "DB_NAME": "dpcexplorer_db",
+        "DB_USER": "dpcexplorer_app",
+        "DB_PASSWORD": "Read from a Kubernetes Secret"
+      },
+      "important_database_note": "Django migrations create and update Django's own tables. They do not create the scientific tables because those models use managed=False.",
+      "completion_check": [
+        "Run the migration Job and confirm that it completes.",
+        "Open the application through its HTTPS Ingress URL.",
+        "Run every common smoke test.",
+        "Delete one web pod and confirm that Kubernetes replaces it.",
+        "Confirm that the replacement pod uses the same database and data volume.",
+        "Scale to two replicas and confirm that both become ready.",
+        "Test a Kubernetes rollout rollback."
+      ],
+      "end_state": "The complete application runs manually on Kubernetes without depending on GitHub deployment automation.",
+      "container_count": {
+        "normal_permanent_web_containers": 2,
+        "temporary_migration_containers": 1,
+        "temporary_first_install_data_loader_containers": 1,
+        "database_containers_owned_by_application": 0
+      },
+      "rollback": "Use Kubernetes rollout undo or redeploy the previously verified image tag."
+    },
+    {
+      "number": 4,
+      "name": "Add GitHub continuous integration",
+      "goal": "Have GitHub validate changes and produce immutable images without automatically changing production.",
+      "tasks": [
+        "Create a GitHub Actions workflow for pull requests and main.",
+        "Start a small temporary PostgreSQL service in CI.",
+        "Install dependencies.",
+        "Run Django system checks and tests.",
+        "Check that model changes have corresponding migrations.",
+        "Build the Docker image.",
+        "Start the image in CI and test the liveness endpoint.",
+        "Use a small test fixture rather than the complete biological dataset.",
+        "Push the image to GitHub Container Registry only after merging to main.",
+        "Tag images using the Git commit SHA.",
+        "Enable main-branch protection and require CI to pass."
+      ],
+      "image_name_example": "ghcr.io/ritareasciencepark/dpc_fam_and_struct_webapp:<commit-sha>",
+      "completion_check": [
+        "Open a test pull request with an intentional failure and confirm that GitHub blocks merging.",
+        "Fix the failure and confirm that CI passes.",
+        "Merge the pull request.",
+        "Confirm that an image tagged with the commit SHA exists in GHCR.",
+        "Manually deploy that exact image to Kubernetes.",
+        "Run every common smoke test against the deployed image."
+      ],
+      "end_state": "GitHub produces verified images while Kubernetes deployment remains manual.",
+      "container_count": {
+        "normal_permanent_web_containers": 2,
+        "ci_containers": "Temporary and only present on the GitHub Actions runner."
+      },
+      "rollback": "Continue running the previously deployed Kubernetes image if CI or image publication fails."
+    },
+    {
+      "number": 5,
+      "name": "Add GitHub continuous deployment",
+      "goal": "Automatically deploy an image that has already passed CI to Kubernetes.",
+      "tasks": [
+        "Create a protected GitHub production Environment.",
+        "Require manual approval for production deployment.",
+        "Give GitHub a restricted Kubernetes identity that can manage only the DPCexplorer namespace.",
+        "Use a self-hosted GitHub Actions runner if the Kubernetes API is private.",
+        "Create a Kubernetes imagePullSecret if the GHCR image is private.",
+        "Deploy the exact image produced by CI without rebuilding it.",
+        "Run the migration Job and wait for it to succeed.",
+        "Update the Deployment to the commit-SHA image.",
+        "Wait for Kubernetes rollout status.",
+        "Call the readiness endpoint.",
+        "Run automatic known-ID smoke tests.",
+        "Mark the deployment successful only after all checks pass."
+      ],
+      "failure_rules": [
+        "If migrations fail, do not update the web Deployment.",
+        "If new pods fail readiness, keep the old ready pods serving traffic.",
+        "If post-deployment smoke tests fail, roll back to the previous image SHA.",
+        "Do not automatically reverse database migrations."
+      ],
+      "completion_check": [
+        "Make a harmless visible change in a pull request.",
+        "Let CI test and build the image.",
+        "Merge the pull request.",
+        "Approve the production deployment.",
+        "Confirm that the expected commit SHA is running.",
+        "Confirm that two replicas are ready.",
+        "Run every common smoke test.",
+        "Test rollback to the previous image SHA."
+      ],
+      "end_state": "Approved changes are tested, published, migrated, deployed, and verified automatically.",
+      "rollback": "Redeploy the previous immutable image SHA with Kubernetes rollout undo or the deployment workflow."
+    }
+  ],
+  "final_release_flow": [
+    "Open a pull request.",
+    "Run CI checks and tests.",
+    "Build one immutable application image.",
+    "Push the image to GHCR using the Git commit SHA.",
+    "Wait for production approval.",
+    "Run the migration Job.",
+    "Roll out two Django/Gunicorn containers.",
+    "Run readiness and functional smoke tests.",
+    "Keep or roll back the release based on the results."
+  ]
+}
