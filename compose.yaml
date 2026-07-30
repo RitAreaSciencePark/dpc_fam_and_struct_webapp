@@ -1,0 +1,36 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dpcexplorer:milestone-2-checkpoint-2
+
+    network_mode: host
+
+    env_file:
+      - .env
+
+    environment:
+      DEBUG: "False"
+      ALLOWED_HOSTS: "127.0.0.1,localhost"
+      DPC_DATA_ROOT: "/data"
+
+    volumes:
+      - ./static:/data:ro
+
+    read_only: true
+
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+
+    user: "10001:10001"
+
+    cap_drop:
+      - ALL
+
+    security_opt:
+      - no-new-privileges:true
+
+    stop_grace_period: 30s
+ 
+ 
