@@ -30,7 +30,7 @@
                     <td>DPCfam seed sequences</td>
                     <td>One FASTA file per metacluster, bundled into a single compressed archive.</td>
                     <td class="text-center">
-                    <a href="{% static 'downloads/dpcfam/dpcfam_mcid_seeds.tar.gz' %}"
+                    <a href="{% url 'data_file' path='downloads/dpcfam/dpcfam_mcid_seeds.tar.gz' %}"
                         class="btn btn-sm btn-primary"
                         download
                         aria-label="Download DPCfam seed sequences (tar.gz)">
@@ -42,7 +42,7 @@
                     <td>DPCfam MSAs</td>
                     <td>One Multiple Sequence Alignment file per metacluster, bundled into a single compressed archive.</td>
                     <td class="text-center">
-                    <a href="{% static 'downloads/dpcfam/dpcfam_mcid_msas.tar.gz' %}"
+                    <a href="{% url 'data_file' path='downloads/dpcfam/dpcfam_mcid_msas.tar.gz' %}"
                         class="btn btn-sm btn-primary"
                         download
                         aria-label="Download DPCfam MSA files (tar.gz)">
@@ -56,7 +56,7 @@
                     Note: 26 metaclusters have no HMM file in the source data (e.g., MC25450).
                     </td>
                     <td class="text-center">
-                    <a href="{% static 'downloads/dpcfam/dpcfam_mcid_hmms.tar.gz' %}"
+                    <a href="{% url 'data_file' path='downloads/dpcfam/dpcfam_mcid_hmms.tar.gz' %}"
                         class="btn btn-sm btn-primary"
                         download
                         aria-label="Download DPCfam HMM profiles (tar.gz)">
@@ -70,7 +70,7 @@
                      Two comprehensive profile files: one covering the Standard DPCfam subset and one covering DPCfamB, bundled together.
                      </td>
                     <td class="text-center">
-                    <a href="{% static 'downloads/dpcfam/dpcfam_all_metaclusters_hmms.tar.gz' %}"
+                    <a href="{% url 'data_file' path='downloads/dpcfam/dpcfam_all_metaclusters_hmms.tar.gz' %}"
                         class="btn btn-sm btn-primary"
                         download
                         aria-label="Download all DPCfam HMM profiles (tar.gz)">

@@ -41,4 +41,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('dpcfam/', include('dpcfam.urls')),
     path('dpcstruct/', include('dpcstruct.urls')),
+    path("health/live", views.health_live, name="health_live"),
+    path("health/ready", views.health_ready, name="health_ready"),
+    path("data/<path:path>", views.data_file, name="data_file"),
 ]

@@ -7,6 +7,131 @@ from dpcstruct.models import DpcStructMcsProperty, DpcStructMcsSequence
 from django.db.models.expressions import RawSQL
 from django.db.models import IntegerField
 
+from pathlib import Path
+
+from django.http import FileResponse, Http404, JsonResponse
+from django.views.decorators.http import require_safe
+
+from django.conf import settings
+from django.db import connection
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+def health_live(request):
+    """Confirm that the Django process can answer requests."""
+    return JsonResponse({"status": "ok"})
+
+
+def health_ready(request):
+    """Confirm that the database, scientific tables, and data files are ready."""
+    checks = {
+        "database": False,
+        "scientific_tables": False,
+        "data_files": False,
+    }
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+            checks["database"] = cursor.fetchone() == (1,)
+
+            cursor.execute(
+                """
+                SELECT
+                    EXISTS (
+                        SELECT 1
+                        FROM dpcfam_mcs_properties
+                        LIMIT 1
+                    ),
+                    EXISTS (
+                        SELECT 1
+                        FROM dpcstruct_mcs_properties
+                        LIMIT 1
+                    )
+                """
+            )
+            checks["scientific_tables"] = all(cursor.fetchone())
+    except Exception as exc:
+        logger.warning("Readiness database check failed: %s", exc)
+
+    required_data_directories = (
+        settings.DPC_DATA_ROOT
+        / "production_files"
+        / "dpcfam"
+        / "metaclusters_fasta",
+        settings.DPC_DATA_ROOT
+        / "production_files"
+        / "dpcfam"
+        / "metaclusters_hmms",
+        settings.DPC_DATA_ROOT
+        / "production_files"
+        / "dpcfam"
+        / "metaclusters_cdhit_msas",
+        settings.DPC_DATA_ROOT
+        / "production_files"
+        / "dpcstruct"
+        / "dpcstruct_reps_seqs",
+        settings.DPC_DATA_ROOT
+        / "production_files"
+        / "dpcstruct"
+        / "dpcstruct_reps_pdbs",
+        settings.DPC_DATA_ROOT
+        / "downloads"
+        / "dpcfam",
+        settings.DPC_DATA_ROOT
+        / "downloads"
+        / "dpcstruct",
+    )
+
+    try:
+        checks["data_files"] = all(
+            directory.is_dir()
+            and next(directory.iterdir(), None) is not None
+            for directory in required_data_directories
+        )
+    except OSError as exc:
+        checks["data_files"] = False
+        logger.warning("Readiness data-file check failed: %s", exc)
+
+    ready = all(checks.values())
+
+    return JsonResponse(
+        {
+            "status": "ready" if ready else "not_ready",
+            "checks": checks,
+        },
+        status=200 if ready else 503,
+    )
+
+
+@require_safe
+def data_file(request, path):
+    """Serve immutable biological data from DPC_DATA_ROOT."""
+
+    relative_path = Path(path)
+
+    # Only expose the two public biological-data directories.
+    if (
+        not relative_path.parts
+        or relative_path.parts[0] not in {"downloads", "production_files"}
+    ):
+        raise Http404
+
+    data_root = settings.DPC_DATA_ROOT.resolve()
+    requested_file = (data_root / relative_path).resolve()
+
+    # Prevent paths such as /data/../../some-private-file.
+    if data_root not in requested_file.parents:
+        raise Http404
+
+    if not requested_file.is_file():
+        raise Http404
+
+    response = FileResponse(requested_file.open("rb"))
+    response["Cache-Control"] = "public, max-age=3600"
+    return response
 
 def search(request):
     database = request.GET.get('database')

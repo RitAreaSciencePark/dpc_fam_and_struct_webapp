@@ -16,6 +16,10 @@ from decouple import config
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+DPC_DATA_ROOT = Path(
+    config("DPC_DATA_ROOT", default=BASE_DIR / "static")
+)
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -26,6 +30,62 @@ ALLOWED_HOSTS = config(
     'ALLOWED_HOSTS',
     default='127.0.0.1,localhost',
     cast=lambda v: [s.strip() for s in v.split(',')]
+)
+
+CSRF_TRUSTED_ORIGINS = config(
+    "CSRF_TRUSTED_ORIGINS",
+    default="",
+    cast=lambda value: [
+        origin.strip()
+        for origin in value.split(",")
+        if origin.strip()
+    ],
+)
+
+# Enable this only when Django is behind a trusted HTTPS proxy or Ingress.
+TRUST_X_FORWARDED_PROTO = config(
+    "TRUST_X_FORWARDED_PROTO",
+    default=False,
+    cast=bool,
+)
+
+if TRUST_X_FORWARDED_PROTO:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+SECURE_SSL_REDIRECT = config(
+    "SECURE_SSL_REDIRECT",
+    default=False,
+    cast=bool,
+)
+
+SESSION_COOKIE_SECURE = config(
+    "SESSION_COOKIE_SECURE",
+    default=False,
+    cast=bool,
+)
+
+CSRF_COOKIE_SECURE = config(
+    "CSRF_COOKIE_SECURE",
+    default=False,
+    cast=bool,
+)
+
+SECURE_HSTS_SECONDS = config(
+    "SECURE_HSTS_SECONDS",
+    default=0,
+    cast=int,
+)
+
+SECURE_HSTS_INCLUDE_SUBDOMAINS = config(
+    "SECURE_HSTS_INCLUDE_SUBDOMAINS",
+    default=False,
+    cast=bool,
+)
+
+SECURE_HSTS_PRELOAD = config(
+    "SECURE_HSTS_PRELOAD",
+    default=False,
+    cast=bool,
 )
 
 # Admin write mode.
@@ -145,28 +205,48 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 STATICFILES_DIRS = [
-    BASE_DIR / "static",
+    ("images", BASE_DIR / "static" / "images"),
 ]
 
 # Enable Whitenoise storage for better caching/compression in production
-if not DEBUG:
-    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": (
+            "whitenoise.storage.CompressedManifestStaticFilesStorage"
+        ),
+    },
+}
+
+LOG_LEVEL = config("LOG_LEVEL", default="INFO").upper()
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'logs' / 'django_errors.log',
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "standard": {
+            "format": "{levelname} {asctime} {name} {message}",
+            "style": "{",
         },
     },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'ERROR',
-            'propagate': True,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "standard",
+            "stream": "ext://sys.stdout",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": LOG_LEVEL,
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": LOG_LEVEL,
+            "propagate": False,
         },
     },
 }
