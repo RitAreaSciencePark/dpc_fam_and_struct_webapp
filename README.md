@@ -73,9 +73,10 @@ metacluster ID, by Pfam ID (family or clan), or by UniProt accession, and explor
 results through interactive tables, a domain-architecture diagram, and
 an embedded **3D molecular viewer** powered by PDBe-Molstar.
 
-> 📚 **Further documentation.** Two companion guides live next to this README:
-> [**`ARCHITECTURE.md`**](ARCHITECTURE.md) maps the repository, the source apps, the preprocessing notebooks and scripts, and the static assets, so you can find your way around; and
-> [**`ADMIN_PANEL.md`**](ADMIN_PANEL.md) documents the admin panel, its read-only default, and how to enable full CRUD.
+> 📚 **Further documentation.** Three companion guides live next to this README:
+> [**`ARCHITECTURE.md`**](ARCHITECTURE.md) maps the repository, the source apps, the preprocessing notebooks and scripts, and the static assets, so you can find your way around;
+> [**`ADMIN_PANEL.md`**](ADMIN_PANEL.md) documents the admin panel, its read-only default, and how to enable full CRUD; and
+> [**`docs/DOCKER.md`**](docs/DOCKER.md) explains how to build, run, test, and stop the containerized application.
 
 ---
 

@@ -47,5 +47,3 @@ HEALTHCHECK \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/live', timeout=2).read()"
 
 CMD ["gunicorn", "dpc_fam_and_struct_webapp.wsgi:application", "--bind=0.0.0.0:8000", "--workers=2", "--timeout=120", "--graceful-timeout=30", "--worker-tmp-dir=/tmp", "--access-logfile=-", "--error-logfile=-"]
- 
- 

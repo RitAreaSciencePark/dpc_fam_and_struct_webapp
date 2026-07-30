@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: dpcexplorer:milestone-2-checkpoint-2
+    image: dpcexplorer:local
 
     network_mode: host
 
@@ -32,5 +32,3 @@ services:
       - no-new-privileges:true
 
     stop_grace_period: 30s
- 
- 

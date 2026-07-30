@@ -109,5 +109,3 @@ echo "Read-only biological-data check passed."
 BASE_URL="http://127.0.0.1:8000" ./scripts/smoke-test.sh
 
 echo "All container checks passed."
- 
- 

@@ -136,5 +136,3 @@ fi
 rm -f "${not_found_file}"
 
 echo "All HTTP smoke tests passed."
- 
- 
