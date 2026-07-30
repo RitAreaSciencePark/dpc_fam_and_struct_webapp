@@ -1,0 +1,24 @@
+.git
+.github
+.venv
+.env
+.env.*
+__pycache__
+*.py[cod]
+.pytest_cache
+.mypy_cache
+staticfiles
+logs/*
+build
+dist
+*.egg-info
+
+# The image needs only normal web images.
+static/*
+!static/images/
+!static/images/**
+
+# Development and preprocessing material
+*.ipynb
+*.pdf
+
