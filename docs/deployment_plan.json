@@ -1,28 +1,74 @@
 {
   "title": "DPCexplorer Docker, Kubernetes, and GitHub CI/CD Deployment Plan",
   "repository": "RitAreaSciencePark/dpc_fam_and_struct_webapp",
-  "status": "Planning document only",
+  "status": "Milestones 0-2 completed; Kubernetes and CI/CD milestones planned",
+  "self_sufficiency_contract": {
+    "definition": "A checkpoint is complete only when the complete application passes the common smoke tests in an explicitly named working environment.",
+    "before_kubernetes_cutover": "The verified local Docker deployment remains the working full application while new Kubernetes resources are built in parallel.",
+    "after_kubernetes_cutover": "The currently deployed Kubernetes release remains available until the replacement release passes readiness and the common smoke tests.",
+    "substep_rule": "Creating storage, loading data, restoring PostgreSQL, running migrations, and starting pods are substeps. None is considered a completed checkpoint on its own.",
+    "failure_rule": "If any substep fails, do not mark the checkpoint complete. Keep or restore the last environment that passed the full smoke test.",
+    "required_checkpoint_evidence": [
+      "The homepage loads.",
+      "Known protein, Pfam, DPCfam, and DPCstruct queries work.",
+      "Biological downloads work.",
+      "The DPCstruct 3D viewer works.",
+      "The admin interface works in its intended read-only mode.",
+      "Liveness and readiness pass.",
+      "The rollback target remains identified and usable."
+    ]
+  },
   "architecture": {
     "flow": [
       "GitHub repository",
       "GitHub Actions",
       "GitHub Container Registry (GHCR)",
-      "Kubernetes Deployment",
-      "Existing PostgreSQL Service",
-      "Shared biological-data storage"
+      "kdevel preproduction cluster",
+      "kprod production cluster",
+      "Django/Gunicorn Deployment",
+      "CloudNativePG PostgreSQL cluster",
+      "Shared RWX biological-data storage"
     ],
+    "kubernetes_profile": {
+      "namespace": "dpcdom",
+      "preproduction_cluster": "kdevel",
+      "production_cluster": "kprod",
+      "production_url": "https://dpcexplorer.areasciencepark.it/",
+      "web_deployment": "dpcexplorer-web",
+      "web_service": "dpcexplorer-web",
+      "data_pvc": {
+        "name": "dpcexplorer-data",
+        "capacity": "70Gi",
+        "access_mode": "ReadWriteMany",
+        "storage_class": "cephfs-hdd-ec"
+      },
+      "postgresql": {
+        "cluster_name": "dpcexplorer-postgresql",
+        "write_service": "dpcexplorer-postgresql-rw",
+        "database": "dpcexplorer",
+        "owner": "dpcexplorer_app",
+        "preproduction_instances": 1,
+        "preproduction_storage": "50Gi",
+        "preproduction_storage_class": "rbd-nvme-replica"
+      },
+      "existing_dpcdom_resources": "Training resources only. Keep them until the parallel DPCexplorer stack passes the full Kubernetes smoke test, then remove them."
+    },
     "containers": {
-      "permanent_recommended": {
+      "permanent_web_recommended": {
         "count": 2,
         "description": "Two identical Django/Gunicorn containers in separate Kubernetes pods."
       },
-      "permanent_minimum": {
+      "permanent_web_initial": {
         "count": 1,
-        "description": "One Django/Gunicorn container, suitable for initial testing but without high availability."
+        "description": "One Django/Gunicorn container during the first internal Kubernetes validation."
       },
-      "postgresql": {
-        "count": 0,
-        "description": "The application uses the PostgreSQL Service already available in the Kubernetes cluster."
+      "permanent_postgresql_preproduction": {
+        "count": 1,
+        "description": "One CloudNativePG PostgreSQL instance in kdevel. PostgreSQL is not embedded in the Django container."
+      },
+      "total_permanent_preproduction_after_scaling": {
+        "count": 3,
+        "description": "Two web containers plus one CloudNativePG PostgreSQL container."
       },
       "temporary_per_release": [
         {
@@ -56,6 +102,7 @@
     {
       "number": 0,
       "name": "Establish a working baseline",
+      "completion_status": "completed",
       "goal": "Prove that the current application, database, and biological files work before changing deployment technology.",
       "tasks": [
         "Run the current application normally.",
@@ -72,6 +119,7 @@
     {
       "number": 1,
       "name": "Make Django production-ready without Docker",
+      "completion_status": "completed",
       "goal": "Prepare Django for production while it still runs directly from the Python virtual environment.",
       "tasks": [
         "Add Gunicorn to requirements.txt.",
@@ -106,6 +154,7 @@
     {
       "number": 2,
       "name": "Dockerize the application",
+      "completion_status": "completed",
       "goal": "Run the complete application as one Docker container while using an external PostgreSQL database and mounted biological data.",
       "tasks": [
         "Create a Dockerfile based on python:3.12-slim.",
@@ -137,131 +186,263 @@
     },
     {
       "number": 3,
-      "name": "Deploy manually to Kubernetes",
-      "goal": "Run the tested image in Kubernetes before giving GitHub permission to deploy.",
-      "tasks": [
-        "Create or select a Kubernetes namespace for DPCexplorer.",
-        "Ask the database administrator to create a database and a dedicated least-privilege application user.",
-        "Transfer the working database with pg_dump and pg_restore, or load the project schema and datasets using the supplied scripts.",
-        "Use the Kubernetes PostgreSQL Service DNS name as DB_HOST.",
-        "Create an RWX PersistentVolumeClaim with approximately 60 to 70 GB capacity.",
-        "Populate the volume using a one-time, idempotent data-loader Job.",
-        "Create a /data/.dpcexplorer-data-ready sentinel after successful loading.",
-        "Mount the biological-data volume read-only at /data in every web pod.",
-        "Create a ConfigMap for non-secret settings.",
-        "Create a Secret for DJANGO_SECRET_KEY and DB_PASSWORD.",
-        "Create a migration Job using the application image.",
-        "Create a Deployment, ClusterIP Service, and HTTPS Ingress.",
-        "Start with one replica and increase to two after verification.",
-        "Configure liveness and readiness probes.",
-        "Keep real secret values out of Git."
-      ],
-      "database_configuration_example": {
-        "DB_HOST": "postgres-service.database-namespace.svc.cluster.local",
-        "DB_PORT": "5432",
-        "DB_NAME": "dpcexplorer_db",
-        "DB_USER": "dpcexplorer_app",
-        "DB_PASSWORD": "Read from a Kubernetes Secret"
-      },
-      "important_database_note": "Django migrations create and update Django's own tables. They do not create the scientific tables because those models use managed=False.",
-      "completion_check": [
-        "Run the migration Job and confirm that it completes.",
-        "Open the application through its HTTPS Ingress URL.",
-        "Run every common smoke test.",
-        "Delete one web pod and confirm that Kubernetes replaces it.",
-        "Confirm that the replacement pod uses the same database and data volume.",
-        "Scale to two replicas and confirm that both become ready.",
-        "Test a Kubernetes rollout rollback."
-      ],
-      "end_state": "The complete application runs manually on Kubernetes without depending on GitHub deployment automation.",
-      "container_count": {
-        "normal_permanent_web_containers": 2,
-        "temporary_migration_containers": 1,
-        "temporary_first_install_data_loader_containers": 1,
-        "database_containers_owned_by_application": 0
-      },
-      "rollback": "Use Kubernetes rollout undo or redeploy the previously verified image tag."
+      "name": "Build a complete kdevel preproduction deployment in parallel",
+      "completion_status": "planned",
+      "goal": "Deploy and verify the complete application in the dpcdom namespace on kdevel without sacrificing the last working full application.",
+      "checkpoint_policy": "The infrastructure operations inside a checkpoint are substeps. A checkpoint closes only after the named working environment passes every common smoke test.",
+      "checkpoints": [
+        {
+          "id": "3.1",
+          "name": "Create reviewable Kubernetes manifests",
+          "working_environment_at_end": "The complete local Docker application from milestone 2.",
+          "substeps": [
+            "Create k8s/base plus k8s/overlays/kdevel and k8s/overlays/kprod.",
+            "Define the dpcexplorer-web Deployment and Service, dpcexplorer-data RWX PersistentVolumeClaim, dpcexplorer-postgresql CloudNativePG cluster, ConfigMap references, Secret references, migration Job, data-loader Job, and Ingress.",
+            "Reference an immutable GHCR image tag or digest.",
+            "Keep all real passwords, Django secret keys, certificates, and kubeconfig data out of Git.",
+            "Render and inspect the kdevel manifests with kubectl kustomize without changing the cluster."
+          ],
+          "completion_check": [
+            "The kdevel manifests render successfully.",
+            "The rendered resource names, namespace, storage classes, access modes, ports, probes, and secret references are correct.",
+            "Run the complete local Docker smoke-test script and confirm every common smoke test still passes."
+          ],
+          "end_state": "A reviewable Kubernetes design exists, and the complete application is still working locally.",
+          "rollback": "Discard or correct only the uncommitted manifest changes; the local Docker application remains unchanged."
+        },
+        {
+          "id": "3.2",
+          "name": "Deploy one complete internal Kubernetes stack",
+          "working_environment_at_end": "The complete application on kdevel through a local port-forward; the local Docker deployment remains a fallback.",
+          "substeps": [
+            "Publish the verified application image to GHCR using the Git commit SHA and configure image pulling in dpcdom if the package is private.",
+            "Create the 70Gi dpcexplorer-data RWX PersistentVolumeClaim using cephfs-hdd-ec.",
+            "Create the one-instance dpcexplorer-postgresql CloudNativePG cluster with 50Gi on rbd-nvme-replica.",
+            "Load the biological data with an idempotent Job and create the readiness sentinel only after validation succeeds.",
+            "Create a verified pg_dump from the working database and restore it into database dpcexplorer through dpcexplorer-postgresql-rw.",
+            "Run Django migrations as a one-time Job. Remember that migrations do not create the scientific tables whose models use managed=False.",
+            "Create new DPCexplorer ConfigMaps and Secrets; do not reuse the fake OpenProject secret.",
+            "Deploy one dpcexplorer-web pod, its ClusterIP Service, and the liveness and readiness probes.",
+            "Use kubectl port-forward for internal validation.",
+            "Keep the existing training resources and the local Docker application until all completion checks pass."
+          ],
+          "completion_check": [
+            "The PostgreSQL cluster, data-loader Job, database restore, and migration Job have completed successfully.",
+            "The web pod is Ready and both health endpoints pass.",
+            "Run every common smoke test through the port-forward, including the 3D viewer and real downloads.",
+            "Confirm the exact application image SHA or digest.",
+            "Confirm the local Docker rollback environment is still usable."
+          ],
+          "end_state": "The complete application works internally on kdevel with PostgreSQL and biological data, without depending on an Ingress.",
+          "rollback": "Delete or repair only the new dpcexplorer-* resources and continue using the verified local Docker deployment."
+        },
+        {
+          "id": "3.3",
+          "name": "Expose and verify the complete kdevel application over HTTPS",
+          "working_environment_at_end": "The complete application on kdevel through its preproduction HTTPS address.",
+          "substeps": [
+            "Confirm a dedicated preproduction hostname with the Kubernetes administrator.",
+            "Create DNS and TLS configuration and an Ingress using the approved kdevel ingress class, expected to be nginx-devel.",
+            "Configure ALLOWED_HOSTS, CSRF_TRUSTED_ORIGINS, proxy HTTPS handling, secure cookies, and production error pages for the preproduction hostname.",
+            "Route the Ingress to the dpcexplorer-web Service."
+          ],
+          "completion_check": [
+            "The TLS certificate is valid and HTTP redirects to HTTPS.",
+            "Both health endpoints pass through the HTTPS address.",
+            "Run every common smoke test through HTTPS, including the 3D viewer, admin login, and large downloads.",
+            "Confirm that the internal Kubernetes route and local Docker rollback environment remain available."
+          ],
+          "end_state": "The complete application works over HTTPS on kdevel.",
+          "rollback": "Remove or correct only the new Ingress and continue using the internal port-forward or local Docker deployment."
+        },
+        {
+          "id": "3.4",
+          "name": "Validate high availability and remove training resources",
+          "working_environment_at_end": "The complete HTTPS application on kdevel with two web replicas and one PostgreSQL instance.",
+          "substeps": [
+            "Scale dpcexplorer-web from one replica to two.",
+            "Confirm that both replicas mount the same RWX biological-data volume read-only.",
+            "Delete one web pod and confirm that Kubernetes replaces it without losing service.",
+            "Test deployment rollback using a previously verified immutable image.",
+            "After all tests pass, remove only the disposable training dpcdom-django and dpcdom-postgresql resources approved for replacement.",
+            "Confirm that namespace CPU, memory, PVC, and storage usage remain within quota."
+          ],
+          "completion_check": [
+            "Two web replicas are Ready and the PostgreSQL instance is Ready.",
+            "The application remains available while one web pod is replaced.",
+            "A rollback to a known-good image works.",
+            "Run every common smoke test again through HTTPS after cleanup.",
+            "Record the running image digest and the database backup or restore point."
+          ],
+          "end_state": "kdevel contains the complete, resilient preproduction DPCexplorer stack, with three permanent containers: two web and one PostgreSQL.",
+          "rollback": "Redeploy the recorded known-good image, scale back to one web replica if necessary, and restore PostgreSQL from the recorded backup or restore point. Do not remove the local fallback until this checkpoint is accepted."
+        }
+      ]
     },
     {
       "number": 4,
-      "name": "Add GitHub continuous integration",
-      "goal": "Have GitHub validate changes and produce immutable images without automatically changing production.",
-      "tasks": [
-        "Create a GitHub Actions workflow for pull requests and main.",
-        "Start a small temporary PostgreSQL service in CI.",
-        "Install dependencies.",
-        "Run Django system checks and tests.",
-        "Check that model changes have corresponding migrations.",
-        "Build the Docker image.",
-        "Start the image in CI and test the liveness endpoint.",
-        "Use a small test fixture rather than the complete biological dataset.",
-        "Push the image to GitHub Container Registry only after merging to main.",
-        "Tag images using the Git commit SHA.",
-        "Enable main-branch protection and require CI to pass."
-      ],
+      "name": "Add GitHub CI/CD while keeping kdevel working",
+      "completion_status": "planned",
+      "goal": "Make GitHub test, publish, and deploy immutable images without allowing a failed automation change to replace the working kdevel release.",
       "image_name_example": "ghcr.io/ritareasciencepark/dpc_fam_and_struct_webapp:<commit-sha>",
-      "completion_check": [
-        "Open a test pull request with an intentional failure and confirm that GitHub blocks merging.",
-        "Fix the failure and confirm that CI passes.",
-        "Merge the pull request.",
-        "Confirm that an image tagged with the commit SHA exists in GHCR.",
-        "Manually deploy that exact image to Kubernetes.",
-        "Run every common smoke test against the deployed image."
-      ],
-      "end_state": "GitHub produces verified images while Kubernetes deployment remains manual.",
-      "container_count": {
-        "normal_permanent_web_containers": 2,
-        "ci_containers": "Temporary and only present on the GitHub Actions runner."
-      },
-      "rollback": "Continue running the previously deployed Kubernetes image if CI or image publication fails."
+      "checkpoints": [
+        {
+          "id": "4.1",
+          "name": "Add non-deploying pull-request CI",
+          "working_environment_at_end": "The existing complete HTTPS application on kdevel.",
+          "substeps": [
+            "Create a GitHub Actions pull-request workflow with a small temporary PostgreSQL service and test fixtures.",
+            "Install dependencies and run Django system checks, tests, and migration consistency checks.",
+            "Build the Docker image, start it, test liveness, and scan it for important vulnerabilities.",
+            "Protect the main branch and require the workflow to pass.",
+            "Do not grant this workflow Kubernetes deployment permission."
+          ],
+          "completion_check": [
+            "An intentional test failure blocks a test pull request.",
+            "After fixing the failure, all CI gates pass.",
+            "The workflow has not changed the kdevel cluster.",
+            "Run every common smoke test against the currently deployed kdevel application."
+          ],
+          "end_state": "Pull requests are gated by CI, and the complete kdevel application remains working.",
+          "rollback": "Disable or revert the workflow change; keep the currently deployed kdevel release."
+        },
+        {
+          "id": "4.2",
+          "name": "Publish one immutable GHCR image after merge",
+          "working_environment_at_end": "The existing complete HTTPS application on kdevel, plus a verified deployable image in GHCR.",
+          "substeps": [
+            "Extend the main-branch workflow to build the image once after CI passes.",
+            "Push the image to GHCR with the exact Git commit SHA and record its digest.",
+            "Configure package visibility and image-pull authentication with least privilege.",
+            "Do not deploy the new package automatically in this checkpoint."
+          ],
+          "completion_check": [
+            "The GHCR package exists with the expected commit-SHA tag.",
+            "The recorded digest identifies the exact tested image.",
+            "A clean pull and container liveness check succeed.",
+            "Run every common smoke test against the unchanged kdevel deployment."
+          ],
+          "end_state": "GitHub produces a verified immutable image while the complete kdevel application continues serving.",
+          "rollback": "Stop publishing new images and continue using the currently deployed known-good digest."
+        },
+        {
+          "id": "4.3",
+          "name": "Add protected automated deployment to kdevel",
+          "working_environment_at_end": "The complete HTTPS application on kdevel, deployed from GitHub using a verified immutable digest.",
+          "substeps": [
+            "Create a protected GitHub kdevel Environment and store only the required deployment credentials there.",
+            "Use a restricted Kubernetes identity for the dpcdom namespace and a self-hosted GitHub Actions runner if the Kubernetes API is private.",
+            "Deploy the exact digest already produced by CI without rebuilding it.",
+            "Run the migration Job first and stop the release if it fails.",
+            "Perform a rolling web Deployment update, wait for readiness, and run automated HTTPS smoke tests.",
+            "Keep old Ready pods serving until the new pods pass readiness.",
+            "If post-deployment tests fail, roll back the web Deployment to the recorded previous digest; never automatically reverse database migrations."
+          ],
+          "completion_check": [
+            "Deploy a harmless visible change through the protected workflow.",
+            "Confirm the expected commit SHA and digest are running in two Ready web pods.",
+            "Run every common smoke test through the kdevel HTTPS address.",
+            "Deploy the previous known-good digest and then restore the new digest, running the full smoke suite after each deployment."
+          ],
+          "end_state": "Approved kdevel releases are tested, published, migrated, deployed, verified, and reversible while the complete application remains available.",
+          "rollback": "Redeploy the recorded previous immutable digest and keep database migrations forward-compatible."
+        }
+      ]
     },
     {
       "number": 5,
-      "name": "Add GitHub continuous deployment",
-      "goal": "Automatically deploy an image that has already passed CI to Kubernetes.",
-      "tasks": [
-        "Create a protected GitHub production Environment.",
-        "Require manual approval for production deployment.",
-        "Give GitHub a restricted Kubernetes identity that can manage only the DPCexplorer namespace.",
-        "Use a self-hosted GitHub Actions runner if the Kubernetes API is private.",
-        "Create a Kubernetes imagePullSecret if the GHCR image is private.",
-        "Deploy the exact image produced by CI without rebuilding it.",
-        "Run the migration Job and wait for it to succeed.",
-        "Update the Deployment to the commit-SHA image.",
-        "Wait for Kubernetes rollout status.",
-        "Call the readiness endpoint.",
-        "Run automatic known-ID smoke tests.",
-        "Mark the deployment successful only after all checks pass."
-      ],
-      "failure_rules": [
-        "If migrations fail, do not update the web Deployment.",
-        "If new pods fail readiness, keep the old ready pods serving traffic.",
-        "If post-deployment smoke tests fail, roll back to the previous image SHA.",
-        "Do not automatically reverse database migrations."
-      ],
-      "completion_check": [
-        "Make a harmless visible change in a pull request.",
-        "Let CI test and build the image.",
-        "Merge the pull request.",
-        "Approve the production deployment.",
-        "Confirm that the expected commit SHA is running.",
-        "Confirm that two replicas are ready.",
-        "Run every common smoke test.",
-        "Test rollback to the previous image SHA."
-      ],
-      "end_state": "Approved changes are tested, published, migrated, deployed, and verified automatically.",
-      "rollback": "Redeploy the previous immutable image SHA with Kubernetes rollout undo or the deployment workflow."
+      "name": "Promote the complete application to kprod in parallel",
+      "completion_status": "planned",
+      "goal": "Build and validate a separate production stack, then move the public URL only after the complete application works on kprod.",
+      "checkpoints": [
+        {
+          "id": "5.1",
+          "name": "Build a complete internal kprod stack",
+          "working_environment_at_end": "The complete application on kprod through an internal validation route; kdevel remains the external fallback.",
+          "substeps": [
+            "Confirm the kprod namespace, quotas, storage classes, ingress class, network policy, and backup policy with the administrator.",
+            "Apply the kprod overlay to create production RWX biological-data storage and a production CloudNativePG cluster with the agreed high-availability and backup settings.",
+            "Populate and validate the data volume, restore a verified database backup, and run migrations.",
+            "Deploy the same immutable image digest already accepted on kdevel, plus its Service and health probes.",
+            "Keep the complete kdevel application running throughout the build."
+          ],
+          "completion_check": [
+            "All kprod database, storage, migration, web, Service, and probe checks pass.",
+            "Run every common smoke test through a port-forward or private validation route.",
+            "Confirm the kprod database backup and restore procedure.",
+            "Confirm the complete kdevel environment remains available as the rollback target."
+          ],
+          "end_state": "The complete application works internally on kprod before any public DNS cutover.",
+          "rollback": "Remove or repair only the new kprod resources and continue serving the complete application from kdevel."
+        },
+        {
+          "id": "5.2",
+          "name": "Validate kprod over HTTPS before public cutover",
+          "working_environment_at_end": "The complete application on kprod over a temporary or controlled HTTPS validation address; kdevel remains live.",
+          "substeps": [
+            "Create a temporary production-validation hostname or use a controlled host mapping approved by the administrator.",
+            "Configure the production Ingress and TLS certificate without moving the public dpcexplorer DNS record.",
+            "Validate production security settings, downloads, viewer behavior, pod replacement, and database connectivity."
+          ],
+          "completion_check": [
+            "TLS and HTTPS routing to kprod pass.",
+            "Run every common smoke test against kprod over HTTPS.",
+            "Replace one web pod and confirm the complete app remains available.",
+            "Confirm kdevel still passes the common smoke tests."
+          ],
+          "end_state": "The complete kprod application is proven over HTTPS before receiving public traffic.",
+          "rollback": "Remove or correct the validation Ingress and continue serving from kdevel."
+        },
+        {
+          "id": "5.3",
+          "name": "Cut over the public production URL",
+          "working_environment_at_end": "The complete application at https://dpcexplorer.areasciencepark.it/ on kprod; kdevel is retained as a rollback environment.",
+          "substeps": [
+            "Lower DNS TTL in advance if the administrator permits it and record the previous DNS target.",
+            "Point dpcexplorer.areasciencepark.it to the approved kprod Ingress.",
+            "Monitor rollout, application logs, health endpoints, error rates, PostgreSQL, storage, and certificate status.",
+            "Keep kdevel intact until the production acceptance period ends."
+          ],
+          "completion_check": [
+            "The public URL presents the correct valid certificate and routes to kprod.",
+            "Run every common smoke test against the public URL.",
+            "Confirm the expected immutable image digest is running with the intended number of Ready replicas.",
+            "Confirm the recorded DNS and image rollback procedures are usable."
+          ],
+          "end_state": "The complete application is serving users from kprod at the final public URL.",
+          "rollback": "Restore the previous DNS target or route, then redeploy the last known-good image digest if required."
+        },
+        {
+          "id": "5.4",
+          "name": "Automate protected kprod promotion",
+          "working_environment_at_end": "The complete application at the public kprod URL, deployed by a protected GitHub promotion workflow.",
+          "substeps": [
+            "Create a protected GitHub production Environment with mandatory human approval.",
+            "Promote the exact image digest that already passed kdevel; never rebuild it for production.",
+            "Run forward-compatible migrations, rolling deployment, readiness checks, and the automated public smoke suite.",
+            "Retain the previous known-good digest and kdevel environment for rollback."
+          ],
+          "completion_check": [
+            "Promote a harmless accepted kdevel release to kprod with manual approval.",
+            "Confirm the exact same digest is running in kdevel and kprod.",
+            "Run every common smoke test against the public URL.",
+            "Exercise a controlled rollback to a known-good digest and restore the intended release, verifying the full app after both operations."
+          ],
+          "end_state": "A release can move safely from GitHub to kdevel and then to kprod, with the complete application verified at every checkpoint.",
+          "rollback": "Redeploy the previous immutable digest, preserve forward-compatible database state, and use the recorded traffic or DNS rollback if application availability requires it."
+        }
+      ]
     }
   ],
   "final_release_flow": [
     "Open a pull request.",
-    "Run CI checks and tests.",
-    "Build one immutable application image.",
-    "Push the image to GHCR using the Git commit SHA.",
-    "Wait for production approval.",
-    "Run the migration Job.",
-    "Roll out two Django/Gunicorn containers.",
-    "Run readiness and functional smoke tests.",
-    "Keep or roll back the release based on the results."
+    "Run required CI checks and preserve the currently working deployment.",
+    "After merge, build the application image once and push it to GHCR using the Git commit SHA and an immutable digest.",
+    "Deploy that digest to kdevel, run forward-compatible migrations, wait for the rolling update, and run every common smoke test.",
+    "Keep or roll back the kdevel release based on the results.",
+    "After kdevel acceptance, request protected production approval.",
+    "Promote the exact same digest to kprod without rebuilding it.",
+    "Run forward-compatible migrations, wait for the rolling update, and run every common smoke test against the public URL.",
+    "Keep or roll back the kprod release while retaining the last verified environment and digest."
   ]
 }
