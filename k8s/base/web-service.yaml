@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dpcexplorer-web
+spec:
+  type: ClusterIP
+
+  selector:
+    app.kubernetes.io/name: dpcexplorer
+    app.kubernetes.io/component: web
+
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8000
+      targetPort: http
