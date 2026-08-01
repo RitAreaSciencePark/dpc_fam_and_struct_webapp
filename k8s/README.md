@@ -19,13 +19,15 @@ sha256 image digest in the environment overlay before deployment.
 
 ## Safety
 
-The initial kdevel overlay uses:
+The first kdevel deployment used:
 
 - Zero web replicas
 - Suspended data-loader Job
 - Suspended migration Job
 
-This prevents workloads from starting before PostgreSQL, biological data, images, and Secrets are ready.
+This prevented workloads from starting before PostgreSQL, biological data, images, and Secrets were ready.
+
+After the data volume, database restore, migrations, and web image were validated, the kdevel overlay was promoted to one web replica. The data-loader and migration Jobs remain suspended in Git and are activated only for explicit one-time operations.
 
 Never commit Kubernetes Secrets.
 
