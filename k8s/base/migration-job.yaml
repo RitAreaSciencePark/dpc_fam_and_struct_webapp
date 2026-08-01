@@ -18,6 +18,9 @@ spec:
       restartPolicy: Never
       automountServiceAccountToken: false
 
+      imagePullSecrets:
+        - name: dpcexplorer-ghcr-pull
+
       securityContext:
         runAsNonRoot: true
         runAsUser: 10001

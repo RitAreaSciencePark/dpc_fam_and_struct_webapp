@@ -17,6 +17,10 @@ spec:
     spec:
       restartPolicy: Never
       automountServiceAccountToken: false
+
+      imagePullSecrets:
+        - name: dpcexplorer-ghcr-pull
+
       terminationGracePeriodSeconds: 30
 
       securityContext:

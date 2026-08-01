@@ -13,7 +13,7 @@ patches:
 
 images:
   - name: ghcr.io/ritareasciencepark/dpc_fam_and_struct_webapp
-    newTag: replace-with-git-sha
+    digest: sha256:063699947472d5bb59ee2ce69b25cd338166581cfed7b15623e54b5442ff11f9
 
   - name: ghcr.io/ritareasciencepark/dpc_fam_and_struct_webapp-data-loader
-    newTag: replace-with-git-sha
+    digest: sha256:3052ec5f331b7718d9ed30317c9748f47de6003cfc20804afde7e2a20b30abd7
