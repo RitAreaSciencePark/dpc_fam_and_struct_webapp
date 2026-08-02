@@ -20,7 +20,6 @@ jobs:
     environment: kdevel
 
     env:
-      KUBECONFIG: ${{ runner.temp }}/kdevel-kubeconfig
       EXPECTED_KUBE_CONTEXT: ${{ vars.KDEVEL_KUBE_CONTEXT }}
 
     steps:
@@ -53,6 +52,7 @@ jobs:
 
       - name: Create temporary kubeconfig
         env:
+          KUBECONFIG: ${{ runner.temp }}/kdevel-kubeconfig
           KDEVEL_KUBECONFIG_B64: ${{ secrets.KDEVEL_KUBECONFIG_B64 }}
         run: |
           umask 077
@@ -60,8 +60,12 @@ jobs:
             base64 --decode > "${KUBECONFIG}"
 
       - name: Deploy reviewed image
+        env:
+          KUBECONFIG: ${{ runner.temp }}/kdevel-kubeconfig
         run: ./scripts/deploy-kdevel-web.sh --apply
 
       - name: Remove temporary kubeconfig
         if: always()
+        env:
+          KUBECONFIG: ${{ runner.temp }}/kdevel-kubeconfig
         run: rm -f "${KUBECONFIG}"
