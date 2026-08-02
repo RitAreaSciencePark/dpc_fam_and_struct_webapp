@@ -91,11 +91,28 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
 
-      - name: Validate Dockerfile
-        run: docker build --check --file Dockerfile .
+      - name: Validate Dockerfiles
+        run: |
+          docker build --check --file Dockerfile .
+          docker build --check --file Dockerfile.data-loader .
 
       - name: Build application image
         run: docker build --file Dockerfile --tag dpcexplorer:ci .
+
+      - name: Build data-loader image
+        run: |
+          docker build \
+            --file Dockerfile.data-loader \
+            --tag dpcexplorer-data-loader:ci \
+            .
+
+      - name: Verify data-loader script
+        run: |
+          docker run \
+            --rm \
+            --entrypoint bash \
+            dpcexplorer-data-loader:ci \
+            -n /loader/load-kubernetes-data.sh
 
       - name: Start restricted application container
         run: |
@@ -170,3 +187,57 @@ jobs:
       - name: Stop application container
         if: always()
         run: docker rm --force dpcexplorer-ci || true
+
+  publish:
+    name: Publish ${{ matrix.name }} image
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs:
+      - django
+      - container
+
+    permissions:
+      contents: read
+      packages: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: web
+            image: ghcr.io/ritareasciencepark/dpc_fam_and_struct_webapp
+            dockerfile: Dockerfile
+          - name: data-loader
+            image: ghcr.io/ritareasciencepark/dpc_fam_and_struct_webapp-data-loader
+            dockerfile: Dockerfile.data-loader
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and publish image
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: |
+            ${{ matrix.image }}:${{ github.sha }}
+            ${{ matrix.image }}:main
+
+      - name: Record published digest
+        run: |
+          echo "### ${{ matrix.name }} image" >> "${GITHUB_STEP_SUMMARY}"
+          echo '${{ matrix.image }}@${{ steps.build.outputs.digest }}' >> "${GITHUB_STEP_SUMMARY}"
