@@ -91,6 +91,9 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
 
+      - name: Validate deployment script
+        run: bash -n scripts/deploy-kdevel-web.sh
+
       - name: Validate Dockerfiles
         run: |
           docker build --check --file Dockerfile .
