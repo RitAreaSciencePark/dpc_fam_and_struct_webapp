@@ -37,6 +37,8 @@ CloudNativePG creates the database Secret named:
 
 The Django Secret must be created directly in Kubernetes as:
 
+`dpcexplorer-django`
+
 Private GHCR images are pulled using the Kubernetes Secret:
 
 `dpcexplorer-ghcr-pull`
@@ -60,3 +62,10 @@ in Git.
 11. Run the complete smoke test through port-forwarding.
 
 The Ingress is intentionally deferred until the preproduction hostname and TLS configuration are confirmed.
+
+## Pending administrator-dependent resources
+
+Review-only Certificate, Ingress, HTTPS ConfigMap, and CloudNativePG
+NetworkPolicy templates are stored in `k8s/pending/kdevel`. They are excluded
+from the active overlay and must not be applied until their administrator-owned
+values and activation gates are confirmed.
