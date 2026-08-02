@@ -63,6 +63,33 @@ in Git.
 
 The Ingress is intentionally deferred until the preproduction hostname and TLS configuration are confirmed.
 
+## Manual kdevel web releases
+
+Routine web releases use an explicit, reviewed image digest:
+
+1. Let the `CI` workflow publish the web image from protected `main`.
+2. Create a branch and replace only the web `digest` in
+   `k8s/overlays/kdevel/kustomization.yaml`.
+3. Open a pull request and merge it only after the required checks pass.
+4. From the Actions page, run the `Deploy kdevel` workflow on `main`.
+5. Complete any configured `kdevel` environment approval when prompted.
+6. Confirm that the rollout and application smoke tests pass.
+
+The workflow deploys only `deployment/dpcexplorer-web`. It always performs a
+server-side dry run first, waits for the rollout, and restores the previous
+image if the rollout fails. It does not modify PostgreSQL, biological data,
+PVCs, Secrets, Jobs, Ingress, or TLS resources.
+
+The `kdevel` GitHub environment requires:
+
+- variable `KDEVEL_KUBE_CONTEXT`: the exact context name approved by the
+  Kubernetes administrators
+- secret `KDEVEL_KUBECONFIG_B64`: a base64-encoded kubeconfig for a dedicated,
+  least-privilege deployment identity
+
+Never use the mutable `main` image tag in Kubernetes and never store a personal
+kubeconfig in GitHub. The committed sha256 digest is the release record.
+
 ## Pending administrator-dependent resources
 
 Review-only Certificate, Ingress, HTTPS ConfigMap, and CloudNativePG
