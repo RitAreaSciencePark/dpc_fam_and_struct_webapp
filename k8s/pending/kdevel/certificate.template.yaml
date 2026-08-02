@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: dpcexplorer-tls
+  namespace: dpcdom
+spec:
+  secretName: dpcexplorer-tls
+  dnsNames:
+    - dpcexplorer.areasciencepark.it
+  issuerRef:
+    kind: ClusterIssuer
+    name: REPLACE_WITH_APPROVED_CLUSTER_ISSUER
