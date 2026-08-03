@@ -150,6 +150,7 @@
             <li class="nav-item"><a class="nav-link" href="#domain-classification">Domain Family Classification</a></li>
             <li class="nav-item"><a class="nav-link" href="#dpc-approach">DPCfam &amp; DPCstruct</a></li>
             <li class="nav-item"><a class="nav-link" href="#role-of-dpcexplorer">What DPCexplorer Does</a></li>
+            <li class="nav-item"><a class="nav-link" href="#rest-api">REST API</a></li>
             <li class="nav-item"><a class="nav-link" href="#credits">Credits &amp; Funding</a></li>
             <li class="nav-item"><a class="nav-link" href="#references">References</a></li>
           </ul>
@@ -395,6 +396,32 @@
              target="_blank">GitHub repository</a>
           or contact us directly. Every hypothesis matters.
         </div>
+      </div>
+
+      <!-- SECTION 3b: REST API -->
+      <div class="about-section">
+        <h4 id="rest-api" style="margin-top: 0;">REST API</h4>
+        <p>
+          Alongside the web interface, DPCexplorer now exposes a public,
+          read-only <strong>REST API</strong> under <code>/api/</code>. It
+          lets you send a DPCfam or DPCstruct metacluster ID, or a
+          comma-separated list of IDs, and get back its properties and members (protein ID and coordinate range) as JSON, without
+          downloading any archive.
+        </p>
+        <div class="highlight-box">
+          <strong>Example:</strong><br>
+          <code>GET https://dpcexplorer.areasciencepark.it/api/dpcfam/mcs/MC1/</code> &rarr; properties of MC1<br>
+          <code>GET https://dpcexplorer.areasciencepark.it/api/dpcfam/mcs/?mcids=MC1,MC3,MC15</code> &rarr; properties of several metaclusters at once<br>
+          <code>GET https://dpcexplorer.areasciencepark.it/api/dpcstruct/mcs/MC5/members/</code> &rarr; representative sequences of MC5
+        </div>
+        <p class="mb-0">
+          No login or API key is required. The full endpoint reference, error
+          behaviour, and a ready-to-run Python script and Jupyter notebook are
+          documented in
+          <a href="https://github.com/RitAreaSciencePark/dpc_fam_and_struct_webapp/blob/main/DPCexplorer_API_Documentation.md"
+             target="_blank">DPCexplorer_API_Documentation.md</a>
+          on GitHub.
+        </p>
       </div>
 
       <!-- SECTION 4: Credits -->
