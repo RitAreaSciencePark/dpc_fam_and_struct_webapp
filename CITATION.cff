@@ -14,9 +14,9 @@ title: >-
   DPCexplorer: A Django Web Application for Interactive Exploration
   of DPCfam and DPCstruct Protein Domain Classifications
 
-version: "v1.0.3"
+version: "v1.1.0"
 
-date-released: "2026-06-27"
+date-released: "2026-08-03"
 
 doi: "10.5281/zenodo.20575268"
 
@@ -60,6 +60,7 @@ keywords:
   - bioinformatics
   - FAIR data
   - Mol*
+  - DPCexplorer
   - web application
 
 authors:
@@ -105,7 +106,7 @@ identifiers:
     value: "10.5281/zenodo.20575268"
     description: >-
       Zenodo concept DOI for the DPCexplorer software; always resolves
-      to the latest archived release (currently v1.0.3).
+      to the latest archived release (currently v1.1.0).
   - type: doi
     value: "10.5281/zenodo.20159208"
     description: >-
@@ -133,7 +134,7 @@ references:
     doi: "10.5281/zenodo.20766432"
     url: "https://doi.org/10.5281/zenodo.20766432"
     notes: >-
-      A 8-page summary paper; preprint archived on Zenodo, under review at
+      A 8-page summary paper; preprint archived on Zenodo, accepted at
       the IEEE eScience 2026 conference.
 
 
