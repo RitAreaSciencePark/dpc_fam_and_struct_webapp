@@ -29,8 +29,7 @@ class DPCexplorerAPIRootView(APIRootView):
     APIRootView class name and docstring."""
 
     def get_view_name(self):
-        return "DPCexplorer REST API - Django Framework"
-
+        return "DPCexplorer REST API - Django REST Framework"
     def get_view_description(self, html=False):
         return "Root of the DPCexplorer REST API, built with Django REST Framework."
 
