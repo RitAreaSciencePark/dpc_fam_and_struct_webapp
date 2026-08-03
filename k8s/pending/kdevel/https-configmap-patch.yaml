@@ -4,7 +4,7 @@ metadata:
   name: dpcexplorer-config
   namespace: dpcdom
 data:
-  ALLOWED_HOSTS: dpcexplorer.areasciencepark.it
+  ALLOWED_HOSTS: 127.0.0.1,localhost,dpcexplorer.areasciencepark.it
   CSRF_TRUSTED_ORIGINS: https://dpcexplorer.areasciencepark.it
   TRUST_X_FORWARDED_PROTO: "True"
   SECURE_SSL_REDIRECT: "True"

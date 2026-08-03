@@ -5,10 +5,12 @@ namespace: dpcdom
 
 resources:
   - ../../base
+  - ingress.yaml
 
 patches:
   - path: data-pvc-patch.yaml
   - path: postgresql-patch.yaml
+  - path: public-host-configmap-patch.yaml
   - path: web-initial-patch.yaml
 
 images:
