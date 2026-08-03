@@ -245,9 +245,9 @@
         </h2>
         <div id="collapseTen" class="accordion-collapse collapse" aria-labelledby="headingTen" data-bs-parent="#faqAccordion">
           <div class="accordion-body">
-            <p>Not yet in this version. A REST API built on <strong>Django REST Framework</strong> is planned for a future release. It will accept one or more metacluster IDs and return properties as JSON or biological files in their native formats, making the platform fully machine-accessible.</p>
-            <p class="mb-0">For now, all data are available through the web interface and the Downloads section. The underlying preprocessed CSV files are openly available on
-             Zenodo (<a href="https://zenodo.org/records/20159208" target="_blank">DOI: 10.5281/zenodo.20159208</a>).</p>
+            <p>Yes. DPCexplorer now offers a public, read-only <strong>REST API</strong> under <code>/api/</code>. You can send a single DPCfam or DPCstruct metacluster ID, or a comma-separated list of IDs, and get its properties back as JSON; a separate endpoint returns its member sequences (ID, Protein ID, and coordinate range), paginated. No login or API key is required.</p>
+            <p class="mb-0">See <a href="https://github.com/RitAreaSciencePark/dpc_fam_and_struct_webapp/blob/main/DPCexplorer_API_Documentation.md" target="_blank" rel="noopener noreferrer">DPCexplorer_API_Documentation.md</a> on GitHub for the full endpoint reference, including a ready-to-run example Python script and Jupyter notebook. The underlying preprocessed CSV files remain openly available on
+             Zenodo (<a href="https://zenodo.org/records/20159208" target="_blank" rel="noopener noreferrer">DOI: 10.5281/zenodo.20159208</a>).</p>
           </div>
         </div>
       </div>

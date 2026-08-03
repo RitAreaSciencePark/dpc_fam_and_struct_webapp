@@ -118,6 +118,9 @@ INSTALLED_APPS = [
     # --- Django Tables and Filters ---
     "django_tables2",
     "django_filters",
+    # --- Django REST Framework ---
+    "rest_framework",
+    'api',  
 ]
 
 MIDDLEWARE = [
@@ -249,4 +252,14 @@ LOGGING = {
             "propagate": False,
         },
     },
+}
+
+# REST_FRAMEWORK: the API is public and read-only, mirroring the read-only
+# admin posture described in ADMIN_PANEL.md. No login is required to read
+# the same data that is already public through the web pages.
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.AllowAny'],
+    'DEFAULT_AUTHENTICATION_CLASSES': [],
 }

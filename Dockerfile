@@ -17,6 +17,7 @@ COPY dpc_fam_and_struct_webapp/ ./dpc_fam_and_struct_webapp/
 COPY dpc/ ./dpc/
 COPY dpcfam/ ./dpcfam/
 COPY dpcstruct/ ./dpcstruct/
+COPY api/ ./api/
 COPY templates/ ./templates/
 COPY static/images/ ./static/images/
 

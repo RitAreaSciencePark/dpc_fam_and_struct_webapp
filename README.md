@@ -7,7 +7,7 @@
 # DPCexplorer: A Django Web Application for Interactive Exploration of DPCfam and DPCstruct Protein Domain Classifications
 
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/RitAreaSciencePark/dpc_fam_and_struct_webapp)
-![Status](https://img.shields.io/badge/Status-Stable%20v1.0.3-brightgreen?style=flat-square)
+![Status](https://img.shields.io/badge/Status-Stable%20v1.1.0-brightgreen?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 [![DOI Software](https://zenodo.org/badge/DOI/10.5281/zenodo.20575268.svg)](https://doi.org/10.5281/zenodo.20575268)
 [![DOI Data](https://zenodo.org/badge/DOI/10.5281/zenodo.20159208.svg)](https://doi.org/10.5281/zenodo.20159208)
@@ -33,7 +33,7 @@ to both.
 **DPCexplorer** makes two large, publicly available protein-family
 datasets easy to explore, with no programming required. Both datasets were
 produced by applying the **Density Peak Clustering (DPC)** algorithm to
-automatically group protein domains into families called **metaclusters**,
+automatically group protein domains into putative families called **metaclusters**,
 without any manual curation.
 
 | Dataset | Input data | Metaclusters | Original source | Preprocessed files |
@@ -41,7 +41,7 @@ without any manual curation.
 | **DPCfam** | ~23 M sequences (UniRef50 v. 2017_07) | 81,384 | [zenodo.org/records/6900559](https://doi.org/10.5281/zenodo.6900559) | [zenodo.org/records/20159208](https://doi.org/10.5281/zenodo.20159208) |
 | **DPCstruct** | ~15 M structures (AlphaFoldDB v4.0) | 28,246 | [zenodo.org/records/13334296](https://doi.org/10.5281/zenodo.13334296) | [zenodo.org/records/20159208](https://doi.org/10.5281/zenodo.20159208) |
 
-Both datasets have been validated against established databases. DPCfam
+Both datasets have been validated against established databases. DPCfam (Standard)
 recovers approximately **81%** of medium-to-large Pfam families and **72%**
 of ECOD families. DPCstruct recovers **91%** of SCOP folds and **83%** of
 CATH folds; when compared against Pfam at the clan level, **70%** of the
@@ -73,10 +73,28 @@ metacluster ID, by Pfam ID (family or clan), or by UniProt accession, and explor
 results through interactive tables, a domain-architecture diagram, and
 an embedded **3D molecular viewer** powered by PDBe-Molstar.
 
-> 📚 **Further documentation.** Three companion guides live next to this README:
-> [**`ARCHITECTURE.md`**](ARCHITECTURE.md) maps the repository, the source apps, the preprocessing notebooks and scripts, and the static assets, so you can find your way around;
-> [**`ADMIN_PANEL.md`**](ADMIN_PANEL.md) documents the admin panel, its read-only default, and how to enable full CRUD; and
-> [**`docs/DOCKER.md`**](docs/DOCKER.md) explains how to build, run, test, and stop the containerized application.
+## 🔌 REST API
+
+DPCexplorer also exposes a public, read-only **REST API** under `/api/`,
+so the data can be queried programmatically, not only through the web
+pages. Send a single metacluster ID, or a comma-separated list, and get
+its properties and members back as JSON:
+
+```
+GET /api/dpcfam/mcs/MC1/
+GET /api/dpcfam/mcs/?mcids=MC1,MC3,MC15
+GET /api/dpcstruct/mcs/MC5/members/
+```
+
+No login or API key is required. Full endpoint reference, error
+behaviour, and a ready-to-run Python script and Jupyter notebook are in
+[**`DPCexplorer_API_Documentation.md`**](DPCexplorer_API_Documentation.md).
+
+> 📚 **Further documentation.** The following companion guides live alongside this README:
+> - [**`ARCHITECTURE.md`**](ARCHITECTURE.md) maps the repository structure, source apps, preprocessing notebooks and scripts, and static assets to help you navigate the project.
+> - [**`ADMIN_PANEL.md`**](ADMIN_PANEL.md) documents the admin panel, its read-only default, and how to enable full CRUD.
+> - [**`docs/DPCexplorer_API_implementation.md`**](docs/DPCexplorer_API_implementation.md) provides a step-by-step guide to implementing the DPCexplorer REST API.
+> - [**`docs/DOCKER.md`**](docs/DOCKER.md) explains how to build, run, test, and stop the containerized application.
 
 ---
 

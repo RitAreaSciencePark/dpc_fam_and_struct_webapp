@@ -1,0 +1,164 @@
+{
+  "properties": [
+    {
+      "mcid": "MC3",
+      "size_uniref50": 28,
+      "avg_len": 215.14,
+      "std_avg_len": 25.44,
+      "lc_percent": 0.05,
+      "cc_percent": 0.38,
+      "dis_percent": 30.15,
+      "tm": 0.0,
+      "pfam_da": "PF14631",
+      "da_percent": 85.71,
+      "avg_ov_percent": 24.57,
+      "overlap_label": "Shifted"
+    }
+  ],
+  "members": {
+    "mcid": "MC3",
+    "count": 28,
+    "results": [
+      {
+        "id": 17932,
+        "protein_id": "A0A1J6J491",
+        "seq_range": "1257-1451"
+      },
+      {
+        "id": 17933,
+        "protein_id": "F4JIJ1",
+        "seq_range": "731-959"
+      },
+      {
+        "id": 17934,
+        "protein_id": "A0A1J3JKD9",
+        "seq_range": "163-381"
+      },
+      {
+        "id": 17935,
+        "protein_id": "A0A1D6F9E3",
+        "seq_range": "139-410"
+      },
+      {
+        "id": 17936,
+        "protein_id": "UPI0009E2B930",
+        "seq_range": "774-995"
+      },
+      {
+        "id": 17937,
+        "protein_id": "A0A0P0X2T8",
+        "seq_range": "697-974"
+      },
+      {
+        "id": 17938,
+        "protein_id": "A0A059DD78",
+        "seq_range": "751-946"
+      },
+      {
+        "id": 17939,
+        "protein_id": "M0XEL2",
+        "seq_range": "113-344"
+      },
+      {
+        "id": 17940,
+        "protein_id": "K4B099",
+        "seq_range": "749-979"
+      },
+      {
+        "id": 17941,
+        "protein_id": "O23351",
+        "seq_range": "623-820"
+      },
+      {
+        "id": 17942,
+        "protein_id": "UPI0009F3EF25",
+        "seq_range": "64-285"
+      },
+      {
+        "id": 17943,
+        "protein_id": "Q0D8J4",
+        "seq_range": "710-923"
+      },
+      {
+        "id": 17944,
+        "protein_id": "B9HDF3",
+        "seq_range": "787-981"
+      },
+      {
+        "id": 17945,
+        "protein_id": "M0XEL6",
+        "seq_range": "461-686"
+      },
+      {
+        "id": 17946,
+        "protein_id": "A0A1J3D7R6",
+        "seq_range": "19-206"
+      },
+      {
+        "id": 17947,
+        "protein_id": "A0A1J3HW26",
+        "seq_range": "152-338"
+      },
+      {
+        "id": 17948,
+        "protein_id": "Q69NX2",
+        "seq_range": "571-758"
+      },
+      {
+        "id": 17949,
+        "protein_id": "UPI000900E2B6",
+        "seq_range": "621-840"
+      },
+      {
+        "id": 17950,
+        "protein_id": "A0A067FMA1",
+        "seq_range": "670-872"
+      },
+      {
+        "id": 17951,
+        "protein_id": "A0A176VIF7",
+        "seq_range": "734-956"
+      },
+      {
+        "id": 17952,
+        "protein_id": "A0A1S4AHX3",
+        "seq_range": "792-983"
+      },
+      {
+        "id": 17953,
+        "protein_id": "A9TCM2",
+        "seq_range": "835-1048"
+      },
+      {
+        "id": 17954,
+        "protein_id": "B9S9C4",
+        "seq_range": "584-773"
+      },
+      {
+        "id": 17955,
+        "protein_id": "A0A0K9NJX6",
+        "seq_range": "778-970"
+      },
+      {
+        "id": 17956,
+        "protein_id": "A0A1U8HMS9",
+        "seq_range": "769-1034"
+      },
+      {
+        "id": 17957,
+        "protein_id": "A0A078GBH1",
+        "seq_range": "762-954"
+      },
+      {
+        "id": 17958,
+        "protein_id": "F6H563",
+        "seq_range": "512-755"
+      },
+      {
+        "id": 17959,
+        "protein_id": "A0A0B0NDC7",
+        "seq_range": "409-602"
+      }
+    ]
+  }
+}

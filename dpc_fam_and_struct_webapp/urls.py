@@ -39,6 +39,7 @@ urlpatterns = [
     path('about/', TemplateView.as_view(template_name='about.html'), name='about'),
     path('faqs/', TemplateView.as_view(template_name='faqs.html'), name='faqs'),
     path('admin/', admin.site.urls),
+    path('api/', include('api.urls')),   # all API endpoints live under /api/
     path('dpcfam/', include('dpcfam.urls')),
     path('dpcstruct/', include('dpcstruct.urls')),
     path("health/live", views.health_live, name="health_live"),
