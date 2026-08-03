@@ -66,8 +66,6 @@ def fetch_all_members(base_url, dataset, mcid, page_size=None):
     page_count = 0
     while url:
         response = requests.get(url, params=params, timeout=30)
-        if response.status_code == 404:
-            return []
         response.raise_for_status()
         payload = response.json()
         all_members.extend(payload["results"])
