@@ -36,7 +36,7 @@ is not a software version DOI at all, it identifies the preprocessed dataset (th
 - **Zenodo** reads the same file when it archives a release, and uses it to prefill the record's metadata: title, authors, ORCID identifiers, license, keywords, and abstract, so this information does not need to be entered by hand on Zenodo for every release.
 
 
-## 4. The Semantic Versionning Pattern `vX.Y.Z`
+## 4. The Semantic Versioning Pattern `vX.Y.Z`
 
 DPCexplorer's GitHub Releases follow the semantic versioning pattern, written as `vX.Y.Z`:
 
