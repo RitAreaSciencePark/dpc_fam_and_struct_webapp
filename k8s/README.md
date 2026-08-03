@@ -61,7 +61,11 @@ in Git.
 10. Scale the web Deployment to one replica.
 11. Run the complete smoke test through port-forwarding.
 
-The Ingress is intentionally deferred until the preproduction hostname and TLS configuration are confirmed.
+The kdevel Ingress routes `dpcexplorer.areasciencepark.it` through
+`nginx-public` to `dpcexplorer-web:8000`. It references the
+administrator-provisioned `tls-cert` Secret. AREA administrators manage the
+public DNS record and TLS Secret lifecycle; certificate renewal responsibility
+must remain documented with them. Secret contents are never stored in Git.
 
 ## Manual kdevel web releases
 
@@ -90,9 +94,10 @@ The `kdevel` GitHub environment requires:
 Never use the mutable `main` image tag in Kubernetes and never store a personal
 kubeconfig in GitHub. The committed sha256 digest is the release record.
 
-## Pending administrator-dependent resources
+## Pending security hardening
 
-Review-only Certificate, Ingress, HTTPS ConfigMap, and CloudNativePG
-NetworkPolicy templates are stored in `k8s/pending/kdevel`. They are excluded
-from the active overlay and must not be applied until their administrator-owned
-values and activation gates are confirmed.
+Review-only HTTPS ConfigMap and CloudNativePG NetworkPolicy templates are
+stored in `k8s/pending/kdevel`. They are excluded from the active overlay and
+must not be applied directly. The HTTPS patch is deferred until public DNS and
+HTTPS smoke tests pass. The NetworkPolicy template is retained only for a
+future administrator-approved namespace-restricted policy.

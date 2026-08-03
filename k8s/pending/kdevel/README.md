@@ -1,25 +1,23 @@
-# Pending kdevel HTTPS activation
+# Pending kdevel security hardening
 
 These files are review-only templates. They are deliberately outside the
-active `k8s/overlays/kdevel` Kustomization and must not be applied yet.
+active `k8s/overlays/kdevel` Kustomization and must not be applied directly.
 
-Activation is blocked until the Kubernetes administrators confirm:
+The public Ingress is active in `k8s/overlays/kdevel/ingress.yaml` and
+references the administrator-provisioned `tls-cert` Secret. Public DNS and the
+TLS Secret lifecycle are administrator-managed; renewal responsibility must be
+confirmed with them.
 
-1. The CloudNativePG operator namespace and labels.
-2. The approved cert-manager `ClusterIssuer` name.
-3. The DNS target and approved hostname for the `nginx-devel` Ingress.
+The remaining templates are optional hardening steps:
 
-Before activation:
+- `https-configmap-patch.yaml` enables Django proxy-aware HTTPS redirects and
+  secure cookies. Activate it only after public DNS and HTTPS smoke tests pass.
+- `cnpg-operator-network-policy.template.yaml` is a reference for any future
+  namespace-restricted policy. Use it only with administrator-confirmed
+  CloudNativePG operator labels and namespace.
 
-1. Replace every `REPLACE_WITH_...` value.
-2. Add the confirmed NetworkPolicy to the kdevel overlay and wait for the
-   CloudNativePG Cluster to report `Ready=True`.
-3. Confirm that DNS resolves to the `nginx-devel` endpoint.
-4. Add the Certificate, Ingress, and ConfigMap patch to the kdevel overlay.
-5. Run client and server dry-runs before applying the overlay.
-6. Wait for the Certificate to become Ready before enabling or testing HTTPS
-   redirects.
-7. Run the complete smoke test through the HTTPS hostname.
+Before activating either template, run client and server dry-runs and confirm
+that the web Deployment and CloudNativePG Cluster remain healthy.
 
 HSTS remains disabled for the initial HTTPS validation. Enable it only after
 the hostname and certificate are stable.

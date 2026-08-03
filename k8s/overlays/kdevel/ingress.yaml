@@ -1,18 +1,17 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: dpcexplorer-web
-  namespace: dpcdom
+  name: dpcexplorer-ingress
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 4g
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
 spec:
-  ingressClassName: nginx-devel
+  ingressClassName: nginx-public
   tls:
     - hosts:
         - dpcexplorer.areasciencepark.it
-      secretName: dpcexplorer-tls
+      secretName: tls-cert
   rules:
     - host: dpcexplorer.areasciencepark.it
       http:
