@@ -1,0 +1,71 @@
+name: Deploy kdevel
+
+run-name: Deploy reviewed web image to kdevel
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kdevel-deployment
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy reviewed web image
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: kdevel
+
+    env:
+      EXPECTED_KUBE_CONTEXT: ${{ vars.KDEVEL_KUBE_CONTEXT }}
+
+    steps:
+      - name: Check out protected main
+        uses: actions/checkout@v6
+
+      - name: Validate deployment credentials
+        env:
+          KDEVEL_KUBECONFIG_B64: ${{ secrets.KDEVEL_KUBECONFIG_B64 }}
+        run: |
+          if [[ "${GITHUB_REF}" != "refs/heads/main" ]]; then
+            echo "::error::Kdevel deployments must run from protected main."
+            exit 1
+          fi
+
+          if [[ -z "${EXPECTED_KUBE_CONTEXT}" ]]; then
+            echo "::error::The KDEVEL_KUBE_CONTEXT environment variable is missing."
+            exit 1
+          fi
+
+          if [[ -z "${KDEVEL_KUBECONFIG_B64}" ]]; then
+            echo "::error::The KDEVEL_KUBECONFIG_B64 environment secret is missing."
+            exit 1
+          fi
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v5
+        with:
+          version: v1.33.1
+
+      - name: Create temporary kubeconfig
+        env:
+          KUBECONFIG: ${{ runner.temp }}/kdevel-kubeconfig
+          KDEVEL_KUBECONFIG_B64: ${{ secrets.KDEVEL_KUBECONFIG_B64 }}
+        run: |
+          umask 077
+          printf '%s' "${KDEVEL_KUBECONFIG_B64}" |
+            base64 --decode > "${KUBECONFIG}"
+
+      - name: Deploy reviewed image
+        env:
+          KUBECONFIG: ${{ runner.temp }}/kdevel-kubeconfig
+        run: ./scripts/deploy-kdevel-web.sh --apply
+
+      - name: Remove temporary kubeconfig
+        if: always()
+        env:
+          KUBECONFIG: ${{ runner.temp }}/kdevel-kubeconfig
+        run: rm -f "${KUBECONFIG}"

@@ -1,0 +1,37 @@
+FROM ubuntu:24.04
+
+LABEL org.opencontainers.image.source="https://github.com/RitAreaSciencePark/dpc_fam_and_struct_webapp"
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update \
+    && apt-get install --yes --no-install-recommends \
+        ca-certificates \
+        coreutils \
+        findutils \
+        gzip \
+        tar \
+        tree \
+        unzip \
+        wget \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /loader
+
+COPY manage.py ./
+COPY setup_dpcexplorer_data.sh ./
+COPY scripts/load-kubernetes-data.sh ./
+
+RUN useradd \
+        --no-create-home \
+        --uid 10001 \
+        --shell /usr/sbin/nologin \
+        loader \
+    && chmod 0755 \
+        setup_dpcexplorer_data.sh \
+        load-kubernetes-data.sh \
+    && ln -s /data /loader/static
+
+USER 10001:10001
+
+ENTRYPOINT ["/loader/load-kubernetes-data.sh"]

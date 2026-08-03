@@ -1,0 +1,246 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  django:
+    name: Django checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: dpcexplorer_ci
+          POSTGRES_USER: dpcexplorer_ci
+          POSTGRES_PASSWORD: ci-database-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U dpcexplorer_ci -d dpcexplorer_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DJANGO_SECRET_KEY: ci-only-9P1cQ7wN4zR8mK2vX6sT0bF5hJ3yL7dA1gC9uE4nM8qW2rV6
+      DEBUG: "False"
+      ALLOWED_HOSTS: 127.0.0.1,localhost
+      CSRF_TRUSTED_ORIGINS: https://example.invalid
+      TRUST_X_FORWARDED_PROTO: "True"
+      SECURE_SSL_REDIRECT: "True"
+      SESSION_COOKIE_SECURE: "True"
+      CSRF_COOKIE_SECURE: "True"
+      SECURE_HSTS_SECONDS: "31536000"
+      SECURE_HSTS_INCLUDE_SUBDOMAINS: "True"
+      SECURE_HSTS_PRELOAD: "True"
+      DB_NAME: dpcexplorer_ci
+      DB_USER: dpcexplorer_ci
+      DB_PASSWORD: ci-database-password
+      DB_HOST: 127.0.0.1
+      DB_PORT: "5432"
+      DPC_DATA_ROOT: /tmp/dpcexplorer-ci-data
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install Python dependencies
+        run: python -m pip install --requirement requirements.txt
+
+      - name: Run Django system checks
+        run: |
+          python manage.py check
+          python manage.py check --deploy
+
+      - name: Check migration consistency
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: Apply migrations to temporary PostgreSQL
+        run: python manage.py migrate --noinput
+
+      - name: Run Django tests
+        run: python manage.py test --verbosity=2
+
+  container:
+    name: Container checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: django
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Validate deployment script
+        run: bash -n scripts/deploy-kdevel-web.sh
+
+      - name: Validate Dockerfiles
+        run: |
+          docker build --check --file Dockerfile .
+          docker build --check --file Dockerfile.data-loader .
+
+      - name: Build application image
+        run: docker build --file Dockerfile --tag dpcexplorer:ci .
+
+      - name: Build data-loader image
+        run: |
+          docker build \
+            --file Dockerfile.data-loader \
+            --tag dpcexplorer-data-loader:ci \
+            .
+
+      - name: Verify data-loader script
+        run: |
+          docker run \
+            --rm \
+            --entrypoint bash \
+            dpcexplorer-data-loader:ci \
+            -n /loader/load-kubernetes-data.sh
+
+      - name: Start restricted application container
+        run: |
+          docker run \
+            --detach \
+            --name dpcexplorer-ci \
+            --network host \
+            --read-only \
+            --tmpfs /tmp:rw,noexec,nosuid,size=64m \
+            --user 10001:10001 \
+            --cap-drop ALL \
+            --security-opt no-new-privileges:true \
+            --env DJANGO_SECRET_KEY=ci-only-9P1cQ7wN4zR8mK2vX6sT0bF5hJ3yL7dA1gC9uE4nM8qW2rV6 \
+            --env DEBUG=False \
+            --env ALLOWED_HOSTS=127.0.0.1,localhost \
+            --env DB_PASSWORD=ci-database-password \
+            --env DPC_DATA_ROOT=/data \
+            dpcexplorer:ci
+
+      - name: Verify container security and liveness
+        run: |
+          container_healthy=false
+
+          for attempt in $(seq 1 45); do
+            health_status="$(
+              docker inspect \
+                --format '{{.State.Health.Status}}' \
+                dpcexplorer-ci
+            )"
+
+            if [[ "${health_status}" == "healthy" ]]; then
+              container_healthy=true
+              break
+            fi
+
+            if [[ "${health_status}" == "unhealthy" ]]; then
+              break
+            fi
+
+            sleep 2
+          done
+
+          if [[ "${container_healthy}" != "true" ]]; then
+            docker logs dpcexplorer-ci
+            exit 1
+          fi
+
+          test "$(docker exec dpcexplorer-ci id -u)" = "10001"
+
+          if docker exec dpcexplorer-ci touch /app/should-not-work; then
+            echo "/app is unexpectedly writable."
+            exit 1
+          fi
+
+          docker exec dpcexplorer-ci sh -c 'touch /tmp/write-test && rm /tmp/write-test'
+
+          curl \
+            --fail \
+            --silent \
+            --show-error \
+            http://127.0.0.1:8000/health/live
+
+          if docker logs dpcexplorer-ci 2>&1 | grep --quiet "Control server error"; then
+            echo "Gunicorn control server failed to start cleanly."
+            exit 1
+          fi
+
+      - name: Show container logs
+        if: always()
+        run: docker logs dpcexplorer-ci || true
+
+      - name: Stop application container
+        if: always()
+        run: docker rm --force dpcexplorer-ci || true
+
+  publish:
+    name: Publish ${{ matrix.name }} image
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs:
+      - django
+      - container
+
+    permissions:
+      contents: read
+      packages: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: web
+            image: ghcr.io/ritareasciencepark/dpc_fam_and_struct_webapp
+            dockerfile: Dockerfile
+          - name: data-loader
+            image: ghcr.io/ritareasciencepark/dpc_fam_and_struct_webapp-data-loader
+            dockerfile: Dockerfile.data-loader
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and publish image
+        id: build
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: |
+            ${{ matrix.image }}:${{ github.sha }}
+            ${{ matrix.image }}:main
+
+      - name: Record published digest
+        run: |
+          echo "### ${{ matrix.name }} image" >> "${GITHUB_STEP_SUMMARY}"
+          echo '${{ matrix.image }}@${{ steps.build.outputs.digest }}' >> "${GITHUB_STEP_SUMMARY}"

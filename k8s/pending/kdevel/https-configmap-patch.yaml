@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dpcexplorer-config
+  namespace: dpcdom
+data:
+  ALLOWED_HOSTS: dpcexplorer.areasciencepark.it
+  CSRF_TRUSTED_ORIGINS: https://dpcexplorer.areasciencepark.it
+  TRUST_X_FORWARDED_PROTO: "True"
+  SECURE_SSL_REDIRECT: "True"
+  SESSION_COOKIE_SECURE: "True"
+  CSRF_COOKIE_SECURE: "True"
+  SECURE_HSTS_SECONDS: "0"
+  SECURE_HSTS_INCLUDE_SUBDOMAINS: "False"
+  SECURE_HSTS_PRELOAD: "False"
