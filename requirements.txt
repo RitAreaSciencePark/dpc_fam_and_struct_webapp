@@ -1,6 +1,9 @@
 # Web framework
 Django==6.0.1
 
+# REST framework for building APIs
+djangorestframework==3.17.1
+
 # PostgreSQL adapter for Python
 psycopg2-binary==2.9.11
 
@@ -19,6 +22,14 @@ whitenoise==6.11.0
 # Reads secrets from .env file
 python-decouple==3.8
 
-# Internal Django and DB utilities
+# Django's async/ASGI support
 asgiref==3.11.0
+
+# SQL parsing used internally by Django
 sqlparse==0.5.3
+
+# Optional libraries
+# HTTP requests library if needed for external API calls (example_api_client.py)
+requests==2.34.2
+# CITATION.cff validation (in the terminal, run: cffconvert --validate)
+cffconvert==2.0.0
