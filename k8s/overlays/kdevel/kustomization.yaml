@@ -15,7 +15,7 @@ patches:
 
 images:
   - name: ghcr.io/ritareasciencepark/dpc_fam_and_struct_webapp
-    digest: sha256:5fbed1dc9bf582c619328c03d235c4d8ea5835c06b79f2fbde5c34777f74e299
+    digest: sha256:819a0fd3d5a098439ed8f71e53023035a22ad3665a79959bda7a21582bb0f5b4
 
   - name: ghcr.io/ritareasciencepark/dpc_fam_and_struct_webapp-data-loader
     digest: sha256:3052ec5f331b7718d9ed30317c9748f47de6003cfc20804afde7e2a20b30abd7

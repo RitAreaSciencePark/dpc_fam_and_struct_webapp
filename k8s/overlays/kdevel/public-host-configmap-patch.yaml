@@ -4,3 +4,4 @@ metadata:
   name: dpcexplorer-config
 data:
   ALLOWED_HOSTS: 127.0.0.1,localhost,dpcexplorer.areasciencepark.it
+  TRUST_X_FORWARDED_PROTO: "True"
