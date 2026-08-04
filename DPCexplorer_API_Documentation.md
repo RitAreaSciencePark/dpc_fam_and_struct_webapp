@@ -72,7 +72,7 @@ MCIDs, and get back a small JSON payload instead of a multi-gigabyte file, impro
 ```json
 {
     "count": 17931,
-    "next": "http://127.0.0.1:8000/api/dpcfam/mcs/MC1/members/?page=2",
+    "next": "https://dpcexplorer.areasciencepark.it/api/dpcfam/mcs/MC1/members/?page=2",
     "previous": null,
     "results": [
         {
@@ -84,7 +84,7 @@ MCIDs, and get back a small JSON payload instead of a multi-gigabyte file, impro
             "id": 2,
             "protein_id": "I4CCA7",
             "seq_range": "496-701"
-        },
+        }
   ]
 }
 ```
@@ -141,7 +141,7 @@ there is no bulk POST endpoint in this release (see Section 9).
 
 | Situation | Response |
 |---|---|
-| Unknown single MCID (`/api/dpcfam/mcs/MC2/`) | `404 Not Found`, `{"detail": "No DpcfamMcsProperty matches the given query."}` |
+| Unknown single MCID (`/api/dpcfam/mcs/DOES-NOT-EXIST/`) | `404 Not Found`, `{"detail": "No DpcfamMcsProperty matches the given query."}` |
 | Unknown MCID inside a `?mcids=` list | Silently omitted from `results`, no error |
 | Malformed page number | `{"detail": "Invalid page."}` |
 

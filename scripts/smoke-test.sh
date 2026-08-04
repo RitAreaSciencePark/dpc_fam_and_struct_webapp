@@ -66,6 +66,11 @@ check_url "/dpcfam/mcs/MC1/"
 check_url "/dpcstruct/"
 check_url "/dpcstruct/mcs/MC1/"
 check_url "/admin/login/"
+check_url "/api/?format=json"
+check_url "/api/dpcfam/mcs/MC1/?format=json"
+check_url "/api/dpcfam/mcs/MC1/members/?page_size=1&format=json"
+check_url "/api/dpcstruct/mcs/MC1/?format=json"
+check_url "/api/dpcstruct/mcs/MC1/members/?page_size=1&format=json"
 
 echo "Checking normal static assets."
 curl \

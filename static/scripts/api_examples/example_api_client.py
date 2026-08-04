@@ -7,7 +7,7 @@ A minimal example client for the DPCexplorer REST API.
 Given one MCID, or a comma-separated list of MCIDs, from either DPCfam or
 DPCstruct, this script:
 
-  1. Fetches the properties of every requested MCID (one API call).
+  1. Fetches the properties of every requested MCID, following pagination.
   2. Fetches ALL members of the first MCID in the list, following every
      paginated "next" link until the whole member list has been collected.
 
@@ -41,25 +41,31 @@ DEFAULT_BASE_URL = "https://dpcexplorer.areasciencepark.it/api"
 
 
 def fetch_properties(base_url, dataset, mcids):
-    """Fetch properties for one or several MCIDs in a single call."""
-    url = f"{base_url}/{dataset}/mcs/"
+    """Fetch properties for one or several MCIDs across every result page."""
+    url = f"{base_url.rstrip('/')}/{dataset}/mcs/"
     params = {"mcids": ",".join(mcids)}
-    response = requests.get(url, params=params, timeout=30)
-    response.raise_for_status()
-    return response.json()["results"]
+
+    properties = []
+    while url:
+        response = requests.get(url, params=params, timeout=30)
+        response.raise_for_status()
+        payload = response.json()
+        properties.extend(payload["results"])
+        url = payload["next"]
+        params = None  # The next URL already contains the original query.
+
+    return properties
 
 
-def fetch_all_members(base_url, dataset, mcid, page_size=None):
+def fetch_all_members(base_url, dataset, mcid, page_size=500):
     """
     Fetch every member of a single MCID, across all pages.
 
-    The /members/ endpoint is paginated (10 per page by default;
-    see DPCexplorer_API_Documentation.md, Section 5). This follows the
-    "next" link returned in each page until the API reports None, so the
-    caller gets the complete list back in one call, exactly like
-    fetch_all_members() in the example notebook.
+    The /members/ endpoint is paginated. This requests the API maximum of
+    500 members per page by default and follows every "next" link until the
+    API reports None.
     """
-    url = f"{base_url}/{dataset}/mcs/{mcid}/members/"
+    url = f"{base_url.rstrip('/')}/{dataset}/mcs/{mcid}/members/"
     params = {"page_size": page_size} if page_size else None
 
     all_members = []
@@ -99,6 +105,8 @@ def main():
     args = parser.parse_args()
 
     mcids = [m.strip() for m in args.mcids.split(",") if m.strip()]
+    if not mcids:
+        parser.error("--mcids must contain at least one non-empty MCID")
 
     # --- 1. Properties for every requested MCID -----------------------
     print(f"Fetching properties for {len(mcids)} MCID(s) from {args.dataset} ...")
