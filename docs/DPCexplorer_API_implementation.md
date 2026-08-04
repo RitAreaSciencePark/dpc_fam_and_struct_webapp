@@ -65,7 +65,7 @@ Each dataset (DPCfam and DPCstruct) got its own `ViewSet`, built on DRF's `ReadO
 
 ### Step 6: urls.py
 
-A single `DefaultRouter` was used to register both `ViewSet`s and generate all their URL patterns automatically. The one addition here is `DPCexplorerAPIRootView`, a small subclass of DRF's `APIRootView` that overrides `get_view_name()` and `get_view_description()`. By default, DRF derives the root page's title and description from the `APIRootView` class name and docstring, which produces a generic, uninformative label. Subclassing it and pointing a custom router (`DPCexplorerRouter`) at that subclass was enough to give the API root page a proper title, "DPCexplorer REST API - Django Framework", instead of the generic one. This is the same idea already applied to the Django admin site header elsewhere in the project, just applied to the DRF root view instead.
+A single `DefaultRouter` was used to register both `ViewSet`s and generate all their URL patterns automatically. The one addition here is `DPCexplorerAPIRootView`, a small subclass of DRF's `APIRootView` that overrides `get_view_name()` and `get_view_description()`. By default, DRF derives the root page's title and description from the `APIRootView` class name and docstring, which produces a generic, uninformative label. Subclassing it and pointing a custom router (`DPCexplorerRouter`) at that subclass was enough to give the API root page a proper title, "DPCexplorer REST API - Django REST Framework", instead of the generic one. This is the same idea already applied to the Django admin site header elsewhere in the project, just applied to the DRF root view instead.
 
 ### Step 7: settings.py, permissions and pagination
 

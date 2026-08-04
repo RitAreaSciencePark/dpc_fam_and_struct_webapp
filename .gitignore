@@ -40,6 +40,9 @@ static/*
 !static/scripts/**
 !static/profiling_reports/**
 !static/images/**
+# Do not re-include generated Python bytecode under tracked scripts.
+static/scripts/**/__pycache__/
+static/scripts/**/*.py[cod]
 
 # Jupyter
 .ipynb_checkpoints
