@@ -1,0 +1,29 @@
+name: dpcexplorer-workshop
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${DB_NAME:?Run workshop/setup.py first}
+      POSTGRES_USER: ${DB_USER:?Run workshop/setup.py first}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Run workshop/setup.py first}
+    ports:
+      - "127.0.0.1:${DB_PORT:-55432}:5432"
+    command: ["postgres", "-c", "shared_buffers=32MB", "-c", "max_connections=20"]
+    mem_limit: 256m
+    cpus: 1.0
+    shm_size: 64m
+    volumes:
+      - database:/var/lib/postgresql/data
+      - ../static/scripts/dpc/create_dpc_tables.sql:/docker-entrypoint-initdb.d/00-dpc.sql:ro
+      - ../static/scripts/dpcfam/create_dpcfam_tables.sql:/docker-entrypoint-initdb.d/01-dpcfam.sql:ro
+      - ../static/scripts/dpcstruct/create_dpcstruct_tables.sql:/docker-entrypoint-initdb.d/02-dpcstruct.sql:ro
+      - ./seed.sql:/docker-entrypoint-initdb.d/10-workshop.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 2s
+      timeout: 3s
+      retries: 45
+
+volumes:
+  database:
