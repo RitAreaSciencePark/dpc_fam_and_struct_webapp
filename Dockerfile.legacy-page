@@ -1,0 +1,25 @@
+FROM ghcr.io/nginx/nginx-unprivileged:1.31.9-alpine3.24@sha256:60214a103e6f38e953ff957f34b1f2e97a9db801ab2df3821da955d0fe6cadd6
+
+LABEL org.opencontainers.image.source="https://github.com/RitAreaSciencePark/dpc_fam_and_struct_webapp"
+LABEL org.opencontainers.image.title="DPCfam moved-service page"
+LABEL org.opencontainers.image.description="Static page directing legacy DPCfam users to DPCexplorer"
+
+COPY --chown=101:101 legacy-page/default.conf /etc/nginx/conf.d/default.conf
+COPY --chown=101:101 legacy-page/index.html /usr/share/nginx/html/index.html
+
+COPY --chown=101:101 \
+    static/images/logo_dpcexplorer_web.png \
+    static/images/logo_area_science_park.png \
+    static/images/logo_sissa.png \
+    /usr/share/nginx/html/static/images/
+
+USER 101:101
+
+EXPOSE 8080
+
+HEALTHCHECK \
+    --interval=30s \
+    --timeout=3s \
+    --start-period=5s \
+    --retries=3 \
+    CMD wget -q -O /dev/null http://127.0.0.1:8080/health/live || exit 1

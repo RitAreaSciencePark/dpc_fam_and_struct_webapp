@@ -98,6 +98,7 @@ jobs:
         run: |
           docker build --check --file Dockerfile .
           docker build --check --file Dockerfile.data-loader .
+          docker build --check --file Dockerfile.legacy-page .
 
       - name: Build application image
         run: docker build --file Dockerfile --tag dpcexplorer:ci .
@@ -116,6 +117,9 @@ jobs:
             --entrypoint bash \
             dpcexplorer-data-loader:ci \
             -n /loader/load-kubernetes-data.sh
+
+      - name: Test legacy DPCfam moved-page container
+        run: ./scripts/test-legacy-page-container.sh
 
       - name: Start restricted application container
         run: |
@@ -214,6 +218,9 @@ jobs:
           - name: data-loader
             image: ghcr.io/ritareasciencepark/dpc_fam_and_struct_webapp-data-loader
             dockerfile: Dockerfile.data-loader
+          - name: dpcfam-moved-page
+            image: ghcr.io/ritareasciencepark/dpc_fam_and_struct_webapp-dpcfam-moved-page
+            dockerfile: Dockerfile.legacy-page
 
     steps:
       - name: Check out repository

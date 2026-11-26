@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+    <meta
+        name="description"
+        content="The DPCfam service has moved to DPCexplorer."
+    >
+
+    <title>DPCfam has moved | DPCexplorer</title>
+
+    <style>
+        :root {
+            --primary-bg: linear-gradient(135deg, #1b1f5a, #0d4f8b);
+            --header-bg: #0b4f8a;
+            --accent-color: #ffd84d;
+            --text-light: #ffffff;
+            --card-text: #263442;
+            --button-hover: #0d4f8b;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            min-height: 100%;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            background: var(--primary-bg);
+            color: var(--text-light);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        header {
+            padding: 1rem 1.25rem;
+            background-color: var(--header-bg);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-content {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-box {
+            flex: 0 0 auto;
+            padding: 4px;
+            border-radius: 8px;
+            background-color: #ffffff;
+        }
+
+        .logo-box img {
+            display: block;
+            width: auto;
+            height: 55px;
+            object-fit: contain;
+        }
+
+        .brand {
+            min-width: 0;
+        }
+
+        .brand-name {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(1.45rem, 4vw, 1.9rem);
+            font-weight: 700;
+            letter-spacing: 1px;
+            line-height: 1.15;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .brand-description {
+            display: block;
+            margin-top: 0.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.85rem;
+            line-height: 1.35;
+        }
+
+        main {
+            width: 100%;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1.25rem;
+        }
+
+        .notice-card {
+            width: 100%;
+            max-width: 760px;
+            padding: clamp(2rem, 6vw, 3.5rem);
+            border-top: 6px solid var(--accent-color);
+            border-radius: 12px;
+            background-color: rgba(255, 255, 255, 0.97);
+            color: var(--card-text);
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+        }
+
+        .service-update {
+            display: inline-block;
+            margin-bottom: 1rem;
+            padding: 0.35rem 0.8rem;
+            border-radius: 999px;
+            background-color: #fff3b8;
+            color: #554600;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 0 0 1.25rem;
+            color: var(--header-bg);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(2rem, 7vw, 3rem);
+            line-height: 1.15;
+        }
+
+        .notice-card p {
+            max-width: 620px;
+            margin: 0 auto 1rem;
+            font-size: 1.08rem;
+            line-height: 1.7;
+        }
+
+        .destination {
+            font-weight: 700;
+            color: var(--header-bg);
+        }
+
+        .continue-button {
+            display: inline-block;
+            margin-top: 1.25rem;
+            padding: 0.85rem 1.6rem;
+            border: 2px solid var(--header-bg);
+            border-radius: 6px;
+            background-color: var(--header-bg);
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition:
+                background-color 0.2s ease,
+                border-color 0.2s ease,
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .continue-button:hover {
+            border-color: var(--button-hover);
+            background-color: var(--button-hover);
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(11, 79, 138, 0.25);
+        }
+
+        .continue-button:focus-visible {
+            outline: 4px solid var(--accent-color);
+            outline-offset: 3px;
+        }
+
+        .bookmark-note {
+            margin-top: 1.5rem !important;
+            margin-bottom: 0 !important;
+            color: #5b6670;
+            font-size: 0.92rem !important;
+        }
+
+        footer {
+            padding: 1.5rem 1.25rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        .footer-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .footer-content img {
+            width: auto;
+            height: 55px;
+            object-fit: contain;
+            filter: brightness(0) invert(1) opacity(0.9);
+        }
+
+        .footer-content p {
+            max-width: 650px;
+            margin: 0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 640px) {
+            header {
+                padding: 0.85rem;
+            }
+
+            .header-content {
+                gap: 0.7rem;
+            }
+
+            .logo-box img {
+                height: 44px;
+            }
+
+            .brand-description {
+                font-size: 0.72rem;
+            }
+
+            main {
+                padding: 2rem 1rem;
+            }
+
+            .notice-card {
+                padding: 2rem 1.25rem;
+            }
+
+            .notice-card p {
+                font-size: 1rem;
+            }
+
+            .continue-button {
+                width: 100%;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .footer-content img {
+                height: 45px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo-box">
+                <img
+                    src="/static/images/logo_dpcexplorer_web.png"
+                    alt="DPCexplorer logo"
+                >
+            </div>
+
+            <div class="brand">
+                <p class="brand-name">DPCexplorer</p>
+                <span class="brand-description">
+                    Interactive exploration of DPCfam and DPCstruct
+                    protein domain classifications
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="notice-card" aria-labelledby="page-title">
+            <span class="service-update">Service update</span>
+
+            <h1 id="page-title">DPCfam has moved</h1>
+
+            <p>
+                The DPCfam service and its datasets have been moved
+                and reorganized within
+                <span class="destination">DPCexplorer</span>.
+            </p>
+
+            <p>
+                Explore DPCfam and DPCstruct protein domain
+                classifications through the new interface.
+            </p>
+
+            <a
+                class="continue-button"
+                href="https://dpcexplorer.areasciencepark.it/"
+            >
+                Continue to DPCexplorer&nbsp;&rarr;
+            </a>
+
+            <p class="bookmark-note">
+                Please update your bookmarks to the new address.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <img
+                src="/static/images/logo_area_science_park.png"
+                alt="Area Science Park logo"
+            >
+
+            <p>
+                DPCexplorer is developed at the Laboratory of Data
+                Engineering (LADE), Area Science Park, in collaboration
+                with SISSA, Trieste, Italy.
+            </p>
+
+            <img
+                src="/static/images/logo_sissa.png"
+                alt="SISSA logo"
+            >
+        </div>
+    </footer>
+</body>
+</html>
